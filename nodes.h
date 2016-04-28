@@ -40,6 +40,7 @@ public:
     Q_PROPERTY(QString NodeProduct READ getNodeProduct)
     Q_PROPERTY(QString NodeBasicType READ getNodeBasicType)
     Q_PROPERTY(QString NodeGenericType READ getNodeGenericType)
+    Q_PROPERTY(bool ZWPlus READ getIsZWPlus)
 
 
     Node(qint8 m_nodeid, int homeid);
@@ -77,6 +78,9 @@ public:
         } else {
             return OpenZWave::Manager::Get()->GetNodeType(this->m_homeid, this->m_nodeid).c_str();
         }
+    }
+    bool getIsZWPlus() const {
+        return OpenZWave::Manager::Get()->IsNodeZWavePlus(this->m_homeid, this->m_nodeid);
     }
 
 

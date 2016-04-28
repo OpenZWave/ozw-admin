@@ -21,6 +21,7 @@
 #include <QFileInfo>
 #include <QMessageBox>
 
+
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "nodes.h"
@@ -164,13 +165,16 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
     ozwNodes = new NodeList();
+    connect(ozwNodes, SIGNAL(rowsInserted(QModelIndex,int,int)), this, SLOT(resizeColumns()));
 
     this->ui->nodeList->setModel(ozwNodes);
     this->ui->nodeList->setSelectionBehavior(QAbstractItemView::SelectRows);
+    this->ui->nodeList->resizeColumnsToContents();
     this->ui->nodeList->horizontalHeader()->setStretchLastSection(true);
     this->ui->nodeList->verticalHeader()->hide();
     this->ui->nodeList->setSelectionMode(QAbstractItemView::SingleSelection);
-//    connect(ozwNodes, SIGNAL(newNode(qint8)), this, SLOT(newNode(qint8)));
+
+    connect(ui->nodeList->selectionModel(), SIGNAL(currentRowChanged(QModelIndex,QModelIndex)), this, SLOT(NodeSelected(QModelIndex,QModelIndex)));
 
 
     this->m_serialport = settings.value("SerialPort", "/dev/ttyUSB0").toString();
@@ -241,4 +245,24 @@ void MainWindow::newNode(qint8 nodeID) {
 void MainWindow::saveCache() {
     qDebug() << "Saving Cache for HomeID" << m_homeid;
     OpenZWave::Manager::Get()->WriteConfig(m_homeid);
+}
+
+void MainWindow::resizeColumns() {
+    this->ui->nodeList->resizeColumnsToContents();
+}
+
+void MainWindow::NodeSelected(QModelIndex current,QModelIndex previous) {
+    Q_UNUSED(previous);
+    if (!current.isValid()) {
+        return;
+    }
+    const QAbstractItemModel * model = current.model();
+    qint8 nodeid = model->data(model->index(current.row(), 0), Qt::DisplayRole).toInt();
+    Node *node = ozwNodes->getNode(nodeid);
+    if (!node) {
+        qDebug() << "Invalid Node";
+        return;
+    }
+    this->ui->ni_zwplus->setChecked(node->getIsZWPlus());
+
 }

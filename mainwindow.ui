@@ -27,12 +27,21 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>2</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="n_info">
        <attribute name="title">
         <string>Node Info</string>
        </attribute>
+       <layout class="QFormLayout" name="formLayout">
+        <item row="0" column="0">
+         <widget class="QCheckBox" name="ni_zwplus">
+          <property name="text">
+           <string>ZWave Plus</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </widget>
       <widget class="QWidget" name="n_values">
        <attribute name="title">

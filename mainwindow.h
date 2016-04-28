@@ -20,6 +20,7 @@
 
 #include <QMainWindow>
 #include <QSettings>
+#include <QModelIndex>
 
 namespace Ui {
 class MainWindow;
@@ -36,6 +37,8 @@ public slots:
     void OpenSerialPort();
     void newNode(qint8 nodeID);
     void saveCache();
+    void resizeColumns();
+    void NodeSelected(QModelIndex,QModelIndex);
 
 
 
