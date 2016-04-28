@@ -62,86 +62,29 @@ public:
 
     Node(qint8 m_nodeid, int homeid);
 
-    qint8 getNodeID() const { return this->m_nodeid; }
-    QString getNodeName() const { return OpenZWave::Manager::Get()->GetNodeName(this->m_homeid, this->m_nodeid).c_str(); }
-    void setNodeName(QString name) {
-        if (this->getNodeName() != name) {
-            OpenZWave::Manager::Get()->SetNodeName(this->m_homeid, this->m_nodeid, name.toStdString());
-            emit NodeNameChanged(name);
-        }
-    }
-    QString getNodeLocation() const { return OpenZWave::Manager::Get()->GetNodeLocation(this->m_homeid, this->m_nodeid).c_str(); }
-    void setNodeLocation(QString location) {
-        if (this->getNodeLocation() != location) {
-            OpenZWave::Manager::Get()->SetNodeLocation(this->m_homeid, this->m_nodeid, location.toStdString());
-            emit NodeLocationChanged(location);
-        }
-    }
-    QString getNodeManufacturer() const { return OpenZWave::Manager::Get()->GetNodeManufacturerName(this->m_homeid, this->m_nodeid).c_str(); }
-    QString getNodeProduct() const { return OpenZWave::Manager::Get()->GetNodeProductName(this->m_homeid, this->m_nodeid).c_str(); }
-    QString getNodeBasicType() const {
-        if (OpenZWave::Manager::Get()->IsNodeZWavePlus(this->m_homeid, this->m_nodeid)) {
-            QString mystr(OpenZWave::Manager::Get()->GetNodePlusTypeString(this->m_homeid, this->m_nodeid).c_str());
-            mystr.append(" ");
-            mystr.append(OpenZWave::Manager::Get()->GetNodeRoleString(this->m_homeid, this->m_nodeid).c_str());
-            return mystr;
-        } else {
-            return nodeBasicStr(OpenZWave::Manager::Get()->GetNodeBasic(this->m_homeid, this->m_nodeid));
-        }
-    }
-    QString getNodeGenericType() const {
-        if (OpenZWave::Manager::Get()->IsNodeZWavePlus(this->m_homeid, this->m_nodeid)) {
-            return OpenZWave::Manager::Get()->GetNodeDeviceTypeString(this->m_homeid, this->m_nodeid).c_str();
-        } else {
-            return OpenZWave::Manager::Get()->GetNodeType(this->m_homeid, this->m_nodeid).c_str();
-        }
-    }
-    bool getIsZWPlus() const {
-        return OpenZWave::Manager::Get()->IsNodeZWavePlus(this->m_homeid, this->m_nodeid);
-    }
-    bool getIsListening() const {
-        return OpenZWave::Manager::Get()->IsNodeListeningDevice(this->m_homeid, this->m_nodeid);
-    }
-    bool getIsBeaming() const {
-        return OpenZWave::Manager::Get()->IsNodeBeamingDevice(this->m_homeid, this->m_nodeid);
-    }
-    bool getIsRouting() const {
-        return OpenZWave::Manager::Get()->IsNodeRoutingDevice(this->m_homeid, this->m_nodeid);
-    }
-    bool getIsFLiRS() const {
-        return OpenZWave::Manager::Get()->IsNodeFrequentListeningDevice(this->m_homeid, this->m_nodeid);
-    }
-    bool getIsSecurity() const {
-        return OpenZWave::Manager::Get()->IsNodeSecurityDevice(this->m_homeid, this->m_nodeid);
-    }
-    bool getIsNodeFailed() const {
-        return OpenZWave::Manager::Get()->IsNodeFailed(this->m_homeid, this->m_nodeid);
-    }
-    bool getIsNodeAwake() const {
-        return OpenZWave::Manager::Get()->IsNodeAwake(this->m_homeid, this->m_nodeid);
-    }
-
-
-    QString getNodeProductID() const {
-        return OpenZWave::Manager::Get()->GetNodeProductId(this->m_homeid, this->m_nodeid).c_str();
-    }
-    QString getNodeProductType() const {
-        return OpenZWave::Manager::Get()->GetNodeProductType(this->m_homeid, this->m_nodeid).c_str();
-    }
-    QString getNodeZWVersion() const {
-        return QString::number(OpenZWave::Manager::Get()->GetNodeVersion(this->m_homeid, this->m_nodeid));
-    }
-    QString getNodeBaudRate() const {
-        return QString::number(OpenZWave::Manager::Get()->GetNodeMaxBaudRate(this->m_homeid, this->m_nodeid));
-    }
-    QString getNodeQueryStage() const {
-        return OpenZWave::Manager::Get()->GetNodeQueryStage(this->m_homeid, this->m_nodeid).c_str();
-    }
-
-    OpenZWave::Node::NodeData &getNodeStatistics() {
-        OpenZWave::Manager::Get()->GetNodeStatistics(this->m_homeid, this->m_nodeid, &this->m_stats);
-        return this->m_stats;
-    }
+    qint8 getNodeID() const;
+    QString getNodeName() const;
+    void setNodeName(QString name);
+    QString getNodeLocation() const;
+    void setNodeLocation(QString location);
+    QString getNodeManufacturer() const;
+    QString getNodeProduct() const;
+    QString getNodeBasicType() const;
+    QString getNodeGenericType() const;
+    bool getIsZWPlus() const;
+    bool getIsListening() const;
+    bool getIsBeaming() const;
+    bool getIsRouting() const;
+    bool getIsFLiRS() const;
+    bool getIsSecurity() const;
+    bool getIsNodeFailed() const;
+    bool getIsNodeAwake() const;
+    QString getNodeProductID() const;
+    QString getNodeProductType() const;
+    QString getNodeZWVersion() const;
+    QString getNodeBaudRate() const;
+    QString getNodeQueryStage() const;
+    OpenZWave::Node::NodeData &getNodeStatistics();
 
 signals:
     void NodeNameChanged(QString);

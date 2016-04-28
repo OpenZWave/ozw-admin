@@ -15,13 +15,24 @@ TEMPLATE = app
 SOURCES += main.cpp\
         mainwindow.cpp \
     nodes.cpp \
-    util.cpp
+    util.cpp \
+    logwindow.cpp
 
 HEADERS  += mainwindow.h \
     nodes.h \
-    util.h
+    util.h \
+    logwindow.h
 
 FORMS    += mainwindow.ui
 
-unix: CONFIG += link_pkgconfig
-unix: PKGCONFIG += libopenzwave
+unix:!macx  {
+    CONFIG += link_pkgconfig
+    PKGCONFIG += libopenzwave
+}
+macx: {
+    CONFIG += c++11
+    INCLUDEPATH += $$PWD/../open-zwave/cpp/src/
+    LIBS += -L$$PWD/../open-zwave -lopenzwave
+    LIBS += $$PWD/../open-zwave/libopenzwave.a -framework IOKit -framework CoreFoundation
+    QMAKE_MAC_SDK = macosx10.11
+}

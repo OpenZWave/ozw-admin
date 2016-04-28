@@ -21,6 +21,7 @@
 #include <QMainWindow>
 #include <QSettings>
 #include <QModelIndex>
+#include "logwindow.h"
 
 namespace Ui {
 class MainWindow;
@@ -39,6 +40,7 @@ public slots:
     void saveCache();
     void resizeColumns();
     void NodeSelected(QModelIndex,QModelIndex);
+    void openLogWindow();
 
 
 
@@ -46,6 +48,7 @@ private:
     Ui::MainWindow *ui;
     QString m_serialport;
     QSettings settings;
+    LogBrowser *logBrowser;
 };
 
 #endif // MAINWINDOW_H

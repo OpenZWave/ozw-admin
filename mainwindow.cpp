@@ -25,6 +25,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "nodes.h"
+#include "logwindow.h"
 
 #include "Options.h"
 #include "Manager.h"
@@ -40,7 +41,6 @@
 
 
 static pthread_mutex_t g_criticalSection;
-static pthread_cond_t  initCond  = PTHREAD_COND_INITIALIZER;
 static pthread_mutex_t initMutex = PTHREAD_MUTEX_INITIALIZER;
 
 NodeList *ozwNodes;
@@ -56,6 +56,7 @@ void OnNotification
     void* _context
 )
 {
+    Q_UNUSED(_context);
     // Must do this inside a critical section to avoid conflicts with the main thread
     pthread_mutex_lock( &g_criticalSection );
 
@@ -160,6 +161,9 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     this->ui->setupUi(this);
 
+    this->logBrowser = new LogBrowser;
+    connect(ui->actionOpen_Log_Window, SIGNAL(triggered()), this, SLOT(openLogWindow()));
+
     connect(ui->actionOpen_Serial_Port, SIGNAL(triggered()), this, SLOT(OpenSerialPort()));
     connect(ui->action_Save_Cache, SIGNAL(triggered()), this, SLOT(saveCache()));
 
@@ -247,6 +251,7 @@ void MainWindow::OpenSerialPort() {
 
 
 void MainWindow::newNode(qint8 nodeID) {
+    Q_UNUSED(nodeID);
 
 }
 
@@ -309,4 +314,9 @@ void MainWindow::NodeSelected(QModelIndex current,QModelIndex previous) {
 
 
 
+}
+
+
+void MainWindow::openLogWindow() {
+    this->logBrowser->show();
 }
