@@ -71,6 +71,8 @@ QVariant NodeList::data(const QModelIndex &index, int role) const {
                 return node->getNodeBasicType();
             case NCN_NodeGenericType:
                 return node->getNodeGenericType();
+            case NCN_QueryStage:
+                return node->getNodeQueryStage();
         }
     }
     return QVariant();
@@ -103,6 +105,9 @@ QVariant NodeList::headerData(int section, Qt::Orientation orientation, int role
             case NCN_NodeGenericType:
                 return tr("Generic Type");
 
+            case NCN_QueryStage:
+                return tr("Query Stage");
+
         }
     }
     return QVariant();
@@ -126,6 +131,7 @@ bool NodeList::setData(const QModelIndex &index, const QVariant &value, int role
                 case NCN_NodeProductName:
                 case NCN_NodeBasicType:
                 case NCN_NodeGenericType:
+                case NCN_QueryStage:
                     /* read only */
                     return false;
                     break;
@@ -186,3 +192,11 @@ QModelIndex NodeList::getNodeValueIndex(qint8 nodeid, NodeColumnNames value) {
     return this->index(j, (int)value);
 }
 
+void NodeList::updateQueryStage(qint8 node) {
+    QModelIndex i = getNodeValueIndex(node, NCN_QueryStage);
+    if (!i.isValid()) {
+        qWarning() << "Can't update QueryStage for Node "<< node;
+        return;
+    }
+    emit(dataChanged(i, i));
+}

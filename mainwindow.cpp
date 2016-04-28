@@ -146,7 +146,7 @@ void OnNotification
         {
         }
     }
-
+    ozwNodes->updateQueryStage(_notification->GetNodeId());
     pthread_mutex_unlock( &g_criticalSection );
 }
 
@@ -175,6 +175,14 @@ MainWindow::MainWindow(QWidget *parent) :
     this->ui->nodeList->setSelectionMode(QAbstractItemView::SingleSelection);
 
     connect(ui->nodeList->selectionModel(), SIGNAL(currentRowChanged(QModelIndex,QModelIndex)), this, SLOT(NodeSelected(QModelIndex,QModelIndex)));
+
+
+    SetCBReadOnly(this->ui->ni_beaming, true);
+    SetCBReadOnly(this->ui->ni_flirs, true);
+    SetCBReadOnly(this->ui->ni_listen,true);
+    SetCBReadOnly(this->ui->ni_routing, true);
+    SetCBReadOnly(this->ui->ni_security, true);
+    SetCBReadOnly(this->ui->ni_zwplus, true);
 
 
     this->m_serialport = settings.value("SerialPort", "/dev/ttyUSB0").toString();
@@ -264,5 +272,41 @@ void MainWindow::NodeSelected(QModelIndex current,QModelIndex previous) {
         return;
     }
     this->ui->ni_zwplus->setChecked(node->getIsZWPlus());
+    this->ui->NI_Manufacturer->setText(node->getNodeManufacturer());
+    this->ui->NI_Product->setText(node->getNodeProduct());
+    QString id(node->getNodeProductID());
+    id.append(":").append(node->getNodeProductType());
+    this->ui->NI_ID->setText(id);
+    this->ui->ni_beaming->setChecked(node->getIsBeaming());
+    this->ui->ni_flirs->setChecked(node->getIsFLiRS());
+    this->ui->ni_listen->setChecked(node->getIsListening());
+    this->ui->ni_routing->setChecked(node->getIsRouting());
+    this->ui->ni_security->setChecked(node->getIsSecurity());
+    this->ui->ni_version->setText(node->getNodeZWVersion());
+    QString baud("Baud Rate: ");
+    baud.append(node->getNodeBaudRate());
+    this->ui->ni_baud->setText(baud);
+
+    /* node status page */
+    this->ui->ns_querystage->setText(node->getNodeQueryStage());
+    this->ui->ns_sleeping->setChecked(!node->getIsNodeAwake());
+    this->ui->ns_status->setText(node->getIsNodeFailed() ? "Failed" : "Ok");
+    OpenZWave::Node::NodeData stats = node->getNodeStatistics();
+    this->ui->ns_avgreqrtt->setText(QString::number(stats.m_averageRequestRTT));
+    this->ui->ns_avgresprtt->setText(QString::number(stats.m_averageResponseRTT));
+    this->ui->ns_lastrecieved->setText(stats.m_receivedTS.c_str());
+    this->ui->ns_lastresprtt->setText(QString::number(stats.m_lastResponseRTT));
+    this->ui->ns_lastseen->setText(stats.m_receivedTS.c_str());
+    this->ui->ns_lastsend->setText(stats.m_sentTS.c_str());
+    this->ui->ns_lreqrtt->setText(QString::number(stats.m_lastRequestRTT));
+    this->ui->ns_quality->setText(QString::number(stats.m_quality));
+    this->ui->ns_rcvdduplicates->setText(QString::number(stats.m_receivedDups));
+    this->ui->ns_recievedcnt->setText(QString::number(stats.m_receivedCnt));
+    this->ui->ns_retries->setText(QString::number(stats.m_retries));
+    this->ui->ns_sentcnt->setText(QString::number(stats.m_sentCnt));
+    this->ui->ns_sentfailed->setText(QString::number(stats.m_sentFailed));
+    this->ui->ns_unsolicited->setText(QString::number(stats.m_receivedUnsolicited));
+
+
 
 }

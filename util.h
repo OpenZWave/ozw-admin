@@ -18,7 +18,9 @@
 #ifndef UTIL_H
 #define UTIL_H
 #include <QApplication>
+#include <QCheckBox>
 
 const char *nodeBasicStr (qint8 basic);
 
+void SetCBReadOnly(QCheckBox* checkBox, bool readOnly);
 #endif // UTIL_H

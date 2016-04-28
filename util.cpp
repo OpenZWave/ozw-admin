@@ -32,3 +32,8 @@ const char *nodeBasicStr (qint8 basic)
   return "unknown";
 }
 
+void SetCBReadOnly(QCheckBox* checkBox, bool readOnly)
+{
+   checkBox->setAttribute(Qt::WA_TransparentForMouseEvents, readOnly);
+   checkBox->setFocusPolicy(readOnly ? Qt::NoFocus : Qt::StrongFocus);
+}
