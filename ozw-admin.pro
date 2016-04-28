@@ -16,12 +16,14 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     nodes.cpp \
     util.cpp \
-    logwindow.cpp
+    logwindow.cpp \
+    associations.cpp
 
 HEADERS  += mainwindow.h \
     nodes.h \
     util.h \
-    logwindow.h
+    logwindow.h \
+    associations.h
 
 FORMS    += mainwindow.ui
 

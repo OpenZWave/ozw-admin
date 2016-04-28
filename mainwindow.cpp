@@ -52,9 +52,9 @@ int m_homeid;
 //-----------------------------------------------------------------------------
 void OnNotification
 (
-    OpenZWave::Notification const* _notification,
-    void* _context
-)
+        OpenZWave::Notification const* _notification,
+        void* _context
+        )
 {
     Q_UNUSED(_context);
     // Must do this inside a critical section to avoid conflicts with the main thread
@@ -63,89 +63,90 @@ void OnNotification
     qDebug() << QString(_notification->GetAsString().c_str());
     switch( _notification->GetType() )
     {
-        case OpenZWave::Notification::Type_ValueAdded:
-        {
-            break;
-        }
+    case OpenZWave::Notification::Type_ValueAdded:
+    {
+        break;
+    }
 
-        case OpenZWave::Notification::Type_ValueRemoved:
-        {
-            break;
-        }
+    case OpenZWave::Notification::Type_ValueRemoved:
+    {
+        break;
+    }
 
-        case OpenZWave::Notification::Type_ValueChanged:
-        {
-            break;
-        }
+    case OpenZWave::Notification::Type_ValueChanged:
+    {
+        break;
+    }
 
-        case OpenZWave::Notification::Type_Group:
-        {
-            break;
-        }
+    case OpenZWave::Notification::Type_Group:
+    {
+        ozwNodes->updateGroups(_notification->GetNodeId());
+        break;
+    }
 
-        case OpenZWave::Notification::Type_NodeAdded:
-        {
-            Node *newNode = new Node(_notification->GetNodeId(), _notification->GetHomeId());
-            ozwNodes->addNode(newNode);
-            break;
-        }
+    case OpenZWave::Notification::Type_NodeAdded:
+    {
+        Node *newNode = new Node(_notification->GetNodeId(), _notification->GetHomeId());
+        ozwNodes->addNode(newNode);
+        break;
+    }
 
-        case OpenZWave::Notification::Type_NodeRemoved:
-        {
-            break;
-        }
+    case OpenZWave::Notification::Type_NodeRemoved:
+    {
+        break;
+    }
 
-        case OpenZWave::Notification::Type_NodeEvent:
-        {
-            break;
-        }
+    case OpenZWave::Notification::Type_NodeEvent:
+    {
+        break;
+    }
 
-        case OpenZWave::Notification::Type_PollingDisabled:
-        {
-            break;
-        }
+    case OpenZWave::Notification::Type_PollingDisabled:
+    {
+        break;
+    }
 
-        case OpenZWave::Notification::Type_PollingEnabled:
-        {
-            break;
-        }
+    case OpenZWave::Notification::Type_PollingEnabled:
+    {
+        break;
+    }
 
-        case OpenZWave::Notification::Type_DriverReady:
-        {
-            m_homeid = _notification->GetHomeId();
-            break;
-        }
+    case OpenZWave::Notification::Type_DriverReady:
+    {
+        m_homeid = _notification->GetHomeId();
+        break;
+    }
 
-        case OpenZWave::Notification::Type_DriverFailed:
-        {
-            break;
-        }
+    case OpenZWave::Notification::Type_DriverFailed:
+    {
+        break;
+    }
 
-        case OpenZWave::Notification::Type_AwakeNodesQueried:
-        case OpenZWave::Notification::Type_AllNodesQueried:
-        case OpenZWave::Notification::Type_AllNodesQueriedSomeDead:
-        {
-            OpenZWave::Manager::Get()->WriteConfig(_notification->GetHomeId());
-            break;
-        }
+    case OpenZWave::Notification::Type_AwakeNodesQueried:
+    case OpenZWave::Notification::Type_AllNodesQueried:
+    case OpenZWave::Notification::Type_AllNodesQueriedSomeDead:
+    {
+        OpenZWave::Manager::Get()->WriteConfig(_notification->GetHomeId());
+        break;
+    }
 
-        case OpenZWave::Notification::Type_DriverReset:
-        case OpenZWave::Notification::Type_Notification:
-        {
-            break;
-        }
-        case OpenZWave::Notification::Type_NodeNaming:
-        {
-            QModelIndex i = ozwNodes->getNodeValueIndex(_notification->GetNodeId(), NCN_NodeName);
-            if (i.isValid())
-                ozwNodes->setData(i,QVariant(OpenZWave::Manager::Get()->GetNodeName(_notification->GetHomeId(),_notification->GetNodeId()).c_str()));
+    case OpenZWave::Notification::Type_DriverReset:
+    case OpenZWave::Notification::Type_Notification:
+    {
+        break;
+    }
+    case OpenZWave::Notification::Type_NodeNaming:
+    {
+        QModelIndex i = ozwNodes->getNodeValueIndex(_notification->GetNodeId(), NCN_NodeName);
+        if (i.isValid())
+            ozwNodes->setData(i,QVariant(OpenZWave::Manager::Get()->GetNodeName(_notification->GetHomeId(),_notification->GetNodeId()).c_str()));
 
-        }
-        case OpenZWave::Notification::Type_NodeProtocolInfo:
-        case OpenZWave::Notification::Type_NodeQueriesComplete:
-        default:
-        {
-        }
+    }
+    case OpenZWave::Notification::Type_NodeProtocolInfo:
+    case OpenZWave::Notification::Type_NodeQueriesComplete:
+    default:
+    {
+    }
     }
     ozwNodes->updateQueryStage(_notification->GetNodeId());
     pthread_mutex_unlock( &g_criticalSection );
@@ -234,8 +235,8 @@ void MainWindow::OpenSerialPort() {
     QFileInfo check_port(text);
     if (!check_port.exists() && !check_port.isWritable()) {
         QMessageBox::warning(this, tr("OZW-Admin"),
-                                       tr("The Serial Port does not exist or is not accessable"),
-                                       QMessageBox::Ok);
+                             tr("The Serial Port does not exist or is not accessable"),
+                             QMessageBox::Ok);
         return;
     }
 
@@ -311,12 +312,24 @@ void MainWindow::NodeSelected(QModelIndex current,QModelIndex previous) {
     this->ui->ns_sentcnt->setText(QString::number(stats.m_sentCnt));
     this->ui->ns_sentfailed->setText(QString::number(stats.m_sentFailed));
     this->ui->ns_unsolicited->setText(QString::number(stats.m_receivedUnsolicited));
-
-
+    this->ui->a_maxgroups->setText(QString::number(node->getNumGroups()));
+    for (int i = 1; i <= node->getNumGroups(); i++)
+        this->updateGroups(nodeid, i);
 
 }
 
 
 void MainWindow::openLogWindow() {
     this->logBrowser->show();
+}
+
+void MainWindow::updateGroups(qint8 nodeID, qint8 groupID) {
+    Node *node = ozwNodes->getNode(nodeID);
+    if (!node) {
+        qDebug() << "Invalid Node";
+        return;
+    }
+    associationinfo *group = node->getGroup(groupID);
+    qDebug() << group->getGroupName();
+
 }

@@ -18,6 +18,7 @@
 #include <QDebug>
 #include "nodes.h"
 #include "Manager.h"
+#include "Group.h"
 
 
 Node::Node(qint8 m_nodeid, int homeid)
@@ -117,8 +118,33 @@ OpenZWave::Node::NodeData &Node::getNodeStatistics() {
     return this->m_stats;
 }
 
+void Node::updateGroups() {
+    int numGroups = OpenZWave::Manager::Get()->GetNumGroups(this->m_homeid, this->m_nodeid);
+    for (int i = 1; i <= numGroups; i++) {
+        associationinfo *group = this->m_groups.getGroup(i);
+        if (!group) {
+            group = this->m_groups.addGroup(i);
+            group->setGroupName(OpenZWave::Manager::Get()->GetGroupLabel(this->m_homeid, this->m_nodeid, i).c_str());
+            group->setMaxAssociations(OpenZWave::Manager::Get()->GetMaxAssociations(this->m_homeid, this->m_nodeid, i));
+        }
+        group->resetMembers();
+        OpenZWave::InstanceAssociation *v = NULL;
+        int num = OpenZWave::Manager::Get()->GetAssociations(this->m_homeid, this->m_nodeid, i, &v);
+        for (int j = 0; j < num; j++) {
+            group->addNode(v[j].m_nodeId, v[j].m_instance);
+        }
 
+        
+    }
+}
 
+qint8 Node::getNumGroups() {
+    return OpenZWave::Manager::Get()->GetNumGroups(this->m_homeid, this->m_nodeid);
+}
+
+associationinfo *Node::getGroup(qint8 groupID) {
+    return this->m_groups.getGroup(groupID);
+}
 
 NodeList::NodeList(QObject *parent)
     : QAbstractTableModel(parent)
@@ -300,4 +326,13 @@ void NodeList::updateQueryStage(qint8 node) {
         return;
     }
     emit(dataChanged(i, i));
+}
+
+void NodeList::updateGroups(qint8 nodeid) {
+    Node *node = getNode(nodeid);
+    if (!node) {
+        qWarning() << "Can't find Node " << nodeid;
+        return;
+    }
+    node->updateGroups();
 }

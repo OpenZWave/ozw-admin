@@ -27,7 +27,7 @@
     <item>
      <widget class="QTabWidget" name="NodePane">
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="n_info">
        <attribute name="title">
@@ -44,8 +44,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>588</width>
-             <height>283</height>
+             <width>605</width>
+             <height>289</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -196,8 +196,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>588</width>
-             <height>428</height>
+             <width>605</width>
+             <height>398</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -517,8 +517,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>588</width>
-             <height>278</height>
+             <width>618</width>
+             <height>280</height>
             </rect>
            </property>
           </widget>
@@ -541,8 +541,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>588</width>
-             <height>278</height>
+             <width>618</width>
+             <height>280</height>
             </rect>
            </property>
           </widget>
@@ -565,10 +565,31 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>588</width>
-             <height>278</height>
+             <width>618</width>
+             <height>280</height>
             </rect>
            </property>
+           <layout class="QVBoxLayout" name="verticalLayout_9">
+            <item>
+             <widget class="QGroupBox" name="groupBox_5">
+              <property name="title">
+               <string>Assoication Info</string>
+              </property>
+              <layout class="QFormLayout" name="formLayout_3">
+               <item row="0" column="0">
+                <widget class="QLabel" name="label_22">
+                 <property name="text">
+                  <string>Max Groups</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="1">
+                <widget class="QLineEdit" name="a_maxgroups"/>
+               </item>
+              </layout>
+             </widget>
+            </item>
+           </layout>
           </widget>
          </widget>
         </item>
@@ -584,7 +605,7 @@
      <x>0</x>
      <y>0</y>
      <width>660</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">

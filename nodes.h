@@ -24,6 +24,7 @@
 #include <QAbstractTableModel>
 #include "Manager.h"
 #include "util.h"
+#include "associations.h"
 
 
 
@@ -86,6 +87,11 @@ public:
     QString getNodeQueryStage() const;
     OpenZWave::Node::NodeData &getNodeStatistics();
 
+
+    void updateGroups();
+    associationinfo *getGroup(qint8);
+    qint8 getNumGroups();
+
 signals:
     void NodeNameChanged(QString);
     void NodeLocationChanged(QString);
@@ -94,6 +100,7 @@ private:
     qint8 m_nodeid;
     int m_homeid;
     OpenZWave::Node::NodeData m_stats;
+    associations m_groups;
 };
 
 
@@ -129,6 +136,7 @@ public:
     Node *getNode(qint8);
     QModelIndex getNodeValueIndex(qint8, NodeColumnNames);
     void updateQueryStage(qint8);
+    void updateGroups(qint8);
 
 private:
 

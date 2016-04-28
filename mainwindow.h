@@ -41,6 +41,7 @@ public slots:
     void resizeColumns();
     void NodeSelected(QModelIndex,QModelIndex);
     void openLogWindow();
+    void updateGroups(qint8, qint8);
 
 
 
