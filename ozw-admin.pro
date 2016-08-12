@@ -17,15 +17,20 @@ SOURCES += main.cpp\
     nodes.cpp \
     util.cpp \
     logwindow.cpp \
-    associations.cpp
+    associations.cpp \
+    devicedb.cpp \
+    devicedbxmlreader.cpp
 
 HEADERS  += mainwindow.h \
     nodes.h \
     util.h \
     logwindow.h \
-    associations.h
+    associations.h \
+    devicedb.hpp \
+    devicedbxmlreader.hpp
 
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui \
+    devicedb.ui
 
 unix:!macx  {
     CONFIG += link_pkgconfig

@@ -44,8 +44,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>605</width>
-             <height>289</height>
+             <width>588</width>
+             <height>283</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -196,8 +196,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>605</width>
-             <height>398</height>
+             <width>588</width>
+             <height>428</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -517,8 +517,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>618</width>
-             <height>280</height>
+             <width>588</width>
+             <height>278</height>
             </rect>
            </property>
           </widget>
@@ -541,8 +541,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>618</width>
-             <height>280</height>
+             <width>588</width>
+             <height>278</height>
             </rect>
            </property>
           </widget>
@@ -565,8 +565,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>618</width>
-             <height>280</height>
+             <width>588</width>
+             <height>278</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -605,7 +605,7 @@
      <x>0</x>
      <y>0</y>
      <width>660</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -615,6 +615,7 @@
     <addaction name="actionOpen_Serial_Port"/>
     <addaction name="action_Save_Cache"/>
     <addaction name="separator"/>
+    <addaction name="actionDevice_Database"/>
     <addaction name="actionEdit_Configuration"/>
     <addaction name="separator"/>
     <addaction name="actionE_xit"/>
@@ -646,7 +647,7 @@
   </action>
   <action name="actionEdit_Configuration">
    <property name="text">
-    <string>Edit &amp;Configuration</string>
+    <string>&amp;Configuration</string>
    </property>
   </action>
   <action name="actionE_xit">
@@ -670,6 +671,11 @@
   <action name="action_Driver_Statistics">
    <property name="text">
     <string>&amp;Driver Statistics</string>
+   </property>
+  </action>
+  <action name="actionDevice_Database">
+   <property name="text">
+    <string>&amp;Device Database</string>
    </property>
   </action>
  </widget>

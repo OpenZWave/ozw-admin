@@ -42,6 +42,7 @@ public slots:
     void NodeSelected(QModelIndex,QModelIndex);
     void openLogWindow();
     void updateGroups(qint8, qint8);
+    void OpenDeviceDB();
 
 
 

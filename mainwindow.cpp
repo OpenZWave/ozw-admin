@@ -26,6 +26,7 @@
 #include "ui_mainwindow.h"
 #include "nodes.h"
 #include "logwindow.h"
+#include "devicedb.hpp"
 
 #include "Options.h"
 #include "Manager.h"
@@ -167,6 +168,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(ui->actionOpen_Serial_Port, SIGNAL(triggered()), this, SLOT(OpenSerialPort()));
     connect(ui->action_Save_Cache, SIGNAL(triggered()), this, SLOT(saveCache()));
+    connect(ui->actionDevice_Database, SIGNAL(triggered()), this, SLOT(OpenDeviceDB()));
 
 
     ozwNodes = new NodeList();
@@ -202,7 +204,7 @@ MainWindow::MainWindow(QWidget *parent) :
     pthread_mutex_lock( &initMutex );
 
 
-    printf("Starting MinOZW with OpenZWave Version %s\n", OpenZWave::Manager::getVersionAsString().c_str());
+    printf("Starting OZWAdmin with OpenZWave Version %s\n", OpenZWave::Manager::getVersionAsString().c_str());
 
 
 
@@ -333,3 +335,9 @@ void MainWindow::updateGroups(qint8 nodeID, qint8 groupID) {
     qDebug() << group->getGroupName();
 
 }
+
+void MainWindow::OpenDeviceDB() {
+    DeviceDB *ddb = new DeviceDB();
+    ddb->show();
+}
+
