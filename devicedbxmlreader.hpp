@@ -3,32 +3,46 @@
 
 
 #include <QIcon>
-#include <QXmlStreamReader>
+#include <QDomDocument>
+#include <QTreeWidget>
 
-class QTreeWidget;
 class QTreeWidgetItem;
+class QTabWidget;
 
-class DeviceDBXMLReader
+
+enum UserDataRoles {
+    ItemType = Qt::UserRole,
+    Manufacturer_ID,
+    Manufacturer_Name,
+    Product_Type,
+    Product_ID,
+    Product_Name,
+    Product_Config
+};
+
+class DeviceDBXMLReader: public QTreeWidget
 {
+    Q_OBJECT
 public:
-    DeviceDBXMLReader(QTreeWidget *treeWidget);
+    DeviceDBXMLReader(QWidget *parent = 0);
 
     bool read(QIODevice *device);
+    bool write(QIODevice *device);
 
-    QString errorString() const;
+signals:
+    void setupManufacturerPage(const QDomElement &element);
+    void setupProductPage(const QDomElement &element);
+private slots:
+    void updateDomElement(QTreeWidgetItem *item, int column);
+    void updateSelection();
 
 private:
-    void readXBEL();
-    void readProduct(QTreeWidgetItem *item);
-    void readSeparator(QTreeWidgetItem *item);
-    void readManufacturer(QTreeWidgetItem *item);
-    void readBookmark(QTreeWidgetItem *item);
+    void readManufacturer(const QDomElement &element, QTreeWidgetItem *parentItem  =0);
+    QTreeWidgetItem *createItem(const QDomElement &element,
+                                QTreeWidgetItem *parentItem = 0);
 
-    QTreeWidgetItem *createChildItem(QTreeWidgetItem *item);
-
-    QXmlStreamReader xml;
-    QTreeWidget *treeWidget;
-
+    QDomDocument domDocument;
+    QHash<QTreeWidgetItem *, QDomElement> domElementForItem;
     QIcon folderIcon;
     QIcon bookmarkIcon;
 };

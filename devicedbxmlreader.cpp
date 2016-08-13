@@ -1,116 +1,182 @@
 #include "devicedbxmlreader.hpp"
 
 #include <QtWidgets>
+#include <QObject>
 
-
-DeviceDBXMLReader::DeviceDBXMLReader(QTreeWidget *treeWidget)
-    : treeWidget(treeWidget)
+DeviceDBXMLReader::DeviceDBXMLReader(QWidget *parent)
+    : QTreeWidget(parent)
 {
-    QStyle *style = treeWidget->style();
+    QStyle *style = this->style();
 
     folderIcon.addPixmap(style->standardPixmap(QStyle::SP_DirClosedIcon),
                          QIcon::Normal, QIcon::Off);
     folderIcon.addPixmap(style->standardPixmap(QStyle::SP_DirOpenIcon),
                          QIcon::Normal, QIcon::On);
     bookmarkIcon.addPixmap(style->standardPixmap(QStyle::SP_FileIcon));
+
 }
 
 bool DeviceDBXMLReader::read(QIODevice *device)
 {
-    xml.setDevice(device);
+    QString errorStr;
+    int errorLine;
+    int errorColumn;
 
-    if (xml.readNextStartElement()) {
-        if (xml.name() == "ManufacturerSpecificData")
-            readXBEL();
-        else
-            xml.raiseError(QObject::tr("The file is not an ManufacturerSpecific file."));
+    if (!domDocument.setContent(device, true,&errorStr, &errorLine, &errorColumn)) {
+        QMessageBox::information(window(), tr("Device Database"), tr("Parse Error at line %1, column %d:\n%3")
+                                 .arg(errorLine)
+                                 .arg(errorColumn)
+                                 .arg(errorStr));
+        return false;
     }
 
-    return !xml.error();
-}
-
-QString DeviceDBXMLReader::errorString() const
-{
-    return QObject::tr("%1\nLine %2, column %3")
-            .arg(xml.errorString())
-            .arg(xml.lineNumber())
-            .arg(xml.columnNumber());
-}
-
-void DeviceDBXMLReader::readXBEL()
-{
-    Q_ASSERT(xml.isStartElement() && xml.name() == "ManufacturerSpecificData");
-
-    while (xml.readNextStartElement()) {
-        if (xml.name() == "Manufacturer")
-            readManufacturer(0);
-        else
-            xml.skipCurrentElement();
+    QDomElement root = domDocument.documentElement();
+    if ((root.tagName() != "ManufacturerSpecificData") && (!root.hasAttribute("Revision"))) {
+        QMessageBox::information(window(), tr("Device Database"),
+                                 tr("The file is not an ManufacturerSpecific file."));
+        return false;
     }
-}
 
-void DeviceDBXMLReader::readProduct(QTreeWidgetItem *item)
-{
-    Q_ASSERT(xml.isStartElement() && xml.name() == "Product");
-    QTreeWidgetItem *product = createChildItem(item);
-    //product->setFlags(item->flags() & Qt::ItemIsSelectable);
-    product->setText(0, xml.attributes().value("name").toString());
-}
+    clear();
 
-void DeviceDBXMLReader::readSeparator(QTreeWidgetItem *item)
-{
-    Q_ASSERT(xml.isStartElement() && xml.name() == "separator");
-
-    QTreeWidgetItem *separator = createChildItem(item);
-    separator->setFlags(item->flags() & ~Qt::ItemIsSelectable);
-    separator->setText(0, QString(30, 0xB7));
-    xml.skipCurrentElement();
-}
-
-void DeviceDBXMLReader::readManufacturer(QTreeWidgetItem *item)
-{
-    Q_ASSERT(xml.isStartElement() && xml.name() == "Manufacturer");
-
-    QTreeWidgetItem *folder = createChildItem(item);
-//    folder->setFlags(item->flags() & ~Qt::ItemIsSelectable);
-    folder->setText(0, xml.attributes().value("name").toString());
-    while (xml.readNextStartElement()) {
-        if (xml.name() == "Product")
-            readProduct(folder);
-        else
-            qDebug() << "Skipping " << xml.name().toString();
-            xml.skipCurrentElement();
+    QDomElement child = root.firstChildElement("Manufacturer");
+    while (!child.isNull()) {
+        readManufacturer(child);
+        child = child.nextSiblingElement("Manufacturer");
     }
+
+    connect(this, SIGNAL(itemSelectionChanged()), this, SLOT(updateSelection()));
+
+    return true;
 }
 
-void DeviceDBXMLReader::readBookmark(QTreeWidgetItem *item)
+bool DeviceDBXMLReader::write(QIODevice *device)
 {
-    Q_ASSERT(xml.isStartElement() && xml.name() == "bookmark");
+    const int IndentSize = 4;
 
-    QTreeWidgetItem *bookmark = createChildItem(item);
-    bookmark->setFlags(bookmark->flags() | Qt::ItemIsEditable);
-    bookmark->setIcon(0, bookmarkIcon);
-    bookmark->setText(0, QObject::tr("Unknown title"));
-    bookmark->setText(1, xml.attributes().value("href").toString());
+    QTextStream out(device);
+    domDocument.save(out, IndentSize);
+    return true;
+}
 
-    while (xml.readNextStartElement()) {
+void DeviceDBXMLReader::updateDomElement(QTreeWidgetItem *item, int column)
+{
 #if 0
-        if (xml.name() == "title")
-            //readTitle(bookmark);
-        else
-            xml.skipCurrentElement();
+    QDomElement element = domElementForItem.value(item);
+    if (!element.isNull()) {
+        if (column == 0) {
+            QDomElement oldTitleElement = element.firstChildElement("title");
+            QDomElement newTitleElement = domDocument.createElement("title");
+
+            QDomText newTitleText = domDocument.createTextNode(item->text(0));
+            newTitleElement.appendChild(newTitleText);
+
+            element.replaceChild(newTitleElement, oldTitleElement);
+        } else {
+            if (element.tagName() == "bookmark")
+                element.setAttribute("href", item->text(1));
+        }
+    }
 #endif
+}
+
+
+
+void DeviceDBXMLReader::readManufacturer(const QDomElement &element,
+                                         QTreeWidgetItem *parentItem)
+{
+    QTreeWidgetItem *item = createItem(element, parentItem);
+
+    QString title = element.attribute("name");
+
+    item->setFlags(item->flags() | Qt::ItemIsEditable);
+    item->setIcon(0, folderIcon);
+    item->setText(0, title);
+
+    QDomElement child = element.firstChildElement();
+    while (!child.isNull()) {
+        if (child.tagName() == "Product") {
+            QTreeWidgetItem *childItem = createItem(child, item);
+
+            QString title = child.attribute("name");
+
+            childItem->setFlags(item->flags() | Qt::ItemIsEditable);
+            childItem->setIcon(0, bookmarkIcon);
+            childItem->setText(0, title);
+            child = child.nextSiblingElement();
+        }
+    }
+
+}
+QTreeWidgetItem *DeviceDBXMLReader::createItem(const QDomElement &element,
+                                      QTreeWidgetItem *parentItem)
+{
+    QTreeWidgetItem *item;
+    if (parentItem) {
+        item = new QTreeWidgetItem(parentItem);
+    } else {
+        item = new QTreeWidgetItem(this);
+    }
+    domElementForItem.insert(item, element);
+    return item;
+}
+
+
+
+
+void DeviceDBXMLReader::updateSelection() {
+
+    QDomElement element = domElementForItem.value(this->currentItem());
+    if (!element.isNull()) {
+        if (element.nodeName().toUpper() == "MANUFACTURER") {
+            qDebug() << "Loading Manufacturer Page for " << element.attribute("name");
+            emit setupManufacturerPage(element);
+        } else if (element.nodeName().toUpper() == "PRODUCT") {
+            qDebug() << "Loading Product Page for " << element.attribute("name");
+            emit setupProductPage(element);
+        } else {
+            qWarning() << "Unknown ManufacturerData Tag:" << element.nodeName();
+        }
     }
 }
 
-QTreeWidgetItem *DeviceDBXMLReader::createChildItem(QTreeWidgetItem *item)
-{
-    QTreeWidgetItem *childItem;
-    if (item) {
-        childItem = new QTreeWidgetItem(item);
+#if 0
+void DeviceDBXMLReader::setupManufacturerPage(QTreeWidgetItem *item) {
+    this->tabWidget->setTabEnabled(3, false);
+    this->tabWidget->setTabEnabled(2, false);
+    this->tabWidget->setTabEnabled(1, false);
+    QWidget* pWidget= this->tabWidget->findChild<QWidget *>("ManufacturerSummary");
+    if (pWidget) {
+        QLineEdit *mname = this->tabWidget->findChild<QLineEdit *>("mname");
+        if (mname)
+            mname->setText(item->data(0, Manufacturer_Name).toString());
+        QLineEdit *mid = this->tabWidget->findChild<QLineEdit *>("mid");
+        if (mid)
+            mid->setText(item->data(0, Manufacturer_ID).toString());
     } else {
-        childItem = new QTreeWidgetItem(treeWidget);
+        qDebug() << "Can't Find ManufacturerSummary Page";
     }
-    childItem->setData(0, Qt::UserRole, xml.name().toString());
-    return childItem;
+
+
+
 }
+
+void DeviceDBXMLReader::setupProductPage(QTreeWidgetItem *item) {
+    this->tabWidget->setTabEnabled(3, true);
+    this->tabWidget->setTabEnabled(2, true);
+    this->tabWidget->setTabEnabled(1, true);
+    QWidget* pWidget= this->tabWidget->findChild<QWidget *>("ManufacturerSummary");
+    if (pWidget) {
+        QLineEdit *mname = this->tabWidget->findChild<QLineEdit *>("mname");
+        if (mname)
+            mname->setText(item->data(0, Manufacturer_Name).toString());
+        QLineEdit *mid = this->tabWidget->findChild<QLineEdit *>("mid");
+        if (mid)
+            mid->setText(item->data(0, Manufacturer_ID).toString());
+    } else {
+        qDebug() << "Can't Find ManufacturerSummary Page";
+    }
+    emit doProductPage(item);
+
+}
+#endif

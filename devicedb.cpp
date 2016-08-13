@@ -1,7 +1,7 @@
 #include <QtWidgets>
 
 #include "devicedb.hpp"
-#include "devicedbxmlreader.hpp"
+
 #include "ui_devicedb.h"
 
 DeviceDB::DeviceDB(QWidget *parent) :
@@ -10,9 +10,7 @@ DeviceDB::DeviceDB(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    /* laod the XML Files */
-    ui->DeviceTreeList->clear();
-    QFile mfxml("/Users/justinhammond/Development/open-zwave/config/manufacturer_specific.xml");
+    QFile mfxml("config/manufacturer_specific.xml");
     if (!mfxml.open(QFile::ReadOnly | QFile::Text)) {
             QMessageBox::warning(this, tr("QXmlStream Bookmarks"),
                                  tr("Cannot read file %1:\n%2.")
@@ -21,17 +19,22 @@ DeviceDB::DeviceDB(QWidget *parent) :
             return;
         }
 
-        DeviceDBXMLReader reader(ui->DeviceTreeList);
-        if (!reader.read(&mfxml)) {
-            QMessageBox::warning(this, tr("QXmlStream Bookmarks"),
-                                 tr("Parse error in file %1:\n\n%2")
-                                 .arg(mfxml.fileName())
-                                 .arg(reader.errorString()));
-        } else {
+        deviceTree = new DeviceDBXMLReader(this);
+        deviceDetails = new DeviceConfigXMLReader(ui->DeviceDetails, this);
+        connect(deviceTree, SIGNAL(setupManufacturerPage(QDomElement)), deviceDetails, SLOT(setupManufacturerPage(QDomElement)));
+        connect(deviceTree, SIGNAL(setupProductPage(QDomElement)), deviceDetails, SLOT(setupProductPage(QDomElement)));
+        //connect(ui->DeviceTreeList, SIGNAL(itemSelectionChanged()), reader, SLOT(itemSelectionChanged()));
+        if (deviceTree->read(&mfxml)) {
             statusBar()->showMessage(tr("File loaded"), 2000);
         }
+        this->ui->horizontalLayout->insertWidget(0, deviceTree);
 
 }
+
+void DeviceDB::doProductPage(QTreeWidgetItem *item) {
+
+}
+
 
 DeviceDB::~DeviceDB()
 {

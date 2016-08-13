@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui xml
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -19,7 +19,9 @@ SOURCES += main.cpp\
     logwindow.cpp \
     associations.cpp \
     devicedb.cpp \
-    devicedbxmlreader.cpp
+    devicedbxmlreader.cpp \
+    deviceconfigxmlreader.cpp \
+    widgets.cpp
 
 HEADERS  += mainwindow.h \
     nodes.h \
@@ -27,19 +29,32 @@ HEADERS  += mainwindow.h \
     logwindow.h \
     associations.h \
     devicedb.hpp \
-    devicedbxmlreader.hpp
+    devicedbxmlreader.hpp \
+    deviceconfigxmlreader.h \
+    widgets.h
 
 FORMS    += mainwindow.ui \
-    devicedb.ui
+    devicedb.ui \
+    HelpEditorDlg.ui \
+    ListDialog.ui
+
+#for now, we will link against a static version of openzwave (Dev branch)
+unix {
+     LIBS += open-zwave/libopenzwave.a -lresolv -ludev
+     INCLUDEPATH += open-zwave/cpp/src/
+
+     libopenzwave.commands = cd open-zwave && make -f Makefile
+     QMAKE_EXTRA_TARGETS += libopenzwave
+     PRE_TARGETDEPS += libopenzwave
+}
+
 
 unix:!macx  {
-    CONFIG += link_pkgconfig
-    PKGCONFIG += libopenzwave
+#    CONFIG += link_pkgconfig
+#    PKGCONFIG += libopenzwave
 }
 macx: {
     CONFIG += c++11
-    INCLUDEPATH += $$PWD/../open-zwave/cpp/src/
-    LIBS += -L$$PWD/../open-zwave -lopenzwave
-    LIBS += $$PWD/../open-zwave/libopenzwave.a -framework IOKit -framework CoreFoundation
+    LIBS += -framework IOKit -framework CoreFoundation
     QMAKE_MAC_SDK = macosx10.11
 }

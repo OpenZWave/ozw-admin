@@ -16,30 +16,110 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QHBoxLayout" name="horizontalLayout">
     <item>
-     <widget class="QTreeWidget" name="DeviceTreeList">
-      <column>
-       <property name="text">
-        <string notr="true">1</string>
-       </property>
-      </column>
-     </widget>
-    </item>
-    <item>
      <widget class="QTabWidget" name="DeviceDetails">
       <property name="currentIndex">
-       <number>2</number>
+       <number>0</number>
       </property>
-      <widget class="QWidget" name="Summary">
+      <widget class="QWidget" name="ManufacturerSummary">
        <attribute name="title">
-        <string>Summary</string>
+        <string>Manufacturer</string>
        </attribute>
+       <layout class="QFormLayout" name="formLayout">
+        <item row="0" column="0">
+         <widget class="QLabel" name="label">
+          <property name="text">
+           <string>Manufacturer Name:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QLineEdit" name="mname">
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="label_2">
+          <property name="text">
+           <string>Manufacturer ID:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QLineEdit" name="mid">
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </widget>
-      <widget class="QWidget" name="Config">
+      <widget class="QWidget" name="ProductSummary">
+       <attribute name="title">
+        <string>Device Details</string>
+       </attribute>
+       <layout class="QFormLayout" name="formLayout_2">
+        <item row="0" column="0">
+         <widget class="QLabel" name="label_3">
+          <property name="text">
+           <string>Product Type:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QLineEdit" name="ptype">
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="label_4">
+          <property name="text">
+           <string>Product ID</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="label_5">
+          <property name="text">
+           <string>Product Name</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="0">
+         <widget class="QLabel" name="label_6">
+          <property name="text">
+           <string>Product Config</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QLineEdit" name="pid">
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1">
+         <widget class="QLineEdit" name="pname"/>
+        </item>
+        <item row="3" column="1">
+         <widget class="QLineEdit" name="pconfig">
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="ProductConfig">
        <attribute name="title">
         <string>Configuration</string>
        </attribute>
       </widget>
-      <widget class="QWidget" name="Quirks">
+      <widget class="QWidget" name="ProductQuirks">
        <attribute name="title">
         <string>Quirks</string>
        </attribute>
@@ -54,7 +134,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>22</height>
+     <height>28</height>
     </rect>
    </property>
   </widget>

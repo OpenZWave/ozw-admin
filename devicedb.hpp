@@ -3,6 +3,9 @@
 
 #include <QMainWindow>
 
+#include "devicedbxmlreader.hpp"
+#include "deviceconfigxmlreader.h"
+
 namespace Ui {
 class DeviceDB;
 }
@@ -14,9 +17,12 @@ class DeviceDB : public QMainWindow
 public:
     explicit DeviceDB(QWidget *parent = 0);
     ~DeviceDB();
-
+public slots:
+    void doProductPage(QTreeWidgetItem *);
 private:
     Ui::DeviceDB *ui;
+    DeviceDBXMLReader *deviceTree;
+    DeviceConfigXMLReader *deviceDetails;
 };
 
 #endif // DEVICEDB_HPP
