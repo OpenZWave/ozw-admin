@@ -43,9 +43,9 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>0</y>
-             <width>588</width>
-             <height>283</height>
+             <y>-115</y>
+             <width>605</width>
+             <height>516</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -108,6 +108,99 @@
                 <widget class="QLineEdit" name="ni_version">
                  <property name="readOnly">
                   <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item>
+             <widget class="QGroupBox" name="groupBox_6">
+              <property name="title">
+               <string>Meta Data</string>
+              </property>
+              <layout class="QFormLayout" name="formLayout_4">
+               <item row="0" column="0">
+                <widget class="QLabel" name="label_23">
+                 <property name="text">
+                  <string>OpenZWave Info Page:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="1">
+                <widget class="QLabel" name="md_ozwinfo">
+                 <property name="text">
+                  <string/>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="0">
+                <widget class="QLabel" name="label_24">
+                 <property name="text">
+                  <string>Z-Wave Product Page:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="1">
+                <widget class="QLabel" name="md_zwprodpage">
+                 <property name="text">
+                  <string/>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="0">
+                <widget class="QLabel" name="label_25">
+                 <property name="text">
+                  <string>Pepper1 Database Entry:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="1">
+                <widget class="QLabel" name="md_pepper1db">
+                 <property name="text">
+                  <string/>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="0">
+                <widget class="QLabel" name="label_26">
+                 <property name="text">
+                  <string>Product Manual:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="4" column="0">
+                <widget class="QLabel" name="label_27">
+                 <property name="text">
+                  <string>Product Page:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="5" column="0">
+                <widget class="QLabel" name="label_28">
+                 <property name="text">
+                  <string>Product Picture:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="1">
+                <widget class="QLabel" name="md_prodmanual">
+                 <property name="text">
+                  <string/>
+                 </property>
+                </widget>
+               </item>
+               <item row="4" column="1">
+                <widget class="QLabel" name="md_prodpage">
+                 <property name="text">
+                  <string/>
+                 </property>
+                </widget>
+               </item>
+               <item row="5" column="1">
+                <widget class="QLabel" name="md_prodimg">
+                 <property name="text">
+                  <string/>
                  </property>
                 </widget>
                </item>
@@ -196,8 +289,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>588</width>
-             <height>428</height>
+             <width>605</width>
+             <height>461</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -517,8 +610,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>588</width>
-             <height>278</height>
+             <width>618</width>
+             <height>301</height>
             </rect>
            </property>
           </widget>
@@ -541,8 +634,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>588</width>
-             <height>278</height>
+             <width>618</width>
+             <height>301</height>
             </rect>
            </property>
           </widget>
@@ -565,8 +658,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>588</width>
-             <height>278</height>
+             <width>618</width>
+             <height>301</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -605,7 +698,7 @@
      <x>0</x>
      <y>0</y>
      <width>660</width>
-     <height>22</height>
+     <height>28</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">

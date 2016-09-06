@@ -118,6 +118,10 @@ OpenZWave::Node::NodeData &Node::getNodeStatistics() {
     return this->m_stats;
 }
 
+QString Node::getNodeMetaData(OpenZWave::Node::MetaDataFields field) const {\
+    return OpenZWave::Manager::Get()->GetMetaData(this->m_homeid, this->m_nodeid, field).c_str();
+}
+
 void Node::updateGroups() {
     int numGroups = OpenZWave::Manager::Get()->GetNumGroups(this->m_homeid, this->m_nodeid);
     for (int i = 1; i <= numGroups; i++) {

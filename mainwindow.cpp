@@ -295,6 +295,20 @@ void MainWindow::NodeSelected(QModelIndex current,QModelIndex previous) {
     baud.append(node->getNodeBaudRate());
     this->ui->ni_baud->setText(baud);
 
+
+    /* metaData info */
+    this->ui->md_ozwinfo->setText(node->getNodeMetaData(OpenZWave::Node::MetaData_OzwInfoPage));
+    this->ui->md_pepper1db->setText(node->getNodeMetaData(OpenZWave::Node::MetaData_Pepper1Page));
+    this->ui->md_prodmanual->setText(node->getNodeMetaData(OpenZWave::Node::MetaData_ProductManual));
+    this->ui->md_prodpage->setText(node->getNodeMetaData(OpenZWave::Node::MetaData_ProductPage));
+    this->ui->md_zwprodpage->setText(node->getNodeMetaData(OpenZWave::Node::MetaData_ZWProductPage));
+//    QImage prodpic;
+//    prodpic.load(node->getNodeMetaData(OpenZWave::Node::MetaData_ProductPic));
+//    this->ui->md_prodimg->setPixmap(QPixmap::fromImage(prodpic));
+    this->ui->md_prodimg->setText(node->getNodeMetaData(OpenZWave::Node::MetaData_ProductPic));
+
+
+
     /* node status page */
     this->ui->ns_querystage->setText(node->getNodeQueryStage());
     this->ui->ns_sleeping->setChecked(!node->getIsNodeAwake());
@@ -314,6 +328,9 @@ void MainWindow::NodeSelected(QModelIndex current,QModelIndex previous) {
     this->ui->ns_sentcnt->setText(QString::number(stats.m_sentCnt));
     this->ui->ns_sentfailed->setText(QString::number(stats.m_sentFailed));
     this->ui->ns_unsolicited->setText(QString::number(stats.m_receivedUnsolicited));
+
+
+
     this->ui->a_maxgroups->setText(QString::number(node->getNumGroups()));
     for (int i = 1; i <= node->getNumGroups(); i++)
         this->updateGroups(nodeid, i);

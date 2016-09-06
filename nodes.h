@@ -86,6 +86,7 @@ public:
     QString getNodeBaudRate() const;
     QString getNodeQueryStage() const;
     OpenZWave::Node::NodeData &getNodeStatistics();
+    QString getNodeMetaData(OpenZWave::Node::MetaDataFields) const;
 
 
     void updateGroups();
