@@ -653,7 +653,7 @@
           <property name="widgetResizable">
            <bool>true</bool>
           </property>
-          <widget class="QWidget" name="scrollAreaWidgetContents_5">
+          <widget class="QWidget" name="groupsa">
            <property name="geometry">
             <rect>
              <x>0</x>

@@ -330,6 +330,14 @@ void MainWindow::NodeSelected(QModelIndex current,QModelIndex previous) {
     this->ui->ns_unsolicited->setText(QString::number(stats.m_receivedUnsolicited));
 
 
+    while (QLayoutItem *item = this->ui->groupsa->layout()->takeAt(1)) {
+        QWidget *w = item->widget();
+
+        this->ui->groupsa->layout()->removeWidget(w);
+        w->deleteLater();
+    }
+
+
 
     this->ui->a_maxgroups->setText(QString::number(node->getNumGroups()));
     for (int i = 1; i <= node->getNumGroups(); i++)
@@ -350,7 +358,18 @@ void MainWindow::updateGroups(qint8 nodeID, qint8 groupID) {
     }
     associationinfo *group = node->getGroup(groupID);
     qDebug() << group->getGroupName();
+    QGroupBox *agi = new QGroupBox("Group " + QString::number(group->getGroupID()) + ": " + group->getGroupName());
+    agi->setStyleSheet("QGroupBox {border: 1px solid gray; border-radius: 9px;margin-top: 0.5em;} QGroupBox::title {subcontrol-origin: margin; left: 10px; padding: 0 3px 0 3px;}");
+    QFormLayout *agifl = new QFormLayout();
+    agi->setLayout(agifl);
 
+    QLabel *malbl = new QLabel("Max Associations");
+    QLabel *mav = new QLabel(QString::number(group->getMaxAssociations()));
+    agifl->addRow(malbl, mav);
+
+
+
+    this->ui->groupsa->layout()->addWidget(agi);
 }
 
 void MainWindow::OpenDeviceDB() {
