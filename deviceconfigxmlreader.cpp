@@ -19,7 +19,7 @@
 #include <QtWidgets>
 #include <QObject>
 #include "widgets.h"
-
+#include "commandclasslist.h"
 
 
 
@@ -65,7 +65,7 @@ void DeviceConfigXMLReader::setupProductPage(const QDomElement &element) {
 
     /* load the Device Config, if it exists */
     if (element.hasAttribute("config")) {
-        QFile dcxml("config/" + element.attribute("config"));
+        QFile dcxml(this->m_Path + "/" + element.attribute("config"));
         if (!dcxml.open(QFile::ReadOnly | QFile::Text)) {
             QMessageBox::warning(tabWidget, tr("Device Database"),
                                  tr("Cannot read file %1:\n%2.")
@@ -125,12 +125,14 @@ bool DeviceConfigXMLReader::read(QIODevice *device)
             /* configuation Params */
             if (child.attribute("id") == "112") {
                 doConfigurationParams(child);
+            } else if (child.attribute("id") == "133") {
+                doAssociations(child);
             } else {
-                qWarning() << "Unhandled CommandClass: " << child.attribute("id");
+                doQuirks(child);
             }
 
         } else if (child.nodeName().toUpper() == "PROTOCOL") {
-
+                qWarning() << "Handle Protocol Block";
         } else {
             qWarning() << "Unknown Element in Config File: " << child.nodeName();
         }
@@ -232,9 +234,120 @@ void DeviceConfigXMLReader::doConfigurationParams(const QDomElement &element) {
     }
 }
 
+void DeviceConfigXMLReader::doAssociations(const QDomElement &element)
+{
+    QWidget* pWidget= this->tabWidget->findChild<QWidget *>("ProductAssociations");
+    if (!pWidget) {
+        qWarning() << "Can't find ProductAssociations Tab";
+        return;
+    }
+
+    qDebug() << "Now setting up table data";
+    QDomElement value = element.firstChildElement();
+    while (!value.isNull()) {
+        qDebug() << value.nodeName().toUpper();
+        if (value.nodeName().toUpper() == "ASSOCIATIONS") {
+            setFieldsFromElement(value, "ProductAssociations", "pc_maxassociations", "num_groups");
+        }
+        QTableWidget *table = this->tabWidget->findChild<QTableWidget *>("AssocTable");
+        if (!table) {
+            table = new QTableWidget(0, 4, pWidget);
+            table->setObjectName("AssocTable");
+            QStringList headers;
+            headers << "Index" <<  "Label" << "Max Nodes" << "Auto Associate";
+            table->setHorizontalHeaderLabels(headers);
+            table->verticalHeader()->hide();
+            qDebug() << pWidget->layout()->objectName();
+            QFormLayout *lo = qobject_cast<QFormLayout *>(pWidget->layout());
+            if (lo) {
+                lo->addRow(table);
+            } else {
+                QFormLayout *lo = new QFormLayout(pWidget);
+                lo->addRow(table);
+            }
+        } else {
+            table->clearContents();
+            table->setRowCount(0);
+        }
+        qDebug() << "Now setting up table data";
+
+        QDomElement assoc = value.firstChildElement("Group");
+        while (!assoc.isNull()) {
+            qDebug() << "Doing Group " << assoc.attribute("label");
+            qDebug() << "Inserting Row for Association Index " << assoc.attribute("index");
+            table->insertRow(table->rowCount());
+            QSpinBox *idx = new QSpinBox();
+            idx->setMinimum(1);
+            idx->setMaximum(255);
+            idx->setValue(assoc.attribute("index").toInt());
+            table->setCellWidget(table->rowCount()-1, 0, idx);
+
+            QTableWidgetItem *label = new QTableWidgetItem(assoc.attribute("label"));
+            table->setItem(table->rowCount()-1, 1, label);
+
+            QSpinBox *ma = new QSpinBox();
+            ma->setMinimum(1);
+            ma->setMaximum(255);
+            ma->setValue(assoc.attribute("max_associations").toInt());
+            table->setCellWidget(table->rowCount()-1, 2, ma);
+
+
+            BoolValueCheckBox *ro = new BoolValueCheckBox();
+            ro->setText("Auto Associate");
+            if (assoc.attribute("index").toInt() == 1)
+                ro->setBoolValue(assoc.attribute("auto", "true"));
+            else
+                ro->setBoolValue(assoc.attribute("auto", "false"));
+            table->setCellWidget(table->rowCount()-1, 3, ro);
+
+            assoc = assoc.nextSiblingElement("Group");
+        }
+        value = value.nextSiblingElement();
+    }
+}
+
+
+void DeviceConfigXMLReader::doQuirks(const QDomElement &element)
+{
+    QWidget* pWidget= this->tabWidget->findChild<QWidget *>("ProductQuirks");
+    if (!pWidget) {
+        qWarning() << "Can't find ProductQuirks Tab";
+        return;
+    }
+
+    QTableWidget* tbl= pWidget->findChild<QTableWidget *>("pq_tableWidget");
+    if (!tbl) {
+        qWarning() << "Can't find pq_tableWidget";
+        return;
+    }
+    QDomNamedNodeMap attribs = element.attributes();
+    qDebug() << attribs.namedItem("id").nodeValue();
+    int CC = attribs.namedItem("id").nodeValue().toInt();
+    if (CC == 0) {
+        qDebug() << "No CC Info";
+        //return;
+    }
+    CommandClassList ccl;
+    for (int i = 0; i < attribs.count(); i++) {
+        QDomNode node = attribs.item(i);
+        if (node.nodeName().toUpper() == "ID")
+            continue;
+        tbl->insertRow(tbl->rowCount());
+
+        QTableWidgetItem *ccname = new QTableWidgetItem(ccl.getName(CC));
+        tbl->setItem(tbl->rowCount()-1, 0, ccname);
+
+        QTableWidgetItem *label = new QTableWidgetItem(node.nodeName());
+        tbl->setItem(tbl->rowCount()-1, 1, label);
+
+        QTableWidgetItem *value = new QTableWidgetItem(node.nodeValue());
+        tbl->setItem(tbl->rowCount()-1, 2, value);
+    }
 
 
 
+
+}
 
 bool DeviceConfigXMLReader::write(QIODevice *device)
 {
@@ -243,6 +356,11 @@ bool DeviceConfigXMLReader::write(QIODevice *device)
     QTextStream out(device);
     domDocument.save(out, IndentSize);
     return true;
+}
+
+void DeviceConfigXMLReader::setPath(QString path)
+{
+    this->m_Path = path;
 }
 
 #if 0
@@ -312,3 +430,5 @@ QTreeWidgetItem *deviceconfigxmlreader::createItem(const QDomElement &element,
 }
 
 #endif
+
+

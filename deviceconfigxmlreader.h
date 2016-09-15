@@ -26,6 +26,7 @@ class DeviceConfigXMLReader : public QObject
     Q_OBJECT
 public:
     DeviceConfigXMLReader(QTabWidget *, QWidget *parent = 0);
+    void setPath(QString path);
 
 
 public slots:
@@ -37,12 +38,15 @@ private:
     bool write(QIODevice *device);
     bool setFieldsFromElement(const QDomElement &, QString, QString, QString);
     void doConfigurationParams(const QDomElement &element);
+    void doAssociations(const QDomElement &element);
+    void doQuirks(const QDomElement &element);
 
     QDomDocument domDocument;
     //QHash<QTreeWidgetItem *, QDomElement> domElementForItem;
     QIcon folderIcon;
     QIcon bookmarkIcon;
     QTabWidget *tabWidget;
+    QString m_Path;
 
 
 };

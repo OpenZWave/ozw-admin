@@ -41,7 +41,6 @@ class DeviceDBXMLReader: public QTreeWidget
     Q_OBJECT
 public:
     DeviceDBXMLReader(QWidget *parent = 0);
-
     bool read(QIODevice *device);
     bool write(QIODevice *device);
 

@@ -1,0 +1,72 @@
+#include "commandclasslist.h"
+
+CommandClassList::CommandClassList()
+{
+    cclist[0x71] = "COMMAND_CLASS_ALARM";
+    cclist[0x22] = "COMMAND_CLASS_APPLICATION_STATUS";
+    cclist[0x85] = "COMMAND_CLASS_ASSOCIATION";
+    cclist[0x9b] = "COMMAND_CLASS_ASSOCIATION_COMMAND_CONFIGURATION";
+    cclist[0x66] = "COMMAND_CLASS_BARRIER_OPERATOR";
+    cclist[0x20] = "COMMAND_CLASS_BASIC";
+    cclist[0x50] = "COMMAND_CLASS_BASIC_WINDOW_COVERING";
+    cclist[0x80] = "COMMAND_CLASS_BATTERY";
+    cclist[0x56] = "COMMAND_CLASS_CRC_16_ENCAP";
+    cclist[0x5b] = "COMMAND_CLASS_CENTRAL_SCENE";
+    cclist[0x46] = "COMMAND_CLASS_CLIMATE_CONTROL_SCHEDULE";
+    cclist[0x81] = "COMMAND_CLASS_CLOCK";
+    cclist[0x33] = "COMMAND_CLASS_COLOR";
+    cclist[0x70] = "COMMAND_CLASS_CONFIGURATION";
+    cclist[0x21] = "COMMAND_CLASS_CONTROLLER_REPLICATION";
+    cclist[0x5a] = "COMMAND_CLASS_DEVICE_RESET_LOCALLY";
+    cclist[0x62] = "COMMAND_CLASS_DOOR_LOCK";
+    cclist[0x4c] = "COMMAND_CLASS_DOOR_LOCK_LOGGING";
+    cclist[0x90] = "COMMAND_CLASS_ENERGY_PRODUCTION";
+    cclist[0x82] = "COMMAND_CLASS_HAIL";
+    cclist[0x87] = "COMMAND_CLASS_INDICATOR";
+    cclist[0x89] = "COMMAND_CLASS_LANGUAGE";
+    cclist[0x76] = "COMMAND_CLASS_LOCK";
+    cclist[0x72] = "COMMAND_CLASS_MANUFACTURER_SPECIFIC";
+    cclist[0x32] = "COMMAND_CLASS_METER";
+    cclist[0x35] = "COMMAND_CLASS_METER_PULSE";
+    cclist[0x8f] = "COMMAND_CLASS_MULTI_CMD";
+    cclist[0x60] = "COMMAND_CLASS_MULTI_INSTANCE/CHANNEL";
+    cclist[0x8e] = "COMMAND_CLASS_MULTI_INSTANCE_ASSOCIATION";
+    cclist[0x00] = "COMMAND_CLASS_NO_OPERATION";
+    cclist[0x77] = "COMMAND_CLASS_NODE_NAMING";
+    cclist[0x73] = "COMMAND_CLASS_POWERLEVEL";
+    cclist[0x88] = "COMMAND_CLASS_PROPRIETARY";
+    cclist[0x75] = "COMMAND_CLASS_PROTECTION";
+    cclist[0x2b] = "COMMAND_CLASS_SCENE_ACTIVATION";
+    cclist[0x98] = "COMMAND_CLASS_SECURITY";
+    cclist[0x9c] = "COMMAND_CLASS_SENSOR_ALARM";
+    cclist[0x30] = "COMMAND_CLASS_SENSOR_BINARY";
+    cclist[0x31] = "COMMAND_CLASS_SENSOR_MULTILEVEL";
+    cclist[0x27] = "COMMAND_CLASS_SWITCH_ALL";
+    cclist[0x25] = "COMMAND_CLASS_SWITCH_BINARY";
+    cclist[0x26] = "COMMAND_CLASS_SWITCH_MULTILEVEL";
+    cclist[0x28] = "COMMAND_CLASS_SWITCH_TOGGLE_BINARY";
+    cclist[0x29] = "COMMAND_CLASS_SWITCH_TOGGLE_MULTILEVEL";
+    cclist[0x44] = "COMMAND_CLASS_THERMOSTAT_FAN_MODE";
+    cclist[0x45] = "COMMAND_CLASS_THERMOSTAT_FAN_STATE";
+    cclist[0x40] = "COMMAND_CLASS_THERMOSTAT_MODE";
+    cclist[0x42] = "COMMAND_CLASS_THERMOSTAT_OPERATING_STATE";
+    cclist[0x43] = "COMMAND_CLASS_THERMOSTAT_SETPOINT";
+    cclist[0x8b] = "COMMAND_CLASS_TIME_PARAMETERS";
+    cclist[0x63] = "COMMAND_CLASS_USER_CODE";
+    cclist[0x86] = "COMMAND_CLASS_VERSION";
+    cclist[0x84] = "COMMAND_CLASS_WAKE_UP";
+    cclist[0x5e] = "COMMAND_CLASS_ZWAVE_PLUS_INFO";
+}
+
+QString CommandClassList::getName(int cc) {
+    if (cclist.contains(cc))
+        return cclist[cc];
+    else
+        return "Unknown";
+}
+
+int getID(QString name) {
+    /* XXX TODO */
+    Q_UNUSED(name);
+    return 0;
+}

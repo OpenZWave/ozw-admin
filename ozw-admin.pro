@@ -21,7 +21,8 @@ SOURCES += main.cpp\
     devicedb.cpp \
     devicedbxmlreader.cpp \
     deviceconfigxmlreader.cpp \
-    widgets.cpp
+    widgets.cpp \
+    commandclasslist.cpp
 
 HEADERS  += mainwindow.h \
     nodes.h \
@@ -31,7 +32,8 @@ HEADERS  += mainwindow.h \
     devicedb.hpp \
     devicedbxmlreader.hpp \
     deviceconfigxmlreader.h \
-    widgets.h
+    widgets.h \
+    commandclasslist.h
 
 FORMS    += mainwindow.ui \
     devicedb.ui \
@@ -40,7 +42,7 @@ FORMS    += mainwindow.ui \
 
 #for now, we will link against a static version of openzwave (Dev branch)
 unix {
-     LIBS += open-zwave/libopenzwave.a -lresolv -ludev
+     LIBS += open-zwave/libopenzwave.a -lresolv
      INCLUDEPATH += open-zwave/cpp/src/
 
      libopenzwave.commands = cd open-zwave && make -f Makefile
@@ -52,6 +54,7 @@ unix {
 unix:!macx  {
 #    CONFIG += link_pkgconfig
 #    PKGCONFIG += libopenzwave
+     LIBS += -ludev
 }
 macx: {
     CONFIG += c++11

@@ -29,16 +29,23 @@ class DeviceDB;
 class DeviceDB : public QMainWindow
 {
     Q_OBJECT
+    Q_PROPERTY(bool ready READ isReady WRITE setReady)
 
 public:
     explicit DeviceDB(QWidget *parent = 0);
     ~DeviceDB();
+    bool isReady() const;
+    void setReady(bool ready);
+
 public slots:
     void doProductPage(QTreeWidgetItem *);
 private:
+    bool LoadXML();
     Ui::DeviceDB *ui;
     DeviceDBXMLReader *deviceTree;
     DeviceConfigXMLReader *deviceDetails;
+    bool m_Ready;
+    QString m_Path;
 };
 
 #endif // DEVICEDB_HPP

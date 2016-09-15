@@ -54,7 +54,7 @@ bool DeviceDBXMLReader::read(QIODevice *device)
     }
 
     clear();
-
+    qDebug() << "doing Children";
     QDomElement child = root.firstChildElement("Manufacturer");
     while (!child.isNull()) {
         readManufacturer(child);
