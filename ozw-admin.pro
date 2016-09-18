@@ -22,7 +22,8 @@ SOURCES += main.cpp\
     devicedbxmlreader.cpp \
     deviceconfigxmlreader.cpp \
     widgets.cpp \
-    commandclasslist.cpp
+    commandclasslist.cpp \
+    devicequirks.cpp
 
 HEADERS  += mainwindow.h \
     nodes.h \
@@ -33,7 +34,8 @@ HEADERS  += mainwindow.h \
     devicedbxmlreader.hpp \
     deviceconfigxmlreader.h \
     widgets.h \
-    commandclasslist.h
+    commandclasslist.h \
+    devicequirks.h
 
 FORMS    += mainwindow.ui \
     devicedb.ui \

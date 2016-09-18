@@ -119,6 +119,21 @@ bool DeviceConfigXMLReader::read(QIODevice *device)
     }
 
 
+    /* clear the Quirks Table */
+    QWidget* pWidget= this->tabWidget->findChild<QWidget *>("ProductQuirks");
+    if (!pWidget) {
+        qWarning() << "Can't find ProductQuirks Tab";
+        return false;
+    }
+
+    QTableWidget* tbl= pWidget->findChild<QTableWidget *>("pq_tableWidget");
+    if (!tbl) {
+        qWarning() << "Can't find pq_tableWidget";
+        return false;
+    }
+    tbl->clearContents();
+    tbl->setRowCount(0);
+
     QDomElement child = root.firstChildElement();
     while (!child.isNull()) {
         if (child.nodeName().toUpper() == "COMMANDCLASS") {
