@@ -14,22 +14,43 @@
  *    You should have received a copy of the GNU General Public License
  *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#ifndef VALUEID_H
+#define VALUEID_H
 
-#include "mainwindow.h"
-#include <QApplication>
-#include "valueid.h"
+#include <QObject>
+#include <QHash>
+#include <QAbstractTableModel>
 
-int main(int argc, char *argv[])
+#include "value_classes/ValueID.h"
+
+class QtValueID : public QObject
 {
+    Q_OBJECT
+public:
+    QtValueID(const OpenZWave::ValueID &vid);
+    QtValueID();
+    QtValueID(const QtValueID &other);
+    ~QtValueID();
 
-    qRegisterMetaType<QtValueID>();
-    QCoreApplication::setOrganizationName("OpenZWave");
-    QCoreApplication::setOrganizationDomain("openzwave.net");
-    QCoreApplication::setApplicationName("ozw-admin");
+    uint32 GetHomeId() const;
+    uint32 GetNodeId() const;
+    OpenZWave::ValueID::ValueGenre GetGenre() const;
+    uint8 GetCommmandClassId() const;
+    uint8 GetInstance() const;
+    uint8 GetIndex() const;
+    uint8 GetType() const;
+    OpenZWave::ValueID const &getValueID() const;
+    QVariant getValue();
 
-    QApplication a(argc, argv);
-    MainWindow w;
-    w.show();
 
-    return a.exec();
-}
+signals:
+
+public slots:
+private:
+    OpenZWave::ValueID m_vid;
+};
+
+Q_DECLARE_METATYPE(QtValueID)
+
+
+#endif // VALUEID_H

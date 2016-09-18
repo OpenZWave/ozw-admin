@@ -27,6 +27,8 @@
 #include "nodes.h"
 #include "logwindow.h"
 #include "devicedb.hpp"
+#include "valueid.h"
+#include "valueiddelegate.h"
 
 #include "Options.h"
 #include "Manager.h"
@@ -66,6 +68,8 @@ void OnNotification
     {
     case OpenZWave::Notification::Type_ValueAdded:
     {
+        QtValueID *vid = new QtValueID(_notification->GetValueID());
+        ozwNodes->ValueAdded(vid);
         break;
     }
 
@@ -170,6 +174,22 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->action_Save_Cache, SIGNAL(triggered()), this, SLOT(saveCache()));
     connect(ui->actionDevice_Database, SIGNAL(triggered()), this, SLOT(OpenDeviceDB()));
 
+    this->m_VFproxyModel_System = new ValueIdFilterProxyModel(this);
+    this->m_VFproxyModel_System->setFilterType(VF_Genre_System);
+    this->m_VFproxyModel_User = new ValueIdFilterProxyModel(this);
+    this->m_VFproxyModel_User->setFilterType(VF_Genre_User);
+    this->m_VFproxyModel_Config = new ValueIdFilterProxyModel(this);
+    this->m_VFproxyModel_Config->setFilterType(VF_Genre_Config);
+    this->ui->val_config_tbl->setItemDelegateForColumn(2, new ValueIDDelegate());
+    this->ui->val_config_tbl->setModel(this->m_VFproxyModel_Config);
+    this->ui->val_system_tbl->setItemDelegateForColumn(2, new ValueIDDelegate());
+    this->ui->val_system_tbl->setModel(this->m_VFproxyModel_System);
+    this->ui->val_user_tbl->setItemDelegateForColumn(2, new ValueIDDelegate());
+    this->ui->val_user_tbl->setModel(this->m_VFproxyModel_User);
+
+
+
+
 
     ozwNodes = new NodeList();
     connect(ozwNodes, SIGNAL(rowsInserted(QModelIndex,int,int)), this, SLOT(resizeColumns()));
@@ -183,6 +203,23 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(ui->nodeList->selectionModel(), SIGNAL(currentRowChanged(QModelIndex,QModelIndex)), this, SLOT(NodeSelected(QModelIndex,QModelIndex)));
 
+    this->ui->val_user_tbl->setSelectionBehavior(QAbstractItemView::SelectRows);
+    this->ui->val_user_tbl->resizeColumnsToContents();
+    this->ui->val_user_tbl->horizontalHeader()->setStretchLastSection(true);
+    this->ui->val_user_tbl->verticalHeader()->hide();
+    this->ui->val_user_tbl->setSelectionMode(QAbstractItemView::SingleSelection);
+
+    this->ui->val_config_tbl->setSelectionBehavior(QAbstractItemView::SelectRows);
+    this->ui->val_config_tbl->resizeColumnsToContents();
+    this->ui->val_config_tbl->horizontalHeader()->setStretchLastSection(true);
+    this->ui->val_config_tbl->verticalHeader()->hide();
+    this->ui->val_config_tbl->setSelectionMode(QAbstractItemView::SingleSelection);
+
+    this->ui->val_system_tbl->setSelectionBehavior(QAbstractItemView::SelectRows);
+    this->ui->val_system_tbl->resizeColumnsToContents();
+    this->ui->val_system_tbl->horizontalHeader()->setStretchLastSection(true);
+    this->ui->val_system_tbl->verticalHeader()->hide();
+    this->ui->val_system_tbl->setSelectionMode(QAbstractItemView::SingleSelection);
 
     SetCBReadOnly(this->ui->ni_beaming, true);
     SetCBReadOnly(this->ui->ni_flirs, true);
@@ -342,6 +379,11 @@ void MainWindow::NodeSelected(QModelIndex current,QModelIndex previous) {
     this->ui->a_maxgroups->setText(QString::number(node->getNumGroups()));
     for (int i = 1; i <= node->getNumGroups(); i++)
         this->updateGroups(nodeid, i);
+
+    this->m_VFproxyModel_Config->setSourceModel(node->getValues());
+    this->m_VFproxyModel_System->setSourceModel(node->getValues());
+    this->m_VFproxyModel_User->setSourceModel(node->getValues());
+
 
 }
 

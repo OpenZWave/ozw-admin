@@ -150,6 +150,38 @@ associationinfo *Node::getGroup(qint8 groupID) {
     return this->m_groups.getGroup(groupID);
 }
 
+QtValueIDList *Node::getValues(ValueFilter vf) {
+    switch (vf) {
+        case VF_None: {
+            return &this->m_valueids;
+            break;
+        }
+    case VF_Genre_User: {
+        return &this->m_valueids;
+        break;
+    }
+    case VF_Genre_System: {
+        return &this->m_valueids;
+        break;
+    }
+    case VF_Genre_Config: {
+        return &this->m_valueids;
+        break;
+    }
+    }
+
+
+}
+
+
+
+void Node::ValueAdded(QtValueID *vid) {
+    this->m_valueids.addQtValueID(vid);
+}
+
+
+
+
 NodeList::NodeList(QObject *parent)
     : QAbstractTableModel(parent)
 {
@@ -339,4 +371,13 @@ void NodeList::updateGroups(qint8 nodeid) {
         return;
     }
     node->updateGroups();
+}
+
+void NodeList::ValueAdded(QtValueID *vid) {
+    Node *node = getNode(vid->GetNodeId());
+    if (!node) {
+        qWarning() << "Can't find Node " << vid->GetNodeId();
+        return;
+    }
+    node->ValueAdded(vid);
 }

@@ -27,7 +27,7 @@
     <item>
      <widget class="QTabWidget" name="NodePane">
       <property name="currentIndex">
-       <number>0</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="n_info">
        <attribute name="title">
@@ -43,7 +43,7 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>-115</y>
+             <y>0</y>
              <width>605</width>
              <height>516</height>
             </rect>
@@ -611,9 +611,54 @@
              <x>0</x>
              <y>0</y>
              <width>618</width>
-             <height>301</height>
+             <height>303</height>
             </rect>
            </property>
+           <layout class="QVBoxLayout" name="verticalLayout_12">
+            <item>
+             <widget class="QToolBox" name="Values">
+              <property name="currentIndex">
+               <number>0</number>
+              </property>
+              <widget class="QWidget" name="genre_user">
+               <property name="geometry">
+                <rect>
+                 <x>0</x>
+                 <y>0</y>
+                 <width>600</width>
+                 <height>217</height>
+                </rect>
+               </property>
+               <attribute name="label">
+                <string>User</string>
+               </attribute>
+               <layout class="QHBoxLayout" name="horizontalLayout_3">
+                <item>
+                 <widget class="QTableView" name="val_user_tbl"/>
+                </item>
+               </layout>
+              </widget>
+              <widget class="QWidget" name="genre_system">
+               <property name="geometry">
+                <rect>
+                 <x>0</x>
+                 <y>0</y>
+                 <width>600</width>
+                 <height>183</height>
+                </rect>
+               </property>
+               <attribute name="label">
+                <string>System</string>
+               </attribute>
+               <layout class="QVBoxLayout" name="verticalLayout_11">
+                <item>
+                 <widget class="QTableView" name="val_system_tbl"/>
+                </item>
+               </layout>
+              </widget>
+             </widget>
+            </item>
+           </layout>
           </widget>
          </widget>
         </item>
@@ -623,7 +668,7 @@
        <attribute name="title">
         <string>Node Configuration</string>
        </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_7">
+       <layout class="QHBoxLayout" name="horizontalLayout">
         <item>
          <widget class="QScrollArea" name="scrollArea_4">
           <property name="widgetResizable">
@@ -635,9 +680,23 @@
              <x>0</x>
              <y>0</y>
              <width>618</width>
-             <height>301</height>
+             <height>303</height>
             </rect>
            </property>
+           <layout class="QVBoxLayout" name="verticalLayout_7">
+            <item>
+             <widget class="QGroupBox" name="groupBox_7">
+              <property name="title">
+               <string>Configuration Values</string>
+              </property>
+              <layout class="QVBoxLayout" name="verticalLayout_13">
+               <item>
+                <widget class="QTableView" name="val_config_tbl"/>
+               </item>
+              </layout>
+             </widget>
+            </item>
+           </layout>
           </widget>
          </widget>
         </item>
@@ -659,7 +718,7 @@
              <x>0</x>
              <y>0</y>
              <width>618</width>
-             <height>301</height>
+             <height>303</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_9">

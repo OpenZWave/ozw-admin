@@ -18,7 +18,7 @@
     <item>
      <widget class="QTabWidget" name="DeviceDetails">
       <property name="currentIndex">
-       <number>4</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="ManufacturerSummary">
        <attribute name="title">
@@ -118,6 +118,7 @@
        <attribute name="title">
         <string>Configuration</string>
        </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout"/>
       </widget>
       <widget class="QWidget" name="ProductAssociations">
        <attribute name="title">
@@ -163,7 +164,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>22</height>
+     <height>28</height>
     </rect>
    </property>
   </widget>

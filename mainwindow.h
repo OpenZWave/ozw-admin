@@ -22,6 +22,7 @@
 #include <QSettings>
 #include <QModelIndex>
 #include "logwindow.h"
+#include "qtvalueidlists.h"
 
 namespace Ui {
 class MainWindow;
@@ -51,6 +52,9 @@ private:
     QString m_serialport;
     QSettings settings;
     LogBrowser *logBrowser;
+    ValueIdFilterProxyModel *m_VFproxyModel_System;
+    ValueIdFilterProxyModel *m_VFproxyModel_User;
+    ValueIdFilterProxyModel *m_VFproxyModel_Config;
 };
 
 #endif // MAINWINDOW_H

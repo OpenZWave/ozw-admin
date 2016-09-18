@@ -22,12 +22,13 @@
 #include <QObject>
 #include <QHash>
 #include <QAbstractTableModel>
+
 #include "Manager.h"
+
+
 #include "util.h"
 #include "associations.h"
-
-
-
+#include "qtvalueidlists.h"
 
 
 class Node : public QObject
@@ -93,6 +94,9 @@ public:
     associationinfo *getGroup(qint8);
     qint8 getNumGroups();
 
+    void ValueAdded(QtValueID *vid);
+    QtValueIDList *getValues(ValueFilter vf = VF_None);
+
 signals:
     void NodeNameChanged(QString);
     void NodeLocationChanged(QString);
@@ -102,6 +106,7 @@ private:
     int m_homeid;
     OpenZWave::Node::NodeData m_stats;
     associations m_groups;
+    QtValueIDList m_valueids;
 };
 
 
@@ -138,6 +143,7 @@ public:
     QModelIndex getNodeValueIndex(qint8, NodeColumnNames);
     void updateQueryStage(qint8);
     void updateGroups(qint8);
+    void ValueAdded(QtValueID *vid);
 
 private:
 

@@ -23,7 +23,10 @@ SOURCES += main.cpp\
     deviceconfigxmlreader.cpp \
     widgets.cpp \
     commandclasslist.cpp \
-    devicequirks.cpp
+    devicequirks.cpp \
+    valueid.cpp \
+    qtvalueidlists.cpp \
+    valueiddelegate.cpp
 
 HEADERS  += mainwindow.h \
     nodes.h \
@@ -35,7 +38,10 @@ HEADERS  += mainwindow.h \
     deviceconfigxmlreader.h \
     widgets.h \
     commandclasslist.h \
-    devicequirks.h
+    devicequirks.h \
+    valueid.h \
+    qtvalueidlists.h \
+    valueiddelegate.h
 
 FORMS    += mainwindow.ui \
     devicedb.ui \
