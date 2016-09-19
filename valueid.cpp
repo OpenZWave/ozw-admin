@@ -15,6 +15,7 @@
  *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "valueid.h"
+#include "util.h"
 #include <QDebug>
 
 #include "Manager.h"
@@ -80,18 +81,81 @@ QVariant QtValueID::getValue() {
                 return QVariant();
         break;
     }
-    case OpenZWave::ValueID::ValueType_Byte:
-    case OpenZWave::ValueID::ValueType_Decimal:
-    case OpenZWave::ValueID::ValueType_Int:
-    case OpenZWave::ValueID::ValueType_List:
-    case OpenZWave::ValueID::ValueType_Schedule:
-    case OpenZWave::ValueID::ValueType_Short:
-    case OpenZWave::ValueID::ValueType_String:
-    case OpenZWave::ValueID::ValueType_Button:
-    case OpenZWave::ValueID::ValueType_Raw:
-    {
+    case OpenZWave::ValueID::ValueType_Byte: {
+        uint8 ret;
+        if (OpenZWave::Manager::Get()->GetValueAsByte(this->m_vid, &ret))
+                return ret;
+        else
+                return QVariant();
+        break;
+    }
+    case OpenZWave::ValueID::ValueType_Decimal:  {
+        float ret;
+        if (OpenZWave::Manager::Get()->GetValueAsFloat(this->m_vid, &ret))
+                return ret;
+        else
+                return QVariant();
+        break;
+    }
+    case OpenZWave::ValueID::ValueType_Int:  {
+        int32 ret;
+        if (OpenZWave::Manager::Get()->GetValueAsInt(this->m_vid, &ret))
+                return ret;
+        else
+                return QVariant();
+        break;
+    }
+    case OpenZWave::ValueID::ValueType_List:  {
+        int32 ret;
+        if (OpenZWave::Manager::Get()->GetValueListSelection(this->m_vid, &ret))
+                return ret;
+        else
+                return QVariant();
+        break;
+    }
+    case OpenZWave::ValueID::ValueType_Schedule: {
+        qDebug() << "QtValueID getValue() Schedule todo";
+        break;
+    }
+    case OpenZWave::ValueID::ValueType_Short: {
+        int16 ret;
+        if (OpenZWave::Manager::Get()->GetValueAsShort(this->m_vid, &ret))
+                return ret;
+        else
+                return QVariant();
+        break;
+    }
+    case OpenZWave::ValueID::ValueType_String: {
+        std::string ret;
+        if (OpenZWave::Manager::Get()->GetValueAsString(this->m_vid, &ret))
+                return QString::fromStdString(ret);
+        else
+                return QVariant();
+        break;
+    }
+    case OpenZWave::ValueID::ValueType_Button: {
+        bool ret;
+        if (OpenZWave::Manager::Get()->GetValueAsBool(this->m_vid, &ret))
+                return ret;
+        else
+                return QVariant();
+        break;
+    }
+    case OpenZWave::ValueID::ValueType_Raw: {
+        qDebug() << "TODO QtValueID Raw";
         return QVariant();
         break;
     }
     }
+}
+
+QStringList QtValueID::GetValueListItems() const {
+    std::vector<std::string> Items;
+    if (OpenZWave::Manager::Get()->GetValueListItems(this->m_vid, &Items)) {
+        QStringList QItems = VectorString_to_QStringList(Items);
+        return QItems;
+    } else {
+        return QStringList();
+    }
+
 }

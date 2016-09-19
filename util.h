@@ -23,4 +23,6 @@
 const char *nodeBasicStr (qint8 basic);
 
 void SetCBReadOnly(QCheckBox* checkBox, bool readOnly);
+
+QStringList VectorString_to_QStringList(const std::vector<std::string>& svector);
 #endif // UTIL_H

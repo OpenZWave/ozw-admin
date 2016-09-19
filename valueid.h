@@ -41,6 +41,7 @@ public:
     uint8 GetType() const;
     OpenZWave::ValueID const &getValueID() const;
     QVariant getValue();
+    QStringList GetValueListItems() const;
 
 
 signals:
