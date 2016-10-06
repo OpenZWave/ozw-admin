@@ -8,15 +8,6 @@ TEMPLATE = subdirs
 
 CONFIG += ordered
 
-SUBDIRS = ozwadmin-widgets devicedb-lib ozwadmin-main open-zwave
+SUBDIRS = ozwadmin-widgets devicedb-lib ozwadmin-main
 
-ozwadmin-main.depends = ozwadmin-widgets devicedb-lib open-zwave
-
-
-#for now, we will link against a static version of openzwave (Dev branch)
-unix {
-     libopenzwave.commands = cd open-zwave && make -f Makefile
-     QMAKE_EXTRA_TARGETS += libopenzwave
-     PRE_TARGETDEPS += libopenzwave
-    ozwadmin-main.depends += libopenzwave
-}
+ozwadmin-main.depends = ozwadmin-widgets devicedb-lib

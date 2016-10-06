@@ -39,9 +39,9 @@ INCLUDEPATH += ../devicedb-lib ../ozwadmin-widgets
 
 #for now, we will link against a static version of openzwave (Dev branch)
 unix {
-     LIBS += ../open-zwave/libopenzwave.a -lresolv
-     INCLUDEPATH += ../open-zwave/cpp/src/
-     libopenzwave.commands = cd ../open-zwave && make -f Makefile
+     LIBS += $$top_srcdir/open-zwave/libopenzwave.a -lresolv
+     INCLUDEPATH += $$top_srcdir/open-zwave/cpp/src/
+     libopenzwave.commands = cd $$top_srcdir/open-zwave && make -f Makefile
      QMAKE_EXTRA_TARGETS += libopenzwave
      PRE_TARGETDEPS += libopenzwave
 }
