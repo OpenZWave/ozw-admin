@@ -8,7 +8,7 @@ QT       += core gui xml
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = ozw-admin
+TARGET = ../ozwadmin
 TEMPLATE = app
 
 
@@ -18,12 +18,6 @@ SOURCES += main.cpp\
     util.cpp \
     logwindow.cpp \
     associations.cpp \
-    devicedb.cpp \
-    devicedbxmlreader.cpp \
-    deviceconfigxmlreader.cpp \
-    widgets.cpp \
-    commandclasslist.cpp \
-    devicequirks.cpp \
     valueid.cpp \
     qtvalueidlists.cpp \
     valueiddelegate.cpp
@@ -33,27 +27,21 @@ HEADERS  += mainwindow.h \
     util.h \
     logwindow.h \
     associations.h \
-    devicedb.hpp \
-    devicedbxmlreader.hpp \
-    deviceconfigxmlreader.h \
-    widgets.h \
-    commandclasslist.h \
-    devicequirks.h \
     valueid.h \
     qtvalueidlists.h \
-    valueiddelegate.h
+    valueiddelegate.h \
 
-FORMS    += mainwindow.ui \
-    devicedb.ui \
-    HelpEditorDlg.ui \
-    ListDialog.ui
+FORMS    += mainwindow.ui
+
+LIBS += ../devicedb-lib/libdevicedb-lib.a ../ozwadmin-widgets/libozwadmin-widgets.a
+INCLUDEPATH += ../devicedb-lib ../ozwadmin-widgets
+
 
 #for now, we will link against a static version of openzwave (Dev branch)
 unix {
-     LIBS += open-zwave/libopenzwave.a -lresolv
-     INCLUDEPATH += open-zwave/cpp/src/
-
-     libopenzwave.commands = cd open-zwave && make -f Makefile
+     LIBS += ../open-zwave/libopenzwave.a -lresolv
+     INCLUDEPATH += ../open-zwave/cpp/src/
+     libopenzwave.commands = cd ../open-zwave && make -f Makefile
      QMAKE_EXTRA_TARGETS += libopenzwave
      PRE_TARGETDEPS += libopenzwave
 }
@@ -67,5 +55,5 @@ unix:!macx  {
 macx: {
     CONFIG += c++11
     LIBS += -framework IOKit -framework CoreFoundation
-    QMAKE_MAC_SDK = macosx10.11
+    #QMAKE_MAC_SDK = macosx10.11
 }
