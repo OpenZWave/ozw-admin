@@ -18,13 +18,19 @@ SOURCES += deviceconfigxmlreader.cpp \
 	devicedb.cpp \
 	devicedbxmlreader.cpp \
 	devicequirks.cpp \
-	commandclasslist.cpp
+	commandclasslist.cpp \
+    domitem.cpp \
+    dommodel.cpp \
+    widgetmapper.cpp
 
 HEADERS  += deviceconfigxmlreader.h \
 	devicequirks.h \
 	devicedb.hpp \
 	devicedbxmlreader.hpp \
-	commandclasslist.h
+	commandclasslist.h \
+    domitem.h \
+    dommodel.h \
+    widgetmapper.h
 
 FORMS    += devicedb.ui
 

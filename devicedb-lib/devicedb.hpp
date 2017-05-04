@@ -39,6 +39,10 @@ public:
 
 public slots:
     void doProductPage(QTreeWidgetItem *);
+    void formDataChanged();
+    void dataWasSaved();
+    void dataWasReset();
+
 private:
     bool LoadXML();
     Ui::DeviceDB *ui;

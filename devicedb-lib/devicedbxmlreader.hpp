@@ -43,10 +43,10 @@ public:
     DeviceDBXMLReader(QWidget *parent = 0);
     bool read(QIODevice *device);
     bool write(QIODevice *device);
-
+    void dump();
 signals:
-    void setupManufacturerPage(const QDomElement &element);
-    void setupProductPage(const QDomElement &element);
+    void setupManufacturerPage(QDomElement &element);
+    void setupProductPage(QDomElement &element);
 private slots:
     void updateDomElement(QTreeWidgetItem *item, int column);
     void updateSelection();

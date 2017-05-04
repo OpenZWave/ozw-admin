@@ -20,30 +20,29 @@
 #include <QObject>
 #include "widgets.h"
 #include "commandclasslist.h"
+#include "widgetmapper.h"
 
 
 
 DeviceConfigXMLReader::DeviceConfigXMLReader(QTabWidget *myTabWidget, QWidget *parent)
     : tabWidget(myTabWidget), QObject(parent)
 {
-
+    this->wm = new WidgetMapper(this);
+    connect(this->wm, SIGNAL(Changed()), this, SLOT(formDataChanged()));
+    connect(this->wm, SIGNAL(dataReset()), this, SLOT(p_dataWasReset()));
+    connect(this->wm, SIGNAL(dataSaved()), this, SLOT(p_dataWasSaved()));
 }
 
-void DeviceConfigXMLReader::setupManufacturerPage(const QDomElement &element) {
+void DeviceConfigXMLReader::setupManufacturerPage(QDomElement &element) {
     this->tabWidget->setTabEnabled(3, false);
     this->tabWidget->setTabEnabled(2, false);
     this->tabWidget->setTabEnabled(1, false);
     this->tabWidget->setCurrentIndex(0);
     setFieldsFromElement(element, "ManufacturerSummary", "mname", "name");
     setFieldsFromElement(element, "ManufacturerSummary", "mid", "id");
-
-
-
-
-
 }
 
-void DeviceConfigXMLReader::setupProductPage(const QDomElement &element) {
+void DeviceConfigXMLReader::setupProductPage(QDomElement &element) {
     this->tabWidget->setTabEnabled(3, true);
     this->tabWidget->setTabEnabled(2, true);
     this->tabWidget->setTabEnabled(1, true);
@@ -78,12 +77,13 @@ void DeviceConfigXMLReader::setupProductPage(const QDomElement &element) {
     }
 }
 
-bool DeviceConfigXMLReader::setFieldsFromElement(const QDomElement &element, QString tab, QString field, QString elementname) {
+bool DeviceConfigXMLReader::setFieldsFromElement(QDomElement &element, QString tab, QString field, QString elementname) {
     QWidget* pWidget= this->tabWidget->findChild<QWidget *>(tab);
     if (pWidget) {
         QLineEdit *qle = this->tabWidget->findChild<QLineEdit *>(field);
         if (qle) {
-            qle->setText(element.attribute(elementname));
+            //qle->setText(element.attribute(elementname));
+            this->wm->MapWidgetAttribute(qle, &element, elementname);
         } else {
             qWarning() << "Can't find Field named " << field;
             return false;
@@ -119,6 +119,7 @@ bool DeviceConfigXMLReader::read(QIODevice *device)
     }
 
 
+
     /* clear the Quirks Table */
     QWidget* pWidget= this->tabWidget->findChild<QWidget *>("ProductQuirks");
     if (!pWidget) {
@@ -147,8 +148,10 @@ bool DeviceConfigXMLReader::read(QIODevice *device)
             }
 
         } else if (child.nodeName().toUpper() == "PROTOCOL") {
-                qWarning() << "Handle Protocol Block";
-        } else {
+            qWarning() << "Handle Protocol Block";
+        } else if (child.nodeName().toUpper() == "METADATA") {
+            doMetaData(child);
+        }else {
             qWarning() << "Unknown Element in Config File: " << child.nodeName();
         }
         child = child.nextSiblingElement();
@@ -157,7 +160,7 @@ bool DeviceConfigXMLReader::read(QIODevice *device)
     return true;
 }
 
-void DeviceConfigXMLReader::doConfigurationParams(const QDomElement &element) {
+void DeviceConfigXMLReader::doConfigurationParams(QDomElement &element) {
     QWidget* pWidget= this->tabWidget->findChild<QWidget *>("ProductConfig");
     if (!pWidget) {
         qWarning() << "Can't find ProductConfig Tab";
@@ -249,7 +252,7 @@ void DeviceConfigXMLReader::doConfigurationParams(const QDomElement &element) {
     }
 }
 
-void DeviceConfigXMLReader::doAssociations(const QDomElement &element)
+void DeviceConfigXMLReader::doAssociations(QDomElement &element)
 {
     QWidget* pWidget= this->tabWidget->findChild<QWidget *>("ProductAssociations");
     if (!pWidget) {
@@ -322,7 +325,7 @@ void DeviceConfigXMLReader::doAssociations(const QDomElement &element)
 }
 
 
-void DeviceConfigXMLReader::doQuirks(const QDomElement &element)
+void DeviceConfigXMLReader::doQuirks(QDomElement &element)
 {
     QWidget* pWidget= this->tabWidget->findChild<QWidget *>("ProductQuirks");
     if (!pWidget) {
@@ -358,12 +361,18 @@ void DeviceConfigXMLReader::doQuirks(const QDomElement &element)
         QTableWidgetItem *value = new QTableWidgetItem(node.nodeValue());
         tbl->setItem(tbl->rowCount()-1, 2, value);
     }
-
-
-
-
 }
 
+void DeviceConfigXMLReader::doMetaData(QDomElement &element) {
+    QDomElement child = element.firstChildElement();
+    while (!child.isNull()) {
+        if (child.nodeName().toUpper() == "METADATAITEM") {
+            qDebug() << child.attributes().namedItem("name").nodeValue();
+            qDebug() << child.text();
+        }
+        child = child.nextSiblingElement();
+    }
+}
 bool DeviceConfigXMLReader::write(QIODevice *device)
 {
     const int IndentSize = 4;
@@ -446,4 +455,23 @@ QTreeWidgetItem *deviceconfigxmlreader::createItem(const QDomElement &element,
 
 #endif
 
+void DeviceConfigXMLReader::formDataChanged() {
+    emit changed();
+}
 
+void DeviceConfigXMLReader::saveData() {
+    this->wm->CommitWidgets();
+}
+
+void DeviceConfigXMLReader::resetData() {
+    this->wm->ResetWidgets();
+}
+
+void DeviceConfigXMLReader::p_dataWasSaved() {
+    emit dataWasSaved();
+    qDebug() << domDocument.toString();
+}
+
+void DeviceConfigXMLReader::p_dataWasReset() {
+    emit dataWasReset();
+}

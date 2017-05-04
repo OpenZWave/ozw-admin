@@ -27,6 +27,8 @@ DeviceDB::DeviceDB(QWidget *parent) :
     m_Path("config/")
 {
     ui->setupUi(this);
+    this->ui->saveBtn->setStandardButtons(QDialogButtonBox::Save | QDialogButtonBox::Cancel);
+    this->ui->saveBtn->button(QDialogButtonBox::Save)->setEnabled(false);
     deviceTree = new DeviceDBXMLReader(this);
     deviceDetails = new DeviceConfigXMLReader(ui->DeviceDetails, this);
 
@@ -40,8 +42,13 @@ DeviceDB::DeviceDB(QWidget *parent) :
         }
     }
     deviceDetails->setPath(m_Path);
-    connect(deviceTree, SIGNAL(setupManufacturerPage(QDomElement)), deviceDetails, SLOT(setupManufacturerPage(QDomElement)));
-    connect(deviceTree, SIGNAL(setupProductPage(QDomElement)), deviceDetails, SLOT(setupProductPage(QDomElement)));
+    connect(deviceTree, SIGNAL(setupManufacturerPage(QDomElement &)), deviceDetails, SLOT(setupManufacturerPage(QDomElement &)));
+    connect(deviceTree, SIGNAL(setupProductPage(QDomElement &)), deviceDetails, SLOT(setupProductPage(QDomElement &)));
+    connect(deviceDetails, SIGNAL(changed()), this, SLOT(formDataChanged()));
+    connect(this->ui->saveBtn, SIGNAL(accepted()), this->deviceDetails, SLOT(saveData()));
+    connect(this->ui->saveBtn, SIGNAL(rejected()), this->deviceDetails, SLOT(resetData()));
+    connect(this->deviceDetails, SIGNAL(dataWasReset()), this, SLOT(dataWasReset()));
+    connect(this->deviceDetails, SIGNAL(dataWasSaved()), this, SLOT(dataWasSaved()));
     this->ui->horizontalLayout->insertWidget(0, deviceTree);
 
 }
@@ -84,4 +91,17 @@ bool DeviceDB::isReady() const
 }
 void DeviceDB::setReady(bool ready) {
     this->m_Ready = ready;
+}
+
+void DeviceDB::formDataChanged() {
+    this->ui->saveBtn->button(QDialogButtonBox::Save)->setEnabled(true);
+}
+
+void DeviceDB::dataWasSaved() {
+    this->ui->saveBtn->button(QDialogButtonBox::Save)->setEnabled(false);
+    this->deviceTree->dump();
+}
+
+void DeviceDB::dataWasReset() {
+    this->ui->saveBtn->button(QDialogButtonBox::Save)->setEnabled(false);
 }

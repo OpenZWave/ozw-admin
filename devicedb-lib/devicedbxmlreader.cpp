@@ -196,3 +196,6 @@ void DeviceDBXMLReader::setupProductPage(QTreeWidgetItem *item) {
 
 }
 #endif
+void DeviceDBXMLReader::dump() {
+    //qDebug() << domDocument.toString();
+}

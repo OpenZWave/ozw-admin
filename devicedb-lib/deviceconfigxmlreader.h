@@ -17,9 +17,13 @@
 #ifndef DEVICECONFIGXMLREADER_H
 #define DEVICECONFIGXMLREADER_H
 
+#include "dommodel.h"
+
 #include <QIcon>
 #include <QDomDocument>
 #include <QTabWidget>
+#include <QTreeView>
+#include "widgetmapper.h"
 
 class DeviceConfigXMLReader : public QObject
 {
@@ -30,16 +34,27 @@ public:
 
 
 public slots:
-    void setupManufacturerPage(const QDomElement &element);
-    void setupProductPage(const QDomElement &element);
+    void setupManufacturerPage(QDomElement &element);
+    void setupProductPage(QDomElement &element);
+    void saveData();
+    void resetData();
+private slots:
+    void formDataChanged();
+    void p_dataWasSaved();
+    void p_dataWasReset();
+signals:
+    void changed();
+    void dataWasSaved();
+    void dataWasReset();
 
 private:
     bool read(QIODevice *device);
     bool write(QIODevice *device);
-    bool setFieldsFromElement(const QDomElement &, QString, QString, QString);
-    void doConfigurationParams(const QDomElement &element);
-    void doAssociations(const QDomElement &element);
-    void doQuirks(const QDomElement &element);
+    bool setFieldsFromElement(QDomElement &, QString, QString, QString);
+    void doConfigurationParams(QDomElement &element);
+    void doAssociations(QDomElement &element);
+    void doQuirks(QDomElement &element);
+    void doMetaData(QDomElement &element);
 
     QDomDocument domDocument;
     //QHash<QTreeWidgetItem *, QDomElement> domElementForItem;
@@ -48,7 +63,7 @@ private:
     QTabWidget *tabWidget;
     QString m_Path;
 
-
+    WidgetMapper *wm;
 };
 
 #endif // DEVICECONFIGXMLREADER_H
