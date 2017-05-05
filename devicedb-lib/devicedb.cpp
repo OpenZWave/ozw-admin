@@ -17,7 +17,7 @@
 #include <QtWidgets>
 
 #include "devicedb.hpp"
-
+#include "devicequirks.h"
 #include "ui_devicedb.h"
 
 DeviceDB::DeviceDB(QWidget *parent) :
@@ -27,6 +27,7 @@ DeviceDB::DeviceDB(QWidget *parent) :
     m_Path("config/")
 {
     ui->setupUi(this);
+    qDebug() << DeviceQuirks::GetInstance().isReady();
     this->ui->saveBtn->setStandardButtons(QDialogButtonBox::Save | QDialogButtonBox::Cancel);
     this->ui->saveBtn->button(QDialogButtonBox::Save)->setEnabled(false);
     deviceTree = new DeviceDBXMLReader(this);

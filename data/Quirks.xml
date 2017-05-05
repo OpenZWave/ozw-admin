@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<QuirkData xmlns='https://github.com/OpenZWave/open-zwave'>
+	<Quirk name="action">
+	</Quirk>
+	<Quirk name="base">
+	</Quirk>
+	<Quirk name="override_precision">
+	</Quirk>
+	<Quirk name="scenecount">
+	</Quirk>
+	<Quirk name="create_vars">
+		<option name="true"/>
+		<option name="false"/>
+	</Quirk>
+	<Quirk name="setasreport">
+		<option name="true"/>
+		<option name="false"/>
+	</Quirk>
+	<Quirk name="ignoreremapping">
+		<option name="true"/>
+		<option name="false"/>
+	</Quirk>
+	<Quirk name="getsupported">
+		<option name="true"/>
+		<option name="false"/>
+	</Quirk>
+	<Quirk name="classgetsupported">
+		<option name="true"/>
+		<option name="false"/>
+	</Quirk>
+	<Quirk name="coloridxbug">
+		<option name="true"/>
+		<option name="false"/>
+	</Quirk>
+	<Quirk name="forceUniqueEndpoints">
+		<option name="true"/>
+		<option name="false"/>
+	</Quirk>
+	<Quirk name="ForceInstances">
+		<option name="true"/>
+		<option name="false"/>
+	</Quirk>
+	<Quirk name="ignoreUnsolicitedMultiChnCapReport" CommandClass="96">
+		<option name="true"/>
+		<option name="false"/>
+		<Help>Blahblah</Help>
+	</Quirk>
+</QuirkData>
