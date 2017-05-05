@@ -45,19 +45,19 @@ public:
     bool write(QIODevice *device);
     void dump();
 signals:
-    void setupManufacturerPage(QDomElement &element);
-    void setupProductPage(QDomElement &element);
+    void setupManufacturerPage(QDomNode &node);
+    void setupProductPage(QDomNode &node);
 private slots:
     void updateDomElement(QTreeWidgetItem *item, int column);
     void updateSelection();
 
 private:
-    void readManufacturer(const QDomElement &element, QTreeWidgetItem *parentItem  =0);
-    QTreeWidgetItem *createItem(const QDomElement &element,
+    void readManufacturer(const QDomNode &node, QTreeWidgetItem *parentItem  =0);
+    QTreeWidgetItem *createItem(const QDomNode &node,
                                 QTreeWidgetItem *parentItem = 0);
 
     QDomDocument domDocument;
-    QHash<QTreeWidgetItem *, QDomElement> domElementForItem;
+    QHash<QTreeWidgetItem *, QDomNode> domNodeForItem;
     QIcon folderIcon;
     QIcon bookmarkIcon;
 };

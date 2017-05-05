@@ -33,22 +33,27 @@ DeviceConfigXMLReader::DeviceConfigXMLReader(QTabWidget *myTabWidget, QWidget *p
     connect(this->wm, SIGNAL(dataSaved()), this, SLOT(p_dataWasSaved()));
 }
 
-void DeviceConfigXMLReader::setupManufacturerPage(QDomElement &element) {
+void DeviceConfigXMLReader::setupManufacturerPage(QDomNode &node) {
     this->tabWidget->setTabEnabled(3, false);
     this->tabWidget->setTabEnabled(2, false);
     this->tabWidget->setTabEnabled(1, false);
     this->tabWidget->setCurrentIndex(0);
-    setFieldsFromElement(element, "ManufacturerSummary", "mname", "name");
-    setFieldsFromElement(element, "ManufacturerSummary", "mid", "id");
+    setFieldsFromElement(node, "ManufacturerSummary", "mname", "name");
+    setFieldsFromElement(node, "ManufacturerSummary", "mid", "id");
 }
 
-void DeviceConfigXMLReader::setupProductPage(QDomElement &element) {
+void DeviceConfigXMLReader::setupProductPage(QDomNode &node) {
     this->tabWidget->setTabEnabled(3, true);
     this->tabWidget->setTabEnabled(2, true);
     this->tabWidget->setTabEnabled(1, true);
-    this->tabWidget->setCurrentIndex(2);
 
-    QDomElement parent = element.parentNode().toElement();
+    if (!node.isElement()) {
+        qWarning() << "Node is not a Element: " << node.nodeName();
+        return;
+    }
+
+
+    QDomNode parent = node.parentNode();
     if (parent.isNull()) {
         qWarning() << "Parent Node is Null";
         return;
@@ -56,15 +61,15 @@ void DeviceConfigXMLReader::setupProductPage(QDomElement &element) {
 
     setFieldsFromElement(parent, "ManufacturerSummary", "mname", "name");
     setFieldsFromElement(parent, "ManufacturerSummary", "mid", "id");
-    setFieldsFromElement(element, "ProductSummary", "ptype", "type");
-    setFieldsFromElement(element, "ProductSummary", "pid", "id");
-    setFieldsFromElement(element, "ProductSummary", "pname", "name");
-    setFieldsFromElement(element, "ProductSummary", "pconfig", "config");
+    setFieldsFromElement(node, "ProductSummary", "ptype", "type");
+    setFieldsFromElement(node, "ProductSummary", "pid", "id");
+    setFieldsFromElement(node, "ProductSummary", "pname", "name");
+    setFieldsFromElement(node, "ProductSummary", "pconfig", "config");
 
 
     /* load the Device Config, if it exists */
-    if (element.hasAttribute("config")) {
-        QFile dcxml(this->m_Path + "/" + element.attribute("config"));
+    if (node.toElement().hasAttribute("config")) {
+        QFile dcxml(this->m_Path + "/" + node.toElement().attribute("config"));
         if (!dcxml.open(QFile::ReadOnly | QFile::Text)) {
             QMessageBox::warning(tabWidget, tr("Device Database"),
                                  tr("Cannot read file %1:\n%2.")
@@ -77,13 +82,12 @@ void DeviceConfigXMLReader::setupProductPage(QDomElement &element) {
     }
 }
 
-bool DeviceConfigXMLReader::setFieldsFromElement(QDomElement &element, QString tab, QString field, QString elementname) {
+bool DeviceConfigXMLReader::setFieldsFromElement(QDomNode &node, QString tab, QString field, QString elementname) {
     QWidget* pWidget= this->tabWidget->findChild<QWidget *>(tab);
     if (pWidget) {
         QLineEdit *qle = this->tabWidget->findChild<QLineEdit *>(field);
         if (qle) {
-            //qle->setText(element.attribute(elementname));
-            this->wm->MapWidgetAttribute(qle, &element, elementname);
+            this->wm->MapWidgetAttribute(qle, node, elementname);
         } else {
             qWarning() << "Can't find Field named " << field;
             return false;
@@ -135,8 +139,9 @@ bool DeviceConfigXMLReader::read(QIODevice *device)
     tbl->clearContents();
     tbl->setRowCount(0);
 
-    QDomElement child = root.firstChildElement();
-    while (!child.isNull()) {
+    QDomNodeList children = root.childNodes();
+    for (int i = 0; i < children.size(); ++i) {
+        QDomElement child = children.item(i).toElement();
         if (child.nodeName().toUpper() == "COMMANDCLASS") {
             /* configuation Params */
             if (child.attribute("id") == "112") {
@@ -154,37 +159,22 @@ bool DeviceConfigXMLReader::read(QIODevice *device)
         }else {
             qWarning() << "Unknown Element in Config File: " << child.nodeName();
         }
-        child = child.nextSiblingElement();
     }
-
     return true;
 }
 
-void DeviceConfigXMLReader::doConfigurationParams(QDomElement &element) {
+void DeviceConfigXMLReader::doConfigurationParams(QDomNode &node) {
     QWidget* pWidget= this->tabWidget->findChild<QWidget *>("ProductConfig");
     if (!pWidget) {
         qWarning() << "Can't find ProductConfig Tab";
         return;
     }
-#if 0
-    qDebug() << "About to delete Layout";
-   // if (pWidget->layout())
-   //     delete pWidget->layout();
-    qDebug() << "About to delete widgets";
-    QList<QWidget *> widgets = pWidget->findChildren<QWidget *>();
-    foreach(QWidget * widget, widgets)
-    {
-        qDebug() << "Deleting " << widget->objectName() << widget->metaObject()->className();
-                    widget->dumpObjectInfo();
-    //    widget->deleteLater();
+
+    if (!node.isElement()) {
+        qWarning() << "Node is not a Element: " << node.nodeName();
+        return;
     }
-    qDebug() << "About to add layout";
-    QTableWidget *table = new QTableWidget(0, 10, pWidget);
-    QStringList headers;
-    headers << "Index" << "Type" << "Label" << "Help" << "Default" << "Read Only" << "Write Only";
-    table->setHorizontalHeaderLabels(headers);
-    table->verticalHeader()->hide();
-#endif
+
     QTableWidget *table;
     if (!pWidget->layout()) {
         QHBoxLayout *Layout = new QHBoxLayout(pWidget);
@@ -206,7 +196,7 @@ void DeviceConfigXMLReader::doConfigurationParams(QDomElement &element) {
         }
     }
     qDebug() << "Now setting up table data";
-    QDomElement value = element.firstChildElement();
+    QDomElement value = node.firstChildElement();
     while (!value.isNull()) {
         if (value.nodeName().toUpper() == "VALUE") {
             qDebug() << "Inserting Row for Config Index " << value.attribute("index");
@@ -216,35 +206,43 @@ void DeviceConfigXMLReader::doConfigurationParams(QDomElement &element) {
             idx->setMaximum(255);
             idx->setValue(value.attribute("index").toInt());
             table->setCellWidget(table->rowCount()-1, 0, idx);
+            this->wm->MapWidgetAttribute(idx,value,"index");
 
             ValueTypeComboBox *type = new ValueTypeComboBox();
             type->setCurrentIndex(type->findData(value.attribute("type")));
             table->setCellWidget(table->rowCount()-1, 1, type);
+            this->wm->MapWidgetAttribute(type,value,"type");
 
             QTableWidgetItem *label = new QTableWidgetItem(value.attribute("label"));
             table->setItem(table->rowCount()-1, 2, label);
+            this->wm->MapWidgetAttribute(label, value, "label");
 
             ValueHelpPopup *help = new ValueHelpPopup();
             help->setValueElement(value);
             table->setCellWidget(table->rowCount()-1, 3, help);
+            this->wm->MapWidgetAttribute(help, value, "help");
 
             QTableWidgetItem *defval = new QTableWidgetItem(value.attribute("value"));
             table->setItem(table->rowCount()-1,4, defval);
+            this->wm->MapWidgetAttribute(defval, value, "value");
 
             BoolValueCheckBox *ro = new BoolValueCheckBox();
             ro->setText("ReadOnly");
             ro->setBoolValue(value.attribute("read_only"));
             table->setCellWidget(table->rowCount()-1, 5, ro);
+            this->wm->MapWidgetAttribute(ro, value, "read_only");
 
             BoolValueCheckBox *wo = new BoolValueCheckBox();
             wo->setText("WriteOnly");
             wo->setBoolValue(value.attribute("write_only"));
             table->setCellWidget(table->rowCount()-1, 6, wo);
+            this->wm->MapWidgetAttribute(wo, value, "write_only");
 
             if (value.attribute("type").toUpper() == "LIST") {
                 ValueListPopup *vlp = new ValueListPopup();
                 vlp->setValueElement(value);
                 table->setCellWidget(table->rowCount()-1, 7, vlp);
+                this->wm->MapWidgetAttribute(vlp, value, "value");
             }
 
         }
@@ -252,16 +250,21 @@ void DeviceConfigXMLReader::doConfigurationParams(QDomElement &element) {
     }
 }
 
-void DeviceConfigXMLReader::doAssociations(QDomElement &element)
+void DeviceConfigXMLReader::doAssociations(QDomNode &node)
 {
     QWidget* pWidget= this->tabWidget->findChild<QWidget *>("ProductAssociations");
     if (!pWidget) {
         qWarning() << "Can't find ProductAssociations Tab";
         return;
     }
+    if (!node.isElement()) {
+        qWarning() << "Node is not a Element: " << node.nodeName();
+        return;
+    }
+
 
     qDebug() << "Now setting up table data";
-    QDomElement value = element.firstChildElement();
+    QDomElement value = node.firstChildElement();
     while (!value.isNull()) {
         qDebug() << value.nodeName().toUpper();
         if (value.nodeName().toUpper() == "ASSOCIATIONS") {
@@ -299,15 +302,18 @@ void DeviceConfigXMLReader::doAssociations(QDomElement &element)
             idx->setMaximum(255);
             idx->setValue(assoc.attribute("index").toInt());
             table->setCellWidget(table->rowCount()-1, 0, idx);
+            this->wm->MapWidgetAttribute(idx, assoc, "index");
 
             QTableWidgetItem *label = new QTableWidgetItem(assoc.attribute("label"));
             table->setItem(table->rowCount()-1, 1, label);
+            this->wm->MapWidgetAttribute(label, assoc, "label");
 
             QSpinBox *ma = new QSpinBox();
             ma->setMinimum(1);
             ma->setMaximum(255);
             ma->setValue(assoc.attribute("max_associations").toInt());
             table->setCellWidget(table->rowCount()-1, 2, ma);
+            this->wm->MapWidgetAttribute(ma,assoc, "max_associations");
 
 
             BoolValueCheckBox *ro = new BoolValueCheckBox();
@@ -317,6 +323,7 @@ void DeviceConfigXMLReader::doAssociations(QDomElement &element)
             else
                 ro->setBoolValue(assoc.attribute("auto", "false"));
             table->setCellWidget(table->rowCount()-1, 3, ro);
+            this->wm->MapWidgetAttribute(ro, assoc, "auto");
 
             assoc = assoc.nextSiblingElement("Group");
         }
@@ -325,7 +332,7 @@ void DeviceConfigXMLReader::doAssociations(QDomElement &element)
 }
 
 
-void DeviceConfigXMLReader::doQuirks(QDomElement &element)
+void DeviceConfigXMLReader::doQuirks(QDomNode &node)
 {
     QWidget* pWidget= this->tabWidget->findChild<QWidget *>("ProductQuirks");
     if (!pWidget) {
@@ -338,7 +345,13 @@ void DeviceConfigXMLReader::doQuirks(QDomElement &element)
         qWarning() << "Can't find pq_tableWidget";
         return;
     }
-    QDomNamedNodeMap attribs = element.attributes();
+
+    if (!node.isElement()) {
+        qWarning() << "Node is not a Element: " << node.nodeName();
+        return;
+    }
+
+    QDomNamedNodeMap attribs = node.toElement().attributes();
     qDebug() << attribs.namedItem("id").nodeValue();
     int CC = attribs.namedItem("id").nodeValue().toInt();
     if (CC == 0) {
@@ -360,11 +373,17 @@ void DeviceConfigXMLReader::doQuirks(QDomElement &element)
 
         QTableWidgetItem *value = new QTableWidgetItem(node.nodeValue());
         tbl->setItem(tbl->rowCount()-1, 2, value);
+        //this->wm->MapWidgetValue(value, node);
+
     }
 }
 
-void DeviceConfigXMLReader::doMetaData(QDomElement &element) {
-    QDomElement child = element.firstChildElement();
+void DeviceConfigXMLReader::doMetaData(QDomNode &node) {
+    if (!node.isElement()) {
+        qWarning() << "Node is not a Element" << node.nodeName();
+        return;
+    }
+    QDomElement child = node.firstChildElement();
     while (!child.isNull()) {
         if (child.nodeName().toUpper() == "METADATAITEM") {
             qDebug() << child.attributes().namedItem("name").nodeValue();
@@ -386,74 +405,6 @@ void DeviceConfigXMLReader::setPath(QString path)
 {
     this->m_Path = path;
 }
-
-#if 0
-void DeviceConfigXMLReader::updateDomElement(QTreeWidgetItem *item, int column)
-{
-    QDomElement element = domElementForItem.value(item);
-    if (!element.isNull()) {
-        if (column == 0) {
-            QDomElement oldTitleElement = element.firstChildElement("title");
-            QDomElement newTitleElement = domDocument.createElement("title");
-
-            QDomText newTitleText = domDocument.createTextNode(item->text(0));
-            newTitleElement.appendChild(newTitleText);
-
-            element.replaceChild(newTitleElement, oldTitleElement);
-        } else {
-            if (element.tagName() == "bookmark")
-                element.setAttribute("href", item->text(1));
-        }
-    }
-}
-#endif
-
-
-#if 0
-void deviceconfigxmlreader::readManufacturer(const QDomElement &element,
-                                             QTreeWidgetItem *parentItem)
-{
-    QTreeWidgetItem *item = createItem(element, parentItem);
-
-    QString title = element.attribute("name");
-
-    item->setFlags(item->flags() | Qt::ItemIsEditable);
-    item->setIcon(0, folderIcon);
-    item->setText(0, title);
-
-    QDomElement child = element.firstChildElement();
-    while (!child.isNull()) {
-        if (child.tagName() == "Product") {
-            QTreeWidgetItem *childItem = createItem(child, item);
-
-            QString title = child.attribute("name");
-
-            childItem->setFlags(item->flags() | Qt::ItemIsEditable);
-            childItem->setIcon(0, bookmarkIcon);
-            childItem->setText(0, title);
-            child = child.nextSiblingElement();
-        }
-    }
-
-}
-
-#endif
-
-#if 0
-QTreeWidgetItem *deviceconfigxmlreader::createItem(const QDomElement &element,
-                                                   QTreeWidgetItem *parentItem)
-{
-    QTreeWidgetItem *item;
-    if (parentItem) {
-        item = new QTreeWidgetItem(parentItem);
-    } else {
-        item = new QTreeWidgetItem(this);
-    }
-    domElementForItem.insert(item, element);
-    return item;
-}
-
-#endif
 
 void DeviceConfigXMLReader::formDataChanged() {
     emit changed();

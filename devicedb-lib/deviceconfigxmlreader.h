@@ -34,8 +34,8 @@ public:
 
 
 public slots:
-    void setupManufacturerPage(QDomElement &element);
-    void setupProductPage(QDomElement &element);
+    void setupManufacturerPage(QDomNode &node);
+    void setupProductPage(QDomNode &node);
     void saveData();
     void resetData();
 private slots:
@@ -50,14 +50,13 @@ signals:
 private:
     bool read(QIODevice *device);
     bool write(QIODevice *device);
-    bool setFieldsFromElement(QDomElement &, QString, QString, QString);
-    void doConfigurationParams(QDomElement &element);
-    void doAssociations(QDomElement &element);
-    void doQuirks(QDomElement &element);
-    void doMetaData(QDomElement &element);
+    bool setFieldsFromElement(QDomNode &, QString, QString, QString);
+    void doConfigurationParams(QDomNode &node);
+    void doAssociations(QDomNode &node);
+    void doQuirks(QDomNode &node);
+    void doMetaData(QDomNode &node);
 
     QDomDocument domDocument;
-    //QHash<QTreeWidgetItem *, QDomElement> domElementForItem;
     QIcon folderIcon;
     QIcon bookmarkIcon;
     QTabWidget *tabWidget;

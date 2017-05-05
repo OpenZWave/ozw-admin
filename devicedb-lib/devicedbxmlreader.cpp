@@ -38,7 +38,7 @@ bool DeviceDBXMLReader::read(QIODevice *device)
     int errorLine;
     int errorColumn;
 
-    if (!domDocument.setContent(device, true,&errorStr, &errorLine, &errorColumn)) {
+    if (!domDocument.setContent(device, false,&errorStr, &errorLine, &errorColumn)) {
         QMessageBox::information(window(), tr("Device Database"), tr("Parse Error at line %1, column %d:\n%3")
                                  .arg(errorLine)
                                  .arg(errorColumn)
@@ -98,18 +98,22 @@ void DeviceDBXMLReader::updateDomElement(QTreeWidgetItem *item, int column)
 
 
 
-void DeviceDBXMLReader::readManufacturer(const QDomElement &element,
+void DeviceDBXMLReader::readManufacturer(const QDomNode &node,
                                          QTreeWidgetItem *parentItem)
 {
-    QTreeWidgetItem *item = createItem(element, parentItem);
+    QTreeWidgetItem *item = createItem(node, parentItem);
+    if (!node.isElement()) {
+        qWarning() << "Node is not a Element: " << node.nodeName();
+        return;
+    }
 
-    QString title = element.attribute("name");
+    QString title = node.toElement().attribute("name");
 
     item->setFlags(item->flags() | Qt::ItemIsEditable);
     item->setIcon(0, folderIcon);
     item->setText(0, title);
 
-    QDomElement child = element.firstChildElement();
+    QDomElement child = node.firstChildElement();
     while (!child.isNull()) {
         if (child.tagName() == "Product") {
             QTreeWidgetItem *childItem = createItem(child, item);
@@ -124,7 +128,7 @@ void DeviceDBXMLReader::readManufacturer(const QDomElement &element,
     }
 
 }
-QTreeWidgetItem *DeviceDBXMLReader::createItem(const QDomElement &element,
+QTreeWidgetItem *DeviceDBXMLReader::createItem(const QDomNode &node,
                                       QTreeWidgetItem *parentItem)
 {
     QTreeWidgetItem *item;
@@ -133,7 +137,7 @@ QTreeWidgetItem *DeviceDBXMLReader::createItem(const QDomElement &element,
     } else {
         item = new QTreeWidgetItem(this);
     }
-    domElementForItem.insert(item, element);
+    domNodeForItem.insert(item, node);
     return item;
 }
 
@@ -142,16 +146,20 @@ QTreeWidgetItem *DeviceDBXMLReader::createItem(const QDomElement &element,
 
 void DeviceDBXMLReader::updateSelection() {
 
-    QDomElement element = domElementForItem.value(this->currentItem());
-    if (!element.isNull()) {
-        if (element.nodeName().toUpper() == "MANUFACTURER") {
-            qDebug() << "Loading Manufacturer Page for " << element.attribute("name");
-            emit setupManufacturerPage(element);
-        } else if (element.nodeName().toUpper() == "PRODUCT") {
-            qDebug() << "Loading Product Page for " << element.attribute("name");
-            emit setupProductPage(element);
+    QDomNode node = domNodeForItem.value(this->currentItem());
+    if (!node.isElement()) {
+        qWarning() << "Node is not a Element:" << node.nodeName();
+        return;
+    }
+    if (!node.isNull()) {
+        if (node.nodeName().toUpper() == "MANUFACTURER") {
+            qDebug() << "Loading Manufacturer Page for " << node.toElement().attribute("name");
+            emit setupManufacturerPage(node);
+        } else if (node.nodeName().toUpper() == "PRODUCT") {
+            qDebug() << "Loading Product Page for " << node.toElement().attribute("name");
+            emit setupProductPage(node);
         } else {
-            qWarning() << "Unknown ManufacturerData Tag:" << element.nodeName();
+            qWarning() << "Unknown ManufacturerData Tag:" << node.nodeName();
         }
     }
 }
@@ -197,5 +205,5 @@ void DeviceDBXMLReader::setupProductPage(QTreeWidgetItem *item) {
 }
 #endif
 void DeviceDBXMLReader::dump() {
-    //qDebug() << domDocument.toString();
+    qDebug() << domDocument.toString();
 }

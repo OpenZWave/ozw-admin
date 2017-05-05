@@ -42,8 +42,8 @@ DeviceDB::DeviceDB(QWidget *parent) :
         }
     }
     deviceDetails->setPath(m_Path);
-    connect(deviceTree, SIGNAL(setupManufacturerPage(QDomElement &)), deviceDetails, SLOT(setupManufacturerPage(QDomElement &)));
-    connect(deviceTree, SIGNAL(setupProductPage(QDomElement &)), deviceDetails, SLOT(setupProductPage(QDomElement &)));
+    connect(deviceTree, SIGNAL(setupManufacturerPage(QDomNode &)), deviceDetails, SLOT(setupManufacturerPage(QDomNode &)));
+    connect(deviceTree, SIGNAL(setupProductPage(QDomNode &)), deviceDetails, SLOT(setupProductPage(QDomNode &)));
     connect(deviceDetails, SIGNAL(changed()), this, SLOT(formDataChanged()));
     connect(this->ui->saveBtn, SIGNAL(accepted()), this->deviceDetails, SLOT(saveData()));
     connect(this->ui->saveBtn, SIGNAL(rejected()), this->deviceDetails, SLOT(resetData()));
