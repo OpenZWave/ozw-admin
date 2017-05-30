@@ -14,24 +14,24 @@ WidgetMapper::WidgetMapper(QObject *parent) :
 bool WidgetMapper::MapWidgetValue(QWidget *widget, QDomNode &data) {
     RemoveWidget(widget);
     this->map.append(WidgetData(widget, data));
-    ConnectSignals(widget);
     Populate(widget);
+    ConnectSignals(widget);
     return true;
 }
 
 bool WidgetMapper::MapWidgetValue(QTableWidgetItem *tblwidget, QDomNode &data) {
     RemoveWidget(tblwidget);
     this->map.append(WidgetData(tblwidget, data));
-    ConnectSignals(tblwidget);
     Populate(tblwidget);
+    ConnectSignals(tblwidget);
     return true;
 }
 
 bool WidgetMapper::MapWidgetAttribute(QWidget *widget, QDomNode &data, QString attribname) {
     RemoveWidget(widget);
     this->map.append(WidgetData(widget, data, attribname));
-    ConnectSignals(widget);
     Populate(widget);
+    ConnectSignals(widget);
     return true;
 }
 
@@ -39,8 +39,8 @@ bool WidgetMapper::MapWidgetAttribute(QWidget *widget, QDomNode &data, QString a
 bool WidgetMapper::MapWidgetAttribute(QTableWidgetItem *tblwidget, QDomNode &data, QString attribname) {
     RemoveWidget(tblwidget);
     this->map.append(WidgetData(tblwidget, data, attribname));
-    ConnectSignals(tblwidget);
     Populate(tblwidget);
+    ConnectSignals(tblwidget);
     return true;
 }
 

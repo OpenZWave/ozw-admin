@@ -17,6 +17,7 @@
 
 #include "mainwindow.h"
 #include <QApplication>
+#include <QMessageBox>
 #include "valueid.h"
 
 int main(int argc, char *argv[])
@@ -26,10 +27,16 @@ int main(int argc, char *argv[])
     QCoreApplication::setOrganizationName("OpenZWave");
     QCoreApplication::setOrganizationDomain("openzwave.net");
     QCoreApplication::setApplicationName("ozw-admin");
-
     QApplication a(argc, argv);
-    MainWindow w;
-    w.show();
+    try {
 
-    return a.exec();
+        MainWindow w;
+        w.show();
+        return a.exec();
+    } catch (OpenZWave::OZWException &e) {
+        QMessageBox::critical(nullptr, "Exception",
+            QString("A unhandled Exception was caught: ").append(e.GetMsg().c_str()),
+            QMessageBox::Abort);
+        exit(-1);
+    }
 }
