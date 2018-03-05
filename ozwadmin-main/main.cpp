@@ -18,6 +18,8 @@
 #include "mainwindow.h"
 #include <QApplication>
 #include <QMessageBox>
+#include <QDir>
+#include <QDebug>
 #include "valueid.h"
 
 int main(int argc, char *argv[])
@@ -35,8 +37,9 @@ int main(int argc, char *argv[])
         return a.exec();
     } catch (OpenZWave::OZWException &e) {
         QMessageBox::critical(nullptr, "Exception",
-            QString("A unhandled Exception was caught: ").append(e.GetMsg().c_str()),
-            QMessageBox::Abort);
+                              QString("A unhandled Exception was caught: ").append(e.GetMsg().c_str()),
+                              QMessageBox::Abort);
+        qDebug() << QDir::currentPath().toLatin1();
         exit(-1);
     }
 }

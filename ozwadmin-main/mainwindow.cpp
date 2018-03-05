@@ -20,6 +20,7 @@
 #include <QSettings>
 #include <QFileInfo>
 #include <QMessageBox>
+#include <QFileDialog>
 
 
 #include "mainwindow.h"
@@ -243,10 +244,34 @@ MainWindow::MainWindow(QWidget *parent) :
 
     printf("Starting OZWAdmin with OpenZWave Version %s\n", OpenZWave::Manager::getVersionAsString().c_str());
 
-
-
-
-    OpenZWave::Options::Create( "../../../config/", "", "" );
+    m_configpath = settings.value("ConfigPath", "../../../config/").toString();
+    m_userpath = settings.value("UserPath", "").toString();
+    while (!m_configpath.exists()) {
+        int ret = QMessageBox::critical(nullptr, "Select Device Database Path",
+                                        QString("Please Select a Path to the Device Database"),
+                                        QMessageBox::Open | QMessageBox::Abort);
+        if (ret == QMessageBox::Open) {
+            QString dir;
+            dir = QFileDialog::getExistingDirectory(this, tr("Open Directory"),
+                                                    QDir::currentPath(),
+                                                    QFileDialog::ShowDirsOnly
+                                                    );
+            QDir directory(dir);
+            if (directory.exists("manufacturer_specific.xml")) {
+                m_configpath.setPath(dir);
+                settings.setValue("ConfigPath", dir);
+            } else {
+                if (QMessageBox::critical(nullptr, "Invalid Directory",
+                                      QString("The Directory ").append(dir).append(" a Valid Device Database"),
+                                          QMessageBox::Ok | QMessageBox::Abort) == QMessageBox::Abort) {
+                    exit(-1);
+                }
+            }
+        } else if (ret == QMessageBox::Abort) {
+            exit(-1);
+        }
+    }
+    OpenZWave::Options::Create( m_configpath.absolutePath().toStdString(), "", "" );
     OpenZWave::Options::Get()->AddOptionInt( "SaveLogLevel", OpenZWave::LogLevel_Detail );
     OpenZWave::Options::Get()->AddOptionInt( "QueueLogLevel", OpenZWave::LogLevel_Debug );
     OpenZWave::Options::Get()->AddOptionInt( "DumpTrigger", OpenZWave::LogLevel_Error );
@@ -335,13 +360,12 @@ void MainWindow::NodeSelected(QModelIndex current,QModelIndex previous) {
 
     /* metaData info */
     this->ui->md_ozwinfo->setText(node->getNodeMetaData(OpenZWave::Node::MetaData_OzwInfoPage));
-    this->ui->md_pepper1db->setText(node->getNodeMetaData(OpenZWave::Node::MetaData_Pepper1Page));
     this->ui->md_prodmanual->setText(node->getNodeMetaData(OpenZWave::Node::MetaData_ProductManual));
     this->ui->md_prodpage->setText(node->getNodeMetaData(OpenZWave::Node::MetaData_ProductPage));
     this->ui->md_zwprodpage->setText(node->getNodeMetaData(OpenZWave::Node::MetaData_ZWProductPage));
-//    QImage prodpic;
-//    prodpic.load(node->getNodeMetaData(OpenZWave::Node::MetaData_ProductPic));
-//    this->ui->md_prodimg->setPixmap(QPixmap::fromImage(prodpic));
+    //    QImage prodpic;
+    //    prodpic.load(node->getNodeMetaData(OpenZWave::Node::MetaData_ProductPic));
+    //    this->ui->md_prodimg->setPixmap(QPixmap::fromImage(prodpic));
     this->ui->md_prodimg->setText(node->getNodeMetaData(OpenZWave::Node::MetaData_ProductPic));
 
 

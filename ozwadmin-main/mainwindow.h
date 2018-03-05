@@ -21,6 +21,7 @@
 #include <QMainWindow>
 #include <QSettings>
 #include <QModelIndex>
+#include <QDir>
 #include "logwindow.h"
 #include "qtvalueidlists.h"
 
@@ -55,6 +56,8 @@ private:
     ValueIdFilterProxyModel *m_VFproxyModel_System;
     ValueIdFilterProxyModel *m_VFproxyModel_User;
     ValueIdFilterProxyModel *m_VFproxyModel_Config;
+    QDir m_configpath;
+    QDir m_userpath;
 };
 
 #endif // MAINWINDOW_H
