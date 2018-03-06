@@ -120,6 +120,7 @@ void OnNotification
     case OpenZWave::Notification::Type_DriverReady:
     {
         m_homeid = _notification->GetHomeId();
+        //settings.setvalue("SerialPort",
         break;
     }
 
@@ -309,7 +310,7 @@ void MainWindow::OpenSerialPort() {
 
     OpenZWave::Options::Get()->Lock();
     OpenZWave::Manager::Create();
-    OpenZWave::Manager::Get()->AddWatcher( OnNotification, NULL );
+    OpenZWave::Manager::Get()->AddWatcher( OnNotification, this );
     OpenZWave::Manager::Get()->AddDriver( this->m_serialport.toStdString());
     this->ui->action_Save_Cache->setEnabled(true);
 }
@@ -403,8 +404,9 @@ void MainWindow::NodeSelected(QModelIndex current,QModelIndex previous) {
     this->ui->a_maxgroups->setText(QString::number(node->getNumGroups()));
     for (int i = 1; i <= node->getNumGroups(); i++)
         this->updateGroups(nodeid, i);
-
+    qDebug() << "doing config";
     this->m_VFproxyModel_Config->setSourceModel(node->getValues());
+    qDebug() << "done config";
     this->m_VFproxyModel_System->setSourceModel(node->getValues());
     this->m_VFproxyModel_User->setSourceModel(node->getValues());
 

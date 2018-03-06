@@ -42,6 +42,7 @@ public:
     OpenZWave::ValueID const &getValueID() const;
     QVariant getValue();
     QStringList GetValueListItems() const;
+    QString GetLabel() const;
 
 
 signals:

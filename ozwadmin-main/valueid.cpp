@@ -23,7 +23,7 @@
 QtValueID::QtValueID(const OpenZWave::ValueID &vid) :
     m_vid(vid)
 {
-    qDebug() << "New ValueID " << vid.GetNodeId();
+    qDebug() << "New ValueID " << this->GetLabel();
 }
 QtValueID::QtValueID() :
     m_vid((uint32)0,(uint64)0)
@@ -64,6 +64,10 @@ uint8 QtValueID::GetIndex() const {
 }
 uint8 QtValueID::GetType() const {
     return this->m_vid.GetType();
+}
+
+QString QtValueID::GetLabel() const {
+    return OpenZWave::Manager::Get()->GetValueLabel(this->m_vid).c_str();
 }
 
 OpenZWave::ValueID const &QtValueID::getValueID() const {
