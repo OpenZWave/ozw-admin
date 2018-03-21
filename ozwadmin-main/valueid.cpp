@@ -66,8 +66,8 @@ uint8 QtValueID::GetType() const {
     return this->m_vid.GetType();
 }
 
-QString QtValueID::GetLabel() const {
-    return OpenZWave::Manager::Get()->GetValueLabel(this->m_vid).c_str();
+QString QtValueID::GetLabel(int32 pos) const {
+    return OpenZWave::Manager::Get()->GetValueLabel(this->m_vid, pos).c_str();
 }
 
 OpenZWave::ValueID const &QtValueID::getValueID() const {
@@ -75,7 +75,7 @@ OpenZWave::ValueID const &QtValueID::getValueID() const {
 }
 
 QVariant QtValueID::getValue() {
-    qDebug() << "HomeID: " << this->GetHomeId();
+    //qDebug() << "HomeID: " << this->GetHomeId();
     switch (this->GetType()) {
     case OpenZWave::ValueID::ValueType_Bool: {
         bool ret;
@@ -118,7 +118,7 @@ QVariant QtValueID::getValue() {
         break;
     }
     case OpenZWave::ValueID::ValueType_Schedule: {
-        qDebug() << "QtValueID getValue() Schedule todo";
+        qWarning() << "QtValueID getValue() Schedule todo";
         break;
     }
     case OpenZWave::ValueID::ValueType_Short: {
@@ -150,6 +150,22 @@ QVariant QtValueID::getValue() {
         return QVariant();
         break;
     }
+    case OpenZWave::ValueID::ValueType_BitSet: {
+        uint8 size;
+        if (OpenZWave::Manager::Get()->GetBitSetSize(this->m_vid, &size)) {
+            QBitArray Values((8*size), false);
+            for (uint32 i = 0; i < (8 * size); i++) {
+                bool val;
+                if (OpenZWave::Manager::Get()->GetValueAsBitSet(this->m_vid, i+1, &val)) {
+                    Values.setBit(i, val);
+                }
+            }
+            return Values;
+        }
+        qWarning() << "Couldn't Retrieve Value for BitSet";
+        return QVariant();
+        break;
+    }
     }
 }
 
@@ -161,5 +177,21 @@ QStringList QtValueID::GetValueListItems() const {
     } else {
         return QStringList();
     }
+}
+
+QBitArray QtValueID::GetBitMask() const {
+    QBitArray Items;
+    if (this->GetType() == OpenZWave::ValueID::ValueType_BitSet) {
+        int32 bitmask;
+        uint8 size;
+        if (OpenZWave::Manager::Get()->GetBitMask(this->m_vid, &bitmask) && OpenZWave::Manager::Get()->GetBitSetSize(this->m_vid, &size)) {
+            Items.resize(8*size);
+            Items.fill(false);
+            for (int32 i = 0; i < (8 *size); i++) {
+               Items.setBit(i, (bitmask & (1 << i)) ? true : false);
+            }
+        }
+    }
+    return Items;
 
 }

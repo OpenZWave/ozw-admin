@@ -20,6 +20,7 @@
 #include <QObject>
 #include <QHash>
 #include <QAbstractTableModel>
+#include <QBitArray>
 
 #include "value_classes/ValueID.h"
 
@@ -42,7 +43,8 @@ public:
     OpenZWave::ValueID const &getValueID() const;
     QVariant getValue();
     QStringList GetValueListItems() const;
-    QString GetLabel() const;
+    QString GetLabel(int32 pos=-1) const;
+    QBitArray GetBitMask() const;
 
 
 signals:

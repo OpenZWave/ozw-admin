@@ -28,6 +28,7 @@
 #include <QMainWindow>
 #include <QDateTime>
 #include <iostream>
+#include <QDebug>
 #include "logwindow.h"
 
 ozwAdminLog::ozwAdminLog()
@@ -47,11 +48,14 @@ void ozwAdminLog::Write( OpenZWave::LogLevel _level, uint8 const _nodeId, char c
         vsnprintf( lineBuf, sizeof(lineBuf), _format, _args );
         va_end( saveargs );
     }
-//    printf("Node %d: %s\n", _nodeId, lineBuf);
     QString msg("Node: ");
     msg.append(QString::number(_nodeId) + ": ");
     msg.append(lineBuf);
-    emit newLogMsg(_level, _nodeId, msg);
+    if (_level < OpenZWave::LogLevel_StreamDetail) {
+        emit newLogMsg(_level, _nodeId, msg);
+        qDebug() << msg;
+    }
+
 
 }
 

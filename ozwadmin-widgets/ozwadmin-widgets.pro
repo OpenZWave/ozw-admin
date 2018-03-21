@@ -13,12 +13,20 @@ TEMPLATE = lib
 CONFIG += staticlib
 
 
-SOURCES += widgets.cpp
+SOURCES += widgets.cpp \
+    bitsetwidget.cpp
 
-HEADERS  += widgets.h
+HEADERS  += widgets.h \
+    bitsetwidget.h
 
 FORMS    += HelpEditorDlg.ui \
 	ListDialog.ui
+
+INCLUDEPATH += ../devicedb-lib ../ozwadmin-main
+
+unix {
+     INCLUDEPATH += $$top_srcdir/open-zwave/cpp/src/
+}
 
 macx: {
     CONFIG += c++11

@@ -162,7 +162,7 @@ bool QtValueIDList::removeRows(int position, int rows, const QModelIndex &index)
 }
 
 void QtValueIDList::addQtValueID(QtValueID *vid) {
-    qDebug() << "Adding Value";
+    //qDebug() << "Adding Value";
     this->m_QtValueIDlist.append(vid);
     beginInsertRows(QModelIndex(), this->m_QtValueIDlist.size(), this->m_QtValueIDlist.size());
     endInsertRows();

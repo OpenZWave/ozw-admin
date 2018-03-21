@@ -213,6 +213,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     this->ui->val_config_tbl->setSelectionBehavior(QAbstractItemView::SelectRows);
     this->ui->val_config_tbl->resizeColumnsToContents();
+    this->ui->val_config_tbl->resizeRowsToContents();
     this->ui->val_config_tbl->horizontalHeader()->setStretchLastSection(true);
     this->ui->val_config_tbl->verticalHeader()->hide();
     this->ui->val_config_tbl->setSelectionMode(QAbstractItemView::SingleSelection);
@@ -404,11 +405,13 @@ void MainWindow::NodeSelected(QModelIndex current,QModelIndex previous) {
     this->ui->a_maxgroups->setText(QString::number(node->getNumGroups()));
     for (int i = 1; i <= node->getNumGroups(); i++)
         this->updateGroups(nodeid, i);
-    qDebug() << "doing config";
     this->m_VFproxyModel_Config->setSourceModel(node->getValues());
-    qDebug() << "done config";
     this->m_VFproxyModel_System->setSourceModel(node->getValues());
     this->m_VFproxyModel_User->setSourceModel(node->getValues());
+    for (int i = 0; i < this->m_VFproxyModel_Config->rowCount(); ++i)
+        this->ui->val_config_tbl->openPersistentEditor(this->m_VFproxyModel_Config->index(i, 2));
+    this->ui->val_config_tbl->resizeColumnsToContents();
+    this->ui->val_config_tbl->resizeRowsToContents();
 
 
 }

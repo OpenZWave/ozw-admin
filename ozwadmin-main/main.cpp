@@ -20,10 +20,13 @@
 #include <QMessageBox>
 #include <QDir>
 #include <QDebug>
+#include <QLoggingCategory>
 #include "valueid.h"
 
 int main(int argc, char *argv[])
 {
+
+    QLoggingCategory::setFilterRules("default.debug=true");
 
     qRegisterMetaType<QtValueID>();
     qRegisterMetaType<uint8>("uint8");
