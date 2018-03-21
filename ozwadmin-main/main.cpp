@@ -26,6 +26,8 @@ int main(int argc, char *argv[])
 {
 
     qRegisterMetaType<QtValueID>();
+    qRegisterMetaType<uint8>("uint8");
+    qRegisterMetaType<QVector<int>>("QVector<int>");
     QCoreApplication::setOrganizationName("OpenZWave");
     QCoreApplication::setOrganizationDomain("openzwave.net");
     QCoreApplication::setApplicationName("ozw-admin");
@@ -39,7 +41,6 @@ int main(int argc, char *argv[])
         QMessageBox::critical(nullptr, "Exception",
                               QString("A unhandled Exception was caught: ").append(e.GetMsg().c_str()),
                               QMessageBox::Abort);
-        qDebug() << QDir::currentPath().toLatin1();
         exit(-1);
     }
 }

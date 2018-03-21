@@ -32,7 +32,6 @@
 
 ozwAdminLog::ozwAdminLog()
 {
-
 }
 ozwAdminLog::~ozwAdminLog()
 {
