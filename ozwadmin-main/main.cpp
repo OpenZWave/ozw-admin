@@ -15,6 +15,8 @@
  *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <unistd.h>
+
 #include "mainwindow.h"
 #include <QApplication>
 #include <QMessageBox>
@@ -22,6 +24,7 @@
 #include <QDebug>
 #include <QLoggingCategory>
 #include "valueid.h"
+#include "qtozwmanager.h"
 
 int main(int argc, char *argv[])
 {
@@ -35,6 +38,18 @@ int main(int argc, char *argv[])
     QCoreApplication::setOrganizationDomain("openzwave.net");
     QCoreApplication::setApplicationName("ozw-admin");
     QApplication a(argc, argv);
+
+
+    setupOZW();
+
+    QRemoteObjectHost srcNode(QUrl(QStringLiteral("local:openzwave")));
+    QTOZWManager manager;
+    srcNode.enableRemoting(&manager, "Manager");
+    manager.Start("/dev/ttyUSB0");
+    while (1) {
+        sleep(1);
+    }
+#if 0
     try {
 
         MainWindow w;
@@ -46,4 +61,5 @@ int main(int argc, char *argv[])
                               QMessageBox::Abort);
         exit(-1);
     }
+#endif
 }

@@ -1,0 +1,7 @@
+#include <QtCore>
+#include "QTOZWNodes.h"
+
+class QTOZWManager {
+    PROP(QList<OZWNodes> nodeList SOURCEONLYSETTER)
+    SLOT(bool Start(QString SerialPort))
+}

@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui xml
+QT       += core gui xml remoteobjects
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -33,8 +33,8 @@ HEADERS  += mainwindow.h \
 
 FORMS    += mainwindow.ui
 
-LIBS += ../devicedb-lib/libdevicedb-lib.a ../ozwadmin-widgets/libozwadmin-widgets.a
-INCLUDEPATH += ../devicedb-lib ../ozwadmin-widgets
+LIBS += ../devicedb-lib/libdevicedb-lib.a ../ozwadmin-widgets/libozwadmin-widgets.a ../qt-openzwave/libqt-openzwave.a
+INCLUDEPATH += ../devicedb-lib ../ozwadmin-widgets ../qt-openzwave
 
 
 #for now, we will link against a static version of openzwave (Dev branch)

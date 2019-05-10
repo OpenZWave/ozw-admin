@@ -361,6 +361,7 @@ void MainWindow::NodeSelected(QModelIndex current,QModelIndex previous) {
 
 
     /* metaData info */
+#if 0
     this->ui->md_ozwinfo->setText(node->getNodeMetaData(OpenZWave::Node::MetaData_OzwInfoPage));
     this->ui->md_prodmanual->setText(node->getNodeMetaData(OpenZWave::Node::MetaData_ProductManual));
     this->ui->md_prodpage->setText(node->getNodeMetaData(OpenZWave::Node::MetaData_ProductPage));
@@ -369,7 +370,7 @@ void MainWindow::NodeSelected(QModelIndex current,QModelIndex previous) {
     //    prodpic.load(node->getNodeMetaData(OpenZWave::Node::MetaData_ProductPic));
     //    this->ui->md_prodimg->setPixmap(QPixmap::fromImage(prodpic));
     this->ui->md_prodimg->setText(node->getNodeMetaData(OpenZWave::Node::MetaData_ProductPic));
-
+#endif
 
 
     /* node status page */
