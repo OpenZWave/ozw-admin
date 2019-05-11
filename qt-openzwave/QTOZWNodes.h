@@ -25,17 +25,16 @@ public:
 
 //    OZWNodes operator=(OZWNodes &other) {return &other}
 
-    friend QDataStream &operator<<(QDataStream &stream, const OZWNodes&);
-    friend QDataStream &operator>>(QDataStream &, OZWNodes &);
+    friend QDataStream &operator<<(QDataStream &stream, const OZWNodes *);
+    friend QDataStream &operator>>(QDataStream &, OZWNodes *);
 
 signals:
 
 public slots:
 };
 
-QDataStream &operator<<(QDataStream &stream, const OZWNodes&);
-QDataStream &operator>>(QDataStream &, OZWNodes &);
-
+QDataStream &operator<<(QDataStream &stream, const OZWNodes *);
+QDataStream &operator>>(QDataStream &, OZWNodes *);
 
 Q_DECLARE_METATYPE(OZWNodes)
 

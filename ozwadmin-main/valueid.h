@@ -38,7 +38,7 @@ public:
     OpenZWave::ValueID::ValueGenre GetGenre() const;
     uint8 GetCommmandClassId() const;
     uint8 GetInstance() const;
-    uint8 GetIndex() const;
+    uint16 GetIndex() const;
     uint8 GetType() const;
     OpenZWave::ValueID const &getValueID() const;
     QVariant getValue();

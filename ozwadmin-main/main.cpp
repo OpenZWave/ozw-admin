@@ -28,8 +28,15 @@
 
 int main(int argc, char *argv[])
 {
+    QLoggingCategory::setFilterRules("qt.remoteobjects.debug=true\n"
+                                     "qt.remoteobjects.warning=true\n"
+                                     "qt.remoteobjects.models.debug=true\n"
+                                     "qt.remoteobjects.models.debug=true\n"
+                                                                          "qt.remoteobjects.io.debug=true\n");
 
-    QLoggingCategory::setFilterRules("default.debug=true");
+
+
+    //QLoggingCategory::setFilterRules("default.debug=true");
 
     qRegisterMetaType<QtValueID>();
     qRegisterMetaType<uint8>("uint8");
@@ -45,10 +52,9 @@ int main(int argc, char *argv[])
     QRemoteObjectHost srcNode(QUrl(QStringLiteral("local:openzwave")));
     QTOZWManager manager;
     srcNode.enableRemoting(&manager, "Manager");
-    manager.Start("/dev/ttyUSB0");
-    while (1) {
-        sleep(1);
-    }
+//    sleep(10);
+//    manager.Start("/dev/ttyUSB0");
+    a.exec();
 #if 0
     try {
 

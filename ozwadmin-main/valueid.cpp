@@ -59,7 +59,7 @@ uint8 QtValueID::GetCommmandClassId() const {
 uint8 QtValueID::GetInstance() const {
     return this->m_vid.GetInstance();
 }
-uint8 QtValueID::GetIndex() const {
+uint16 QtValueID::GetIndex() const {
     return this->m_vid.GetIndex();
 }
 uint8 QtValueID::GetType() const {

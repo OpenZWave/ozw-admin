@@ -10,11 +10,11 @@ OZWNodes::OZWNodes(QObject *parent) : OZWNodesSimpleSource (parent)
 
 
 
-QDataStream &operator<<(QDataStream &stream, const OZWNodes&mode)
+QDataStream &operator<<(QDataStream &stream, const OZWNodes *node)
 {
     return stream;
 }
-QDataStream &operator>>(QDataStream &stream, OZWNodes &node)
+QDataStream &operator>>(QDataStream &stream, OZWNodes *node)
 {
     return stream;
 }

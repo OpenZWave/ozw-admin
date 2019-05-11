@@ -56,4 +56,5 @@ macx: {
     CONFIG += c++11
     LIBS += -framework IOKit -framework CoreFoundation
     #QMAKE_MAC_SDK = macosx10.11
+    QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.14
 }

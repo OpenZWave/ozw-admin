@@ -9,7 +9,7 @@ QT       += remoteobjects
 
 TEMPLATE = lib
 
-CONFIG += staticlib local
+CONFIG += staticlib remote
 
 
 DEFINES += QTOPENZWAVE_LIBRARY
@@ -51,6 +51,5 @@ remote {
   DEFINES += BUILD_REP
 }
 
-macx {
-    QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.14
-}
+DISTFILES += \
+    qtozwmanager.rep

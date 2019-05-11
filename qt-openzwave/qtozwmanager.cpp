@@ -1,3 +1,4 @@
+#include <unistd.h>
 #include <QDebug>
 #include "qtozwmanager.h"
 
@@ -9,7 +10,7 @@
 #include "platform/Log.h"
 
 void setupOZW() {
-    qRegisterMetaType<QList<OZWNodes>>("QList<OZWNodes>");
+    qRegisterMetaType<QList<OZWNodes *>>("QList<OZWNodes *>");
 }
 
 
@@ -91,6 +92,7 @@ void OZWNotification
 
     case OpenZWave::Notification::Type_DriverFailed:
     {
+        manager->setRunning(false);
         break;
     }
 
@@ -167,7 +169,12 @@ bool QTOZWManager::Start(QString SerialPort)
         return false;
     }
     qDebug() << "Started OZW";
-    return true;
+  QThread::sleep(1);
+  this->setRunning(false);
+   QThread::sleep(1);
+   this->setRunning(true);
+   QThread::sleep(1);
+   return true;
 }
 
 bool QTOZWManager::Lock() {
