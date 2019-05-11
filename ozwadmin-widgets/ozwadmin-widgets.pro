@@ -22,7 +22,7 @@ HEADERS  += widgets.h \
 FORMS    += HelpEditorDlg.ui \
 	ListDialog.ui
 
-INCLUDEPATH += ../devicedb-lib ../ozwadmin-main
+INCLUDEPATH += ../devicedb-lib ../ozwadmin-main ../open-zwave/cpp/src/
 
 unix {
      INCLUDEPATH += $$top_srcdir/open-zwave/cpp/src/

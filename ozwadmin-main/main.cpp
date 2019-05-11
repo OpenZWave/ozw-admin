@@ -32,11 +32,10 @@ int main(int argc, char *argv[])
                                      "qt.remoteobjects.warning=true\n"
                                      "qt.remoteobjects.models.debug=true\n"
                                      "qt.remoteobjects.models.debug=true\n"
-                                                                          "qt.remoteobjects.io.debug=true\n");
+                                     "qt.remoteobjects.io.debug=true\n"
+                                     "default.debug=true");
 
 
-
-    //QLoggingCategory::setFilterRules("default.debug=true");
 
     qRegisterMetaType<QtValueID>();
     qRegisterMetaType<uint8>("uint8");

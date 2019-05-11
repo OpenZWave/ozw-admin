@@ -55,7 +55,10 @@
 
 #include "qtozwmanager.h"
 #include "rep_OZWNodes_replica.h"
-#include "rep_qtozwmanager_replica.h"
+
+#include "dialog.h"
+
+
 
 int main(int argc, char **argv)
 {
@@ -64,30 +67,12 @@ int main(int argc, char **argv)
                                      "qt.remoteobjects.warning=true\n"
                                      "qt.remoteobjects.models.debug=true\n"
                                      "qt.remoteobjects.models.debug=true\n"
-                                     "qt.remoteobjects.io.debug=true\n");
+                                     "qt.remoteobjects.io.debug=true\n"
+                                     "default.debug=true");
 
 
     QApplication app(argc, argv);
-
-
-
-    QRemoteObjectNode node(QUrl(QStringLiteral("local:openzwave")));
-    node.setHeartbeatInterval(1000);
-    QTreeView view;
-    view.setWindowTitle(QStringLiteral("RemoteView"));
-    view.resize(640,480);
-    QScopedPointer<QAbstractItemModelReplica> model(node.acquireModel(QStringLiteral("RemoteModel")));
-    view.setModel(model.data());
-
-    QSharedPointer<QTOZWManagerReplica> manager;
-    manager.reset(node.acquire<QTOZWManagerReplica>(QStringLiteral("Manager")));
-
-    while (manager->isInitialized() != true) {
-        app.processEvents();
-    }
-    manager->Start("/dev/ttyUSB0");
-
-    view.show();
-
+    Dialog window;
+    window.show();
     return app.exec();
 }

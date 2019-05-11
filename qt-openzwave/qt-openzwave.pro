@@ -28,13 +28,15 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         qtopenzwave.cpp \
     qtozwmanager.cpp \
-    QTOZWNodes.cpp
+    QTOZWNodes.cpp \
+    qtozwnotification.cpp
 
 HEADERS += \
         qtopenzwave.h \
         qt-openzwave_global.h \ 
     qtozwmanager.h \
-    QTOZWNodes.h
+    QTOZWNodes.h \
+    qtozwnotification.h
 
 INCLUDEPATH += ../open-zwave/cpp/src/
 
