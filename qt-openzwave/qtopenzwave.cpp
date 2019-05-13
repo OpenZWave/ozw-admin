@@ -8,6 +8,8 @@ QTOpenZwave::QTOpenZwave
     QObject (parent),
     m_manager(nullptr)
 {
+    qRegisterMetaType<uint32_t>("uint32_t");
+
     this->m_websockserver = new WebSocketServer(1984, this);
 
     this->m_srcNode = new QRemoteObjectHost(QUrl(QStringLiteral("tcp://0.0.0.0:1983")));

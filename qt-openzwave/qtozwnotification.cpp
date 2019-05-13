@@ -1,5 +1,5 @@
-#include "qtozwnotification.h"
 #include <QtDebug>
+#include "qtozwnotification.h"
 
 OZWNotification *OZWNotification::s_Instance = nullptr;
 

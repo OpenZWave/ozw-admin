@@ -21,11 +21,43 @@ class QTOZWManager : public QTOZWManagerSimpleSource
 {
 public:
     friend class OZWNotification;
-
     QTOZWManager();
 
     bool Start(QString SerialPort);
     QTOZW_Nodes *getNodeModel();
+
+    bool refreshNodeInfo(uint8_t _node);
+    bool requestNodeState(uint8_t _node);
+    bool requestNodeDynamic(uint8_t _node);
+
+    bool setConfigParam(uint8_t _node, uint8_t _param, int32_t _value, uint8_t const _size);
+    void requestConfigParam(uint8_t _node, uint8_t _param);
+    void requestAllConfigParam(uint8_t _node);
+
+    void softResetController();
+    void hardResetController();
+
+    bool cancelControllerCommand();
+
+    void testNetworkNode(uint8_t _node, uint32_t const _count);
+    void testNetwork(uint32_t const _count);
+    void healNetworkNode(uint8_t _node, bool _doRR);
+    void healNetwork(bool _doRR);
+    bool addNode(bool _doSecure);
+    bool removeNode();
+    bool removeFailedNode(uint8_t _node);
+    bool hasNodeFailed(uint8_t _node);
+    bool requestNodeNeighborUpdate(uint8_t _node);
+    bool assignReturnRoute(uint8_t _node);
+    bool deleteAllReturnRoute(uint8_t _node);
+    bool sendNodeInfomation(uint8_t _node);
+    bool replaceFailedNode(uint8_t _node);
+    bool requestNetworkUpdate(uint8_t _node);
+
+    bool checkLatestConfigFileRevision(uint8_t const _node);
+    bool checkLatestMFSRevision();
+    bool downloadLatestConfigFileRevision(uint8_t const _node);
+    bool downloadLatestMFSRevision();
 
 
 public slots:
@@ -63,11 +95,15 @@ private:
     bool Unlock();
 
 private:
+
+    bool checkHomeId();
+    bool checkNodeId(uint8_t _node);
+
     OpenZWave::Options *m_options;
     OpenZWave::Manager *m_manager;
     QTOZW_Nodes_internal *m_nodeModel;
     pthread_mutex_t m_manager_mutex;
-    uint32_t m_homeID;
+    QVector<uint8_t> m_validNodes;
 };
 
 #endif // QTOZWMANAGER_H

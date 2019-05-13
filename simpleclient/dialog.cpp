@@ -102,7 +102,6 @@ void Dialog::managerReady(QRemoteObjectReplica::State state, QRemoteObjectReplic
 }
 
 void Dialog::startOZW() {
-//    manager->Start("/dev/ttyUSB0");
       QRemoteObjectPendingReply<bool> result = manager->Start("/dev/cu.usbmodem14101");
       result.waitForFinished(30000);
 }
