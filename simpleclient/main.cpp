@@ -54,7 +54,6 @@
 #include <QAbstractItemModelReplica>
 
 #include "qtozwmanager.h"
-#include "rep_OZWNodes_replica.h"
 
 #include "dialog.h"
 
@@ -72,6 +71,8 @@ int main(int argc, char **argv)
 
 
     QApplication app(argc, argv);
+
+
     Dialog window;
     window.show();
     return app.exec();

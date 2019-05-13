@@ -23,18 +23,23 @@
 #include <QDir>
 #include <QDebug>
 #include <QLoggingCategory>
+#include <QTreeView>
 #include "valueid.h"
+#include "qtopenzwave.h"
 #include "qtozwmanager.h"
+#include "websocketiodevice.h"
 
 int main(int argc, char *argv[])
 {
+#if 0
     QLoggingCategory::setFilterRules("qt.remoteobjects.debug=true\n"
                                      "qt.remoteobjects.warning=true\n"
                                      "qt.remoteobjects.models.debug=true\n"
                                      "qt.remoteobjects.models.debug=true\n"
                                      "qt.remoteobjects.io.debug=true\n"
                                      "default.debug=true");
-
+#endif
+    QLoggingCategory::setFilterRules("default.debug=true");
 
 
     qRegisterMetaType<QtValueID>();
@@ -45,14 +50,18 @@ int main(int argc, char *argv[])
     QCoreApplication::setApplicationName("ozw-admin");
     QApplication a(argc, argv);
 
+    QTOpenZwave *ozw = new QTOpenZwave();
+    QTOZWManager *manager = ozw->GetManager();
+    qDebug() << manager;
 
-    setupOZW();
+    QTreeView view;
+    view.setWindowTitle(QStringLiteral("LocalView"));
+    view.resize(640,480);
+    view.setModel(manager->getNodeModel());
+    view.show();
 
-    QRemoteObjectHost srcNode(QUrl(QStringLiteral("local:openzwave")));
-    QTOZWManager manager;
-    srcNode.enableRemoting(&manager, "Manager");
-//    sleep(10);
-//    manager.Start("/dev/ttyUSB0");
+
+
     a.exec();
 #if 0
     try {

@@ -1,10 +1,13 @@
 #include "dialog.h"
 #include "ui_dialog.h"
 #include <QScopedPointer>
+#include "websocketiodevice.h"
+
 
 void printSignal() {
     qDebug() << "Got Signal";
 }
+
 
 
 Dialog::Dialog(QWidget *parent) :
@@ -13,14 +16,48 @@ Dialog::Dialog(QWidget *parent) :
 {
     ui->setupUi(this);
     QObject::connect(this->ui->buttonBox, &QDialogButtonBox::accepted, this, &Dialog::startOZW);
-    node.connectToNode(QUrl(QStringLiteral("local:openzwave")));
-    node.setHeartbeatInterval(1000);
-    model.reset(node.acquireModel(QStringLiteral("RemoteModel")));
+
+    QRemoteObjectNode::RemoteObjectSchemaHandler setupTcp = [this](QUrl url) {
+        qDebug() << "setupTcp" << url;
+        WebSocketIODevice *socket = new WebSocketIODevice(this);
+        connect(socket, &WebSocketIODevice::connected,
+                [socket, this]() {
+            qDebug() << "adding clientside connection " << socket;
+            this->node.addClientSideConnection(socket);
+        });
+//      connect(socket, QOverload<QAbstractSocket::SocketError>::of(&QSslSocket::error),
+//        [socket](QAbstractSocket::SocketError error) {
+//            delete socket;
+//      });
+        socket->setUrl(url);
+        socket->open(QIODevice::ReadWrite);
+    };
+    //node.registerExternalSchema(QStringLiteral("ws"), setupTcp);
+
+
+
+    node.connectToNode(QUrl(QStringLiteral("tcp://127.0.0.1:1983")));
+    //setupTcp(QUrl(QStringLiteral("ws://localhost:1984")));
+//    node.setHeartbeatInterval(2000);
+    model.reset(node.acquireModel(QStringLiteral("nodeModel")));
     manager.reset(node.acquire<QTOZWManagerReplica>(QStringLiteral("Manager")));
     QObject::connect(manager.data(), &QTOZWManagerReplica::stateChanged, this, &Dialog::managerReady);
-    manager->waitForSource(5000);
+//    manager->waitForSource(5000);
     ui->treeView->setModel(model.data());
+    qDebug() << node.lastError();
 
+
+
+
+//    test.setUrl(QUrl("ws://localhost:1984/"));
+//    //test.setProtocol("OpenZWave");
+
+//    connect(&test, &WebSocketIODevice::socketConnected, this, [this]() {
+//        qDebug() << "WebSocket connected, initializing MQTT connection.";
+//    });
+//    qDebug() << "trying";
+//    test.open(QIODevice::ReadWrite);
+//    qDebug() << "done";
 }
 
 Dialog::~Dialog()
@@ -58,7 +95,6 @@ void Dialog::managerReady(QRemoteObjectReplica::State state, QRemoteObjectReplic
         //     QObject::connect(manager.data(), &QTOZWManagerReplica::ozwNotification, &printSignal);
         //     QObject::connect(manager.data(), &QTOZWManagerReplica::ozwUserAlert, &printSignal);
              QObject::connect(manager.data(), &QTOZWManagerReplica::manufacturerSpecificDBReady, &printSignal);
-
     } else {
         qDebug() << "State is not valid?" << state << " " << oldState;
     }
@@ -66,6 +102,7 @@ void Dialog::managerReady(QRemoteObjectReplica::State state, QRemoteObjectReplic
 }
 
 void Dialog::startOZW() {
-    manager->Start("/dev/ttyUSB0");
-
+//    manager->Start("/dev/ttyUSB0");
+      QRemoteObjectPendingReply<bool> result = manager->Start("/dev/cu.usbmodem14101");
+      result.waitForFinished(30000);
 }

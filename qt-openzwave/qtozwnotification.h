@@ -30,10 +30,10 @@ signals:
     void nodeProtocolInfo(uint8_t node);
     void nodeEssentialNodeQueriesComplete(uint8_t node);
     void nodeQueriesComplete(uint8_t node);
-    void driverReady();
-    void driverFailed();
-    void driverReset();
-    void driverRemoved();
+    void driverReady(uint32_t homeID);
+    void driverFailed(uint32_t homeID);
+    void driverReset(uint32_t homeID);
+    void driverRemoved(uint32_t homeID);
     void driverAllNodesQueriedSomeDead();
     void driverAwakeNodesQueried();
     void driverAllNodesQueried();

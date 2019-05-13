@@ -1,6 +1,7 @@
 #include <unistd.h>
 #include <QDebug>
 #include "qtozwmanager.h"
+#include "qtozwnodemodel.h"
 
 
 #include "qtozwnotification.h"
@@ -10,8 +11,15 @@
 #include "Notification.h"
 #include "platform/Log.h"
 
+QString nodeBasicStr (uint8 basic);
+
+
+
 void setupOZW() {
-    qRegisterMetaType<QList<OZWNodes *>>("QList<OZWNodes *>");
+
+
+
+
 }
 
 
@@ -37,6 +45,9 @@ QTOZWManager::QTOZWManager()
     this->m_options->AddOptionInt( "PollInterval", 500 );
     this->m_options->AddOptionBool( "IntervalBetweenPolls", true );
     this->m_options->AddOptionBool( "ValidateValueChanges", true);
+
+    this->m_nodeModel = new QTOZW_Nodes_internal(this);
+
 }
 
 bool QTOZWManager::Start(QString SerialPort)
@@ -70,7 +81,7 @@ bool QTOZWManager::Start(QString SerialPort)
     QObject::connect(OZWNotification::Get(), &OZWNotification::nodeReset, this, &QTOZWManager::pvt_nodeReset, Qt::QueuedConnection);
     QObject::connect(OZWNotification::Get(), &OZWNotification::nodeNaming, this, &QTOZWManager::pvt_nodeNaming, Qt::QueuedConnection);
     QObject::connect(OZWNotification::Get(), &OZWNotification::nodeEvent, this, &QTOZWManager::pvt_nodeEvent, Qt::QueuedConnection);
-    QObject::connect(OZWNotification::Get(), &OZWNotification::nodeProtocolInfo, this, &QTOZWManager::pvt_nodeEssentialNodeQueriesComplete, Qt::QueuedConnection);
+    QObject::connect(OZWNotification::Get(), &OZWNotification::nodeProtocolInfo, this, &QTOZWManager::pvt_nodeProtocolInfo, Qt::QueuedConnection);
     QObject::connect(OZWNotification::Get(), &OZWNotification::nodeEssentialNodeQueriesComplete, this, &QTOZWManager::pvt_nodeEssentialNodeQueriesComplete, Qt::QueuedConnection);
     QObject::connect(OZWNotification::Get(), &OZWNotification::nodeQueriesComplete, this, &QTOZWManager::pvt_nodeQueriesComplete, Qt::QueuedConnection);
     QObject::connect(OZWNotification::Get(), &OZWNotification::driverReady, this, &QTOZWManager::pvt_driverReady, Qt::QueuedConnection);
@@ -117,6 +128,12 @@ bool QTOZWManager::Unlock()
 
 };
 
+QTOZW_Nodes *QTOZWManager::getNodeModel() {
+    return static_cast<QTOZW_Nodes *>(this->m_nodeModel);
+}
+
+
+
 void QTOZWManager::pvt_valueAdded(QTValueID vid)
 {
     qDebug() << "Notification pvt_valueAdded";
@@ -159,11 +176,34 @@ void QTOZWManager::pvt_nodeGroupChanged(uint8_t node, uint8_t group)
 void QTOZWManager::pvt_nodeNew(uint8_t node)
 {
     qDebug() << "Notification pvt_nodeNew";
+    this->m_nodeModel->addNode(node);
+
+    QVariant data = this->m_manager->GetNodeQueryStage(this->m_homeID, node).c_str();
+    this->m_nodeModel->setNodeData(node, QTOZW_Nodes::NodeQueryStage, data);
+
+    this->m_nodeModel->setNodeFlags(node, QTOZW_Nodes::isNIFRecieved, this->m_manager->IsNodeInfoReceived(this->m_homeID, node));
+
+    this->m_nodeModel->setNodeFlags(node, QTOZW_Nodes::isAwake, this->m_manager->IsNodeAwake(this->m_homeID, node));
+
+    this->m_nodeModel->setNodeFlags(node, QTOZW_Nodes::isFailed, this->m_manager->IsNodeFailed(this->m_homeID, node));
+
+
     emit this->nodeNew(node);
 }
 void QTOZWManager::pvt_nodeAdded(uint8_t node)
 {
     qDebug() << "Notification pvt_nodeAdded";
+    this->m_nodeModel->addNode(node);
+
+    QVariant data = this->m_manager->GetNodeQueryStage(this->m_homeID, node).c_str();
+    this->m_nodeModel->setNodeData(node, QTOZW_Nodes::NodeQueryStage, data);
+
+    this->m_nodeModel->setNodeFlags(node, QTOZW_Nodes::isNIFRecieved, this->m_manager->IsNodeInfoReceived(this->m_homeID, node));
+
+    this->m_nodeModel->setNodeFlags(node, QTOZW_Nodes::isAwake, this->m_manager->IsNodeAwake(this->m_homeID, node));
+
+    this->m_nodeModel->setNodeFlags(node, QTOZW_Nodes::isFailed, this->m_manager->IsNodeFailed(this->m_homeID, node));
+
     emit this->nodeAdded(node);
 
 }
@@ -182,48 +222,175 @@ void QTOZWManager::pvt_nodeReset(uint8_t node)
 void QTOZWManager::pvt_nodeNaming(uint8_t node)
 {
     qDebug() << "Notification pvt_nodeNaming";
-    emit this->nodeNaming(node);
+    QString data = this->m_manager->GetNodeName(this->m_homeID, node).c_str();
+    this->m_nodeModel->setNodeData(node, QTOZW_Nodes::NodeName, data);
+    data = this->m_manager->GetNodeLocation(this->m_homeID, node).c_str();
+    this->m_nodeModel->setNodeData(node, QTOZW_Nodes::NodeLocation, data);
 
+    data = this->m_manager->GetNodeQueryStage(this->m_homeID, node).c_str();
+    this->m_nodeModel->setNodeData(node, QTOZW_Nodes::NodeQueryStage, data);
+
+    this->m_nodeModel->setNodeFlags(node, QTOZW_Nodes::isNIFRecieved, this->m_manager->IsNodeInfoReceived(this->m_homeID, node));
+
+    this->m_nodeModel->setNodeFlags(node, QTOZW_Nodes::isAwake, this->m_manager->IsNodeAwake(this->m_homeID, node));
+
+    this->m_nodeModel->setNodeFlags(node, QTOZW_Nodes::isFailed, this->m_manager->IsNodeFailed(this->m_homeID, node));
+
+    emit this->nodeNaming(node);
 }
 void QTOZWManager::pvt_nodeEvent(uint8_t node, uint8_t event)
 {
     qDebug() << "Notification pvt_nodeEvent";
+
+    QVariant data = this->m_manager->GetNodeQueryStage(this->m_homeID, node).c_str();
+    this->m_nodeModel->setNodeData(node, QTOZW_Nodes::NodeQueryStage, data);
+
+    this->m_nodeModel->setNodeFlags(node, QTOZW_Nodes::isAwake, this->m_manager->IsNodeAwake(this->m_homeID, node));
+
+    this->m_nodeModel->setNodeFlags(node, QTOZW_Nodes::isFailed, this->m_manager->IsNodeFailed(this->m_homeID, node));
+
     emit this->nodeEvent(node, event);
 }
 void QTOZWManager::pvt_nodeProtocolInfo(uint8_t node)
 {
     qDebug() << "Notification pvt_nodeProtocolInfo";
+
+    QVariant data = this->m_manager->GetNodeProductName(this->m_homeID, node).c_str();
+    this->m_nodeModel->setNodeData(node, QTOZW_Nodes::NodeProductName, data);
+
+    data = this->m_manager->GetNodeManufacturerName(this->m_homeID, node).c_str();
+    this->m_nodeModel->setNodeData(node, QTOZW_Nodes::NodeManufacturerName, data);
+
+    data = this->m_manager->GetNodeManufacturerId(this->m_homeID, node).c_str();
+    this->m_nodeModel->setNodeData(node, QTOZW_Nodes::NodeManufacturerID, data);
+
+    data = this->m_manager->GetNodeProductId(this->m_homeID, node).c_str();
+    this->m_nodeModel->setNodeData(node, QTOZW_Nodes::NodeProductID, data);
+
+    data = this->m_manager->GetNodeProductType(this->m_homeID, node).c_str();
+    this->m_nodeModel->setNodeData(node, QTOZW_Nodes::NodeProductType, data);
+
+    data = this->m_manager->GetNodeProductId(this->m_homeID, node).c_str();
+    this->m_nodeModel->setNodeData(node, QTOZW_Nodes::NodeProductID, data);
+
+    data = this->m_manager->GetNodeProductType(this->m_homeID, node).c_str();
+    this->m_nodeModel->setNodeData(node, QTOZW_Nodes::NodeProductType, data);
+
+    data = nodeBasicStr(this->m_manager->GetNodeBasic(this->m_homeID, node));
+    this->m_nodeModel->setNodeData(node, QTOZW_Nodes::NodeBasicString, data);
+
+    data = this->m_manager->GetNodeBasic(this->m_homeID, node);
+    this->m_nodeModel->setNodeData(node, QTOZW_Nodes::NodeBasic, data);
+
+    data = this->m_manager->GetNodeDeviceTypeString(this->m_homeID, node).c_str();
+    this->m_nodeModel->setNodeData(node, QTOZW_Nodes::NodeGenericString, data);
+
+    data = this->m_manager->GetNodeGeneric(this->m_homeID, node);
+    this->m_nodeModel->setNodeData(node, QTOZW_Nodes::NodeGeneric, data);
+
+    data = this->m_manager->GetNodeSpecific(this->m_homeID, node);
+    this->m_nodeModel->setNodeData(node, QTOZW_Nodes::NodeSpecific, data);
+
+    /* XXX TODO: Need a OZW SpecificString function */
+    data = this->m_manager->GetNodeSpecific(this->m_homeID, node);
+    this->m_nodeModel->setNodeData(node, QTOZW_Nodes::NodeSpecificString, data);
+
+    data = this->m_manager->GetNodeMaxBaudRate(this->m_homeID, node);
+    this->m_nodeModel->setNodeData(node, QTOZW_Nodes::NodeBaudRate, data);
+
+    data = this->m_manager->GetNodeVersion(this->m_homeID, node);
+    this->m_nodeModel->setNodeData(node, QTOZW_Nodes::NodeVersion, data);
+
+    data = this->m_manager->GetNodeQueryStage(this->m_homeID, node).c_str();
+    this->m_nodeModel->setNodeData(node, QTOZW_Nodes::NodeQueryStage, data);
+
+    /* set our Flags */
+    this->m_nodeModel->setNodeFlags(node, QTOZW_Nodes::isListening, this->m_manager->IsNodeListeningDevice(this->m_homeID, node));
+
+    this->m_nodeModel->setNodeFlags(node, QTOZW_Nodes::isFlirs, this->m_manager->IsNodeFrequentListeningDevice(this->m_homeID, node));
+
+    this->m_nodeModel->setNodeFlags(node, QTOZW_Nodes::isBeaming, this->m_manager->IsNodeBeamingDevice(this->m_homeID, node));
+
+    this->m_nodeModel->setNodeFlags(node, QTOZW_Nodes::isRouting, this->m_manager->IsNodeRoutingDevice(this->m_homeID, node));
+
+    this->m_nodeModel->setNodeFlags(node, QTOZW_Nodes::isNIFRecieved, this->m_manager->IsNodeInfoReceived(this->m_homeID, node));
+
+    this->m_nodeModel->setNodeFlags(node, QTOZW_Nodes::isAwake, this->m_manager->IsNodeAwake(this->m_homeID, node));
+
+    this->m_nodeModel->setNodeFlags(node, QTOZW_Nodes::isFailed, this->m_manager->IsNodeFailed(this->m_homeID, node));
+
     emit this->nodeProtocolInfo(node);
 }
 void QTOZWManager::pvt_nodeEssentialNodeQueriesComplete(uint8_t node)
 {
     qDebug() << "Notification pvt_nodeEssentialNodeQueriesComplete";
+    QVariant data = this->m_manager->GetNodeQueryStage(this->m_homeID, node).c_str();
+    this->m_nodeModel->setNodeData(node, QTOZW_Nodes::NodeQueryStage, data);
+
+    this->m_nodeModel->setNodeFlags(node, QTOZW_Nodes::isNIFRecieved, this->m_manager->IsNodeInfoReceived(this->m_homeID, node));
+
+    this->m_nodeModel->setNodeFlags(node, QTOZW_Nodes::isAwake, this->m_manager->IsNodeAwake(this->m_homeID, node));
+
+    this->m_nodeModel->setNodeFlags(node, QTOZW_Nodes::isFailed, this->m_manager->IsNodeFailed(this->m_homeID, node));
+
     emit this->nodeEssentialNodeQueriesComplete(node);
 }
 void QTOZWManager::pvt_nodeQueriesComplete(uint8_t node)
 {
     qDebug() << "Notification pvt_nodeQueriesComplete";
+    /* Plus Type Info here */
+    QVariant data = this->m_manager->GetNodeDeviceType(this->m_homeID, node);
+    this->m_nodeModel->setNodeData(node, QTOZW_Nodes::NodeDeviceType, data);
+
+    data = this->m_manager->GetNodeDeviceTypeString(this->m_homeID, node).c_str();
+    this->m_nodeModel->setNodeData(node, QTOZW_Nodes::NodeDeviceTypeString, data);
+
+    data = this->m_manager->GetNodeRole(this->m_homeID, node);
+    this->m_nodeModel->setNodeData(node, QTOZW_Nodes::NodeRole, data);
+
+    data = this->m_manager->GetNodeRoleString(this->m_homeID, node).c_str();
+    this->m_nodeModel->setNodeData(node, QTOZW_Nodes::NodeRoleString, data);
+
+    data = this->m_manager->GetNodePlusType(this->m_homeID, node);
+    this->m_nodeModel->setNodeData(node, QTOZW_Nodes::NodePlusType, data);
+
+    data = this->m_manager->GetNodePlusTypeString(this->m_homeID, node).c_str();
+    this->m_nodeModel->setNodeData(node, QTOZW_Nodes::NodePlusTypeString, data);
+
+    data = this->m_manager->GetNodeQueryStage(this->m_homeID, node).c_str();
+    this->m_nodeModel->setNodeData(node, QTOZW_Nodes::NodeQueryStage, data);
+
+    /* set our Flags */
+    this->m_nodeModel->setNodeFlags(node, QTOZW_Nodes::isZWavePlus, this->m_manager->IsNodeZWavePlus(this->m_homeID, node));
+
+    this->m_nodeModel->setNodeFlags(node, QTOZW_Nodes::isNIFRecieved, this->m_manager->IsNodeInfoReceived(this->m_homeID, node));
+
+    this->m_nodeModel->setNodeFlags(node, QTOZW_Nodes::isAwake, this->m_manager->IsNodeAwake(this->m_homeID, node));
+
+    this->m_nodeModel->setNodeFlags(node, QTOZW_Nodes::isFailed, this->m_manager->IsNodeFailed(this->m_homeID, node));
+
     emit this->nodeQueriesComplete(node);
 }
-void QTOZWManager::pvt_driverReady()
+void QTOZWManager::pvt_driverReady(uint32_t _homeID)
 {
     qDebug() << "Notification pvt_driverRead";
-    emit this->driverReady();
+    this->m_homeID = _homeID;
+    emit this->driverReady(_homeID);
 }
-void QTOZWManager::pvt_driverFailed()
+void QTOZWManager::pvt_driverFailed(uint32_t _homeID)
 {
     qDebug() << "Notification pvt_driverFailed";
-    emit this->driverFailed();
+    emit this->driverFailed(_homeID);
 }
-void QTOZWManager::pvt_driverReset()
+void QTOZWManager::pvt_driverReset(uint32_t _homeID)
 {
     qDebug() << "Notification pvt_driverReset";
-    emit this->driverReset();
+    emit this->driverReset(_homeID);
 }
-void QTOZWManager::pvt_driverRemoved()
+void QTOZWManager::pvt_driverRemoved(uint32_t _homeID)
 {
     qDebug() << "Notification pvt_driverRemoved";
-    emit this->driverRemoved();
+    emit this->driverRemoved(_homeID);
 }
 void QTOZWManager::pvt_driverAllNodesQueriedSomeDead()
 {
@@ -261,5 +428,23 @@ void QTOZWManager::pvt_manufacturerSpecificDBReady()
 {
     qDebug() << "Notification pvt_manufacturerSpecificDBReady";
     emit this->manufacturerSpecificDBReady();
+}
+
+
+
+/* XXX TODO: this needs to go into OZW */
+QString nodeBasicStr (uint8 basic)
+{
+  switch (basic) {
+  case 1:
+    return "Controller";
+  case 2:
+    return "Static Controller";
+  case 3:
+    return "Slave";
+  case 4:
+    return "Routing Slave";
+  }
+  return "unknown";
 }
 

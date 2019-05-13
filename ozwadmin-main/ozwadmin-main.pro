@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui xml remoteobjects
+QT       += core gui xml remoteobjects websockets
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 

@@ -27,19 +27,21 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         qtopenzwave.cpp \
-    qtozwmanager.cpp \
-    QTOZWNodes.cpp
+        qtozwmanager.cpp \
+        qtozwnodemodel.cpp \
+        websocketiodevice.cpp
 
 HEADERS += \
         qtopenzwave.h \
-        qt-openzwave_global.h \ 
-    qtozwmanager.h \
-    QTOZWNodes.h
+        qt-openzwave_global.h \  \
+        qtozwnodemodel.h \
+        websocketiodevice.h \
+        qtozwmanager.h
 
 INCLUDEPATH += ../open-zwave/cpp/src/
 
-REPC_SOURCE = OZWNodes.rep qtozwmanager.rep
-REPC_REPLICA = OZWNodes.rep qtozwmanager.rep
+REPC_SOURCE = qtozwmanager.rep
+REPC_REPLICA = qtozwmanager.rep
 
 unix {
     target.path = /usr/lib
@@ -50,6 +52,3 @@ remote {
   TARGET = qt-openzwave_remote
   DEFINES += BUILD_REP
 }
-
-DISTFILES += \
-    qtozwmanager.rep

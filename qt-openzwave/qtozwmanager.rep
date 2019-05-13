@@ -1,8 +1,6 @@
 #include <QtCore>
-#include "QTOZWNodes.h"
 
 class QTOZWManager {
-    //PROP(QList<OZWNodes *> nodeList )
     PROP(bool running SOURCEONLYSETTER)
     SLOT(bool Start(QString SerialPort))
     SIGNAL(nodeNew(uint8_t node))
@@ -14,10 +12,10 @@ class QTOZWManager {
     SIGNAL(nodeProtocolInfo(uint8_t node))
     SIGNAL(nodeEssentialNodeQueriesComplete(uint8_t node))
     SIGNAL(nodeQueriesComplete(uint8_t node))
-    SIGNAL(driverReady())
-    SIGNAL(driverFailed())
-    SIGNAL(driverReset())
-    SIGNAL(driverRemoved())
+    SIGNAL(driverReady(uint32_t homeID))
+    SIGNAL(driverFailed(uint32_t homeID))
+    SIGNAL(driverReset(uint32_t homeID))
+    SIGNAL(driverRemoved(uint32_t homeID))
     SIGNAL(driverAllNodesQueriedSomeDead())
     SIGNAL(driverAllNodesQueried())
     SIGNAL(driverAwakeNodesQueried())

@@ -6,6 +6,8 @@
 
 QT       -= gui
 QT       += remoteobjects
+QT       += websockets
+
 
 TEMPLATE = lib
 
@@ -28,20 +30,23 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         qtopenzwave.cpp \
     qtozwmanager.cpp \
-    QTOZWNodes.cpp \
-    qtozwnotification.cpp
+    qtozwnotification.cpp \
+    websocketiodevice.cpp \
+    qtozwnodemodel.cpp
 
 HEADERS += \
         qtopenzwave.h \
-        qt-openzwave_global.h \ 
-    qtozwmanager.h \
-    QTOZWNodes.h \
-    qtozwnotification.h
+        qt-openzwave_global.h \  \
+        websocketiodevice.h \
+        qtozwmanager.h \
+        qtozwnotification.h \
+        qtozwnodemodel.h
+
 
 INCLUDEPATH += ../open-zwave/cpp/src/
 
-REPC_SOURCE = OZWNodes.rep qtozwmanager.rep
-REPC_REPLICA = OZWNodes.rep qtozwmanager.rep
+REPC_SOURCE =  qtozwmanager.rep
+REPC_REPLICA =  qtozwmanager.rep
 
 unix {
     target.path = /usr/lib

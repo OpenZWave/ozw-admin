@@ -3,12 +3,11 @@
 
 #include <QObject>
 #include "rep_qtozwmanager_source.h"
-#include "QTOZWNodes.h"
 #include "qtozwnotification.h"
+#include "qtozwnodemodel.h"
 
 void setupOZW();
 
-//Q_DECLARE_METATYPE(QList<OZWNodes>)
 
 namespace OpenZWave {
 
@@ -26,6 +25,9 @@ public:
     QTOZWManager();
 
     bool Start(QString SerialPort);
+    QTOZW_Nodes *getNodeModel();
+
+
 public slots:
     /* these slots are called from our OZWNotification Class. Applications should not call them */
     void pvt_valueAdded(QTValueID);
@@ -44,10 +46,10 @@ public slots:
     void pvt_nodeProtocolInfo(uint8_t node);
     void pvt_nodeEssentialNodeQueriesComplete(uint8_t node);
     void pvt_nodeQueriesComplete(uint8_t node);
-    void pvt_driverReady();
-    void pvt_driverFailed();
-    void pvt_driverReset();
-    void pvt_driverRemoved();
+    void pvt_driverReady(uint32_t homeID);
+    void pvt_driverFailed(uint32_t homeID);
+    void pvt_driverReset(uint32_t homeID);
+    void pvt_driverRemoved(uint32_t homeID);
     void pvt_driverAllNodesQueriedSomeDead();
     void pvt_driverAllNodesQueried();
     void pvt_driverAwakeNodesQueried();
@@ -63,7 +65,9 @@ private:
 private:
     OpenZWave::Options *m_options;
     OpenZWave::Manager *m_manager;
+    QTOZW_Nodes_internal *m_nodeModel;
     pthread_mutex_t m_manager_mutex;
+    uint32_t m_homeID;
 };
 
 #endif // QTOZWMANAGER_H

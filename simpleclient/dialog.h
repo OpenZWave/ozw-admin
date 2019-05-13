@@ -6,6 +6,8 @@
 #include <QRemoteObjectNode>
 #include <QAbstractItemModelReplica>
 #include "rep_qtozwmanager_replica.h"
+#include "websocketiodevice.h"
+
 
 namespace Ui {
 class Dialog;
@@ -29,6 +31,7 @@ private:
     QRemoteObjectNode node;
     QScopedPointer<QAbstractItemModelReplica> model;
     QScopedPointer<QTOZWManagerReplica> manager;
+    WebSocketIODevice test;
 };
 
 #endif // DIALOG_H
