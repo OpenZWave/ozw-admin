@@ -29,12 +29,14 @@ SOURCES += \
         qtopenzwave.cpp \
         qtozwmanager.cpp \
         qtozwnodemodel.cpp \
+        qtozwvalueidmodel.cpp \
         websocketiodevice.cpp
 
 HEADERS += \
         qtopenzwave.h \
         qt-openzwave_global.h \  \
         qtozwnodemodel.h \
+        qtozwvalueidmodel.h \
         websocketiodevice.h \
         qtozwmanager.h
 

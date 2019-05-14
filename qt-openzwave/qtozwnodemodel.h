@@ -71,7 +71,6 @@ protected:
     QVariant getNodeData(uint8_t, NodeColumns);
     int32_t getNodeRow(uint8_t _node);
 
-    uint8_t m_nodeCount;
     QHash<int32_t, QHash<NodeColumns, QVariant> > m_nodeData;
 };
 

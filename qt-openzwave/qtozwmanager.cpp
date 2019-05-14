@@ -48,6 +48,7 @@ QTOZWManager::QTOZWManager()
     this->m_options->AddOptionBool( "ValidateValueChanges", true);
 
     this->m_nodeModel = new QTOZW_Nodes_internal(this);
+    this->m_valueModel = new QTOZW_ValueIds_internal(this);
 
 }
 
@@ -460,6 +461,11 @@ QTOZW_Nodes *QTOZWManager::getNodeModel() {
     return static_cast<QTOZW_Nodes *>(this->m_nodeModel);
 }
 
+QTOZW_ValueIds *QTOZWManager::getValueModel() {
+    return static_cast<QTOZW_ValueIds *>(this->m_valueModel);
+}
+
+
 bool QTOZWManager::checkHomeId() {
     if (this->m_manager == nullptr) {
         emit this->error(QTOZWErrorCodes::Manager_Not_Started);
@@ -482,39 +488,151 @@ bool QTOZWManager::checkNodeId(uint8_t _node) {
     return true;
 }
 
+#if 0
+Value,
+Type,
+Instance,
+CommandClass,
+Index,
+Node,
+Genre,
+Help,
+ValueIDKey,
+ValueFlags,
+#endif
+
+bool QTOZWManager::convertValueID(uint64_t vidKey) {
+    OpenZWave::ValueID vid(this->homeId(), vidKey);
+    switch (vid.GetType()) {
+        case OpenZWave::ValueID::ValueType_Bool:
+        {
+            bool value;
+            this->m_manager->GetValueAsBool(vid, &value);
+            this->m_valueModel->setValueData(vidKey, QTOZW_ValueIds::ValueIdColumns::Value, QVariant::fromValue(value));
+            this->m_valueModel->setValueData(vidKey, QTOZW_ValueIds::ValueIdColumns::Type, QTOZW_ValueIds::ValueIdTypes::Bool);
+            break;
+        }
+        case OpenZWave::ValueID::ValueType_Byte:
+        {
+            uint8_t value;
+            this->m_manager->GetValueAsByte(vid, &value);
+            this->m_valueModel->setValueData(vidKey, QTOZW_ValueIds::ValueIdColumns::Value, QVariant::fromValue((int32)value));
+            this->m_valueModel->setValueData(vidKey, QTOZW_ValueIds::ValueIdColumns::Type, QTOZW_ValueIds::ValueIdTypes::Byte);
+            break;
+        }
+        case OpenZWave::ValueID::ValueType_Decimal:
+        {
+            std::string value;
+            this->m_manager->GetValueAsString(vid, &value);
+            this->m_valueModel->setValueData(vidKey, QTOZW_ValueIds::ValueIdColumns::Value, QVariant::fromValue(QString(value.c_str()).toFloat()));
+            this->m_valueModel->setValueData(vidKey, QTOZW_ValueIds::ValueIdColumns::Type, QTOZW_ValueIds::ValueIdTypes::Decimal);
+            break;
+        }
+        case OpenZWave::ValueID::ValueType_Int:
+        {
+            int32_t value;
+            this->m_manager->GetValueAsInt(vid, &value);
+            this->m_valueModel->setValueData(vidKey, QTOZW_ValueIds::ValueIdColumns::Value, QVariant::fromValue(value));
+            this->m_valueModel->setValueData(vidKey, QTOZW_ValueIds::ValueIdColumns::Type, QTOZW_ValueIds::ValueIdTypes::Int);
+            break;
+        }
+        case OpenZWave::ValueID::ValueType_List:
+        {
+            this->m_valueModel->setValueData(vidKey, QTOZW_ValueIds::ValueIdColumns::Type, QTOZW_ValueIds::ValueIdTypes::List);
+            break;
+        }
+        case OpenZWave::ValueID::ValueType_Schedule:
+        {
+            this->m_valueModel->setValueData(vidKey, QTOZW_ValueIds::ValueIdColumns::Type, QTOZW_ValueIds::ValueIdTypes::Schedule);
+            break;
+        }
+        case OpenZWave::ValueID::ValueType_Short:
+        {
+            int16_t value;
+            this->m_manager->GetValueAsShort(vid, &value);
+            this->m_valueModel->setValueData(vidKey, QTOZW_ValueIds::ValueIdColumns::Value, QVariant::fromValue(value));
+            this->m_valueModel->setValueData(vidKey, QTOZW_ValueIds::ValueIdColumns::Type, QTOZW_ValueIds::ValueIdTypes::Short);
+            break;
+        }
+        case OpenZWave::ValueID::ValueType_String:
+        {
+            std::string value;
+            this->m_manager->GetValueAsString(vid, &value);
+            this->m_valueModel->setValueData(vidKey, QTOZW_ValueIds::ValueIdColumns::Value, QVariant::fromValue(QString(value.c_str())));
+            this->m_valueModel->setValueData(vidKey, QTOZW_ValueIds::ValueIdColumns::Type, QTOZW_ValueIds::ValueIdTypes::String);
+            break;
+        }
+        case OpenZWave::ValueID::ValueType_Button:
+        {
+            this->m_valueModel->setValueData(vidKey, QTOZW_ValueIds::ValueIdColumns::Type, QTOZW_ValueIds::ValueIdTypes::Button);
+            break;
+        }
+        case OpenZWave::ValueID::ValueType_Raw:
+        {
+            this->m_valueModel->setValueData(vidKey, QTOZW_ValueIds::ValueIdColumns::Type, QTOZW_ValueIds::ValueIdTypes::Raw);
+            break;
+        }
+        case OpenZWave::ValueID::ValueType_BitSet:
+        {
+            this->m_valueModel->setValueData(vidKey, QTOZW_ValueIds::ValueIdColumns::Type, QTOZW_ValueIds::ValueIdTypes::BitSet);
+            break;
+        }
+    }
+
+}
 
 
-void QTOZWManager::pvt_valueAdded(QTValueID vid)
+void QTOZWManager::pvt_valueAdded(uint64_t vidKey)
 {
     qDebug() << "Notification pvt_valueAdded";
-    Q_UNUSED(vid);
+    if (!this->m_validValues.contains(vidKey))
+        this->m_validValues.push_back(vidKey);
+    this->m_valueModel->addValue(vidKey);
+
+    try {
+        OpenZWave::ValueID vid(this->homeId(), vidKey);
+        this->m_valueModel->setValueData(vidKey, QTOZW_ValueIds::ValueIdColumns::Label, this->m_manager->GetValueLabel(vid).c_str());
+        this->m_valueModel->setValueData(vidKey, QTOZW_ValueIds::ValueIdColumns::Instance, vid.GetInstance());
+        this->m_valueModel->setValueData(vidKey, QTOZW_ValueIds::ValueIdColumns::CommandClass, vid.GetCommandClassId());
+        this->m_valueModel->setValueData(vidKey, QTOZW_ValueIds::ValueIdColumns::Index, vid.GetIndex());
+        this->m_valueModel->setValueData(vidKey, QTOZW_ValueIds::ValueIdColumns::Node, vid.GetNodeId());
+        this->m_valueModel->setValueData(vidKey, QTOZW_ValueIds::ValueIdColumns::Genre, vid.GetGenre());
+        this->m_valueModel->setValueData(vidKey, QTOZW_ValueIds::ValueIdColumns::Help, this->m_manager->GetValueHelp(vid).c_str());
+        this->convertValueID(vidKey);
+    } catch (OpenZWave::OZWException &e) {
+        emit this->error(QTOZWErrorCodes::OZWException);
+        this->setErrorString(e.GetMsg().c_str());
+    }
+    emit this->valueAdded(vidKey);
 }
-void QTOZWManager::pvt_valueRemoved(QTValueID vid)
+void QTOZWManager::pvt_valueRemoved(uint64_t vidKey)
 {
     qDebug() << "Notification pvt_valueRemoved";
-    Q_UNUSED(vid);
+    Q_UNUSED(vidKey);
 }
-void QTOZWManager::pvt_valueChanged(QTValueID vid)
+void QTOZWManager::pvt_valueChanged(uint64_t vidKey)
 {
     qDebug() << "Notification pvt_valueChanged";
-    Q_UNUSED(vid);
+
+    this->convertValueID(vidKey);
 }
-void QTOZWManager::pvt_valueRefreshed(QTValueID vid)
+void QTOZWManager::pvt_valueRefreshed(uint64_t vidKey)
 {
     qDebug() << "Notification pvt_valueRefreshed";
-    Q_UNUSED(vid);
+
+    this->convertValueID(vidKey);
 
 }
-void QTOZWManager::pvt_valuePollingEnabled(QTValueID vid)
+void QTOZWManager::pvt_valuePollingEnabled(uint64_t vidKey)
 {
     qDebug() << "Notification pvt_valuePollingEnabled";
-    Q_UNUSED(vid);
+    Q_UNUSED(vidKey);
 
 }
-void QTOZWManager::pvt_valuePollingDisabled(QTValueID vid)
+void QTOZWManager::pvt_valuePollingDisabled(uint64_t vidKey)
 {
     qDebug() << "Notification pvt_valuePollingDisabled";
-    Q_UNUSED(vid);
+    Q_UNUSED(vidKey);
 
 }
 void QTOZWManager::pvt_nodeGroupChanged(uint8_t node, uint8_t group)

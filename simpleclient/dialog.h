@@ -30,6 +30,7 @@ private:
     Ui::Dialog *ui;
     QRemoteObjectNode node;
     QScopedPointer<QAbstractItemModelReplica> model;
+    QScopedPointer<QAbstractItemModelReplica> valuemodel;
     QScopedPointer<QTOZWManagerReplica> manager;
     WebSocketIODevice test;
 };

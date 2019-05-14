@@ -5,6 +5,7 @@
 #include "rep_qtozwmanager_source.h"
 #include "qtozwnotification.h"
 #include "qtozwnodemodel.h"
+#include "qtozwvalueidmodel.h"
 
 void setupOZW();
 
@@ -25,6 +26,7 @@ public:
 
     bool Start(QString SerialPort);
     QTOZW_Nodes *getNodeModel();
+    QTOZW_ValueIds *getValueModel();
 
     bool refreshNodeInfo(uint8_t _node);
     bool requestNodeState(uint8_t _node);
@@ -62,12 +64,12 @@ public:
 
 public slots:
     /* these slots are called from our OZWNotification Class. Applications should not call them */
-    void pvt_valueAdded(QTValueID);
-    void pvt_valueRemoved(QTValueID);
-    void pvt_valueChanged(QTValueID);
-    void pvt_valueRefreshed(QTValueID);
-    void pvt_valuePollingEnabled(QTValueID);
-    void pvt_valuePollingDisabled(QTValueID);
+    void pvt_valueAdded(uint64_t vidKey);
+    void pvt_valueRemoved(uint64_t vidKey);
+    void pvt_valueChanged(uint64_t vidKey);
+    void pvt_valueRefreshed(uint64_t vidKey);
+    void pvt_valuePollingEnabled(uint64_t vidKey);
+    void pvt_valuePollingDisabled(uint64_t vidKey);
     void pvt_nodeGroupChanged(uint8_t node, uint8_t group);
     void pvt_nodeNew(uint8_t node);
     void pvt_nodeAdded(uint8_t node);
@@ -98,12 +100,17 @@ private:
 
     bool checkHomeId();
     bool checkNodeId(uint8_t _node);
+    bool convertValueID(uint64_t vidKey);
+
 
     OpenZWave::Options *m_options;
     OpenZWave::Manager *m_manager;
     QTOZW_Nodes_internal *m_nodeModel;
+    QTOZW_ValueIds_internal *m_valueModel;
     pthread_mutex_t m_manager_mutex;
     QVector<uint8_t> m_validNodes;
+    QVector<uint64_t> m_validValues;
+
 };
 
 #endif // QTOZWMANAGER_H

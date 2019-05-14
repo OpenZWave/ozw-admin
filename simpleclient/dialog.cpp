@@ -40,10 +40,15 @@ Dialog::Dialog(QWidget *parent) :
     //setupTcp(QUrl(QStringLiteral("ws://localhost:1984")));
 //    node.setHeartbeatInterval(2000);
     model.reset(node.acquireModel(QStringLiteral("nodeModel")));
+    valuemodel.reset(node.acquireModel(QStringLiteral("valueModel")));
     manager.reset(node.acquire<QTOZWManagerReplica>(QStringLiteral("Manager")));
     QObject::connect(manager.data(), &QTOZWManagerReplica::stateChanged, this, &Dialog::managerReady);
 //    manager->waitForSource(5000);
     ui->treeView->setModel(model.data());
+    QTreeView *valuetree = new QTreeView();
+    valuetree->resize(640,480);
+    valuetree->setModel(valuemodel.data());
+    valuetree->show();
     qDebug() << node.lastError();
 
 

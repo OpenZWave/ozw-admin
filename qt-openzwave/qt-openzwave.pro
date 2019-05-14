@@ -32,7 +32,8 @@ SOURCES += \
     qtozwmanager.cpp \
     qtozwnotification.cpp \
     websocketiodevice.cpp \
-    qtozwnodemodel.cpp
+    qtozwnodemodel.cpp \
+    qtozwvalueidmodel.cpp
 
 HEADERS += \
         qtopenzwave.h \
@@ -40,7 +41,8 @@ HEADERS += \
         websocketiodevice.h \
         qtozwmanager.h \
         qtozwnotification.h \
-        qtozwnodemodel.h
+        qtozwnodemodel.h \
+        qtozwvalueidmodel.h
 
 
 INCLUDEPATH += ../open-zwave/cpp/src/

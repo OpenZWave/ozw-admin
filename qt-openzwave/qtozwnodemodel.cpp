@@ -4,8 +4,7 @@
 
 
 QTOZW_Nodes::QTOZW_Nodes(QObject *parent)
-    : QAbstractTableModel(parent),
-      m_nodeCount(0)
+    : QAbstractTableModel(parent)
 {
 }
 

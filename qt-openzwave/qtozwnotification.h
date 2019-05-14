@@ -4,8 +4,6 @@
 #include <QObject>
 #include "Notification.h"
 
-#define QTValueID uint64_t
-
 class OZWNotification : public QObject {
     Q_OBJECT
 public:
@@ -14,12 +12,12 @@ public:
     // All our Signals that we emit - one for each type of Notification
     //-----------------------------------------------------------------------------
 signals:
-    void valueAdded(QTValueID);
-    void valueRemoved(QTValueID);
-    void valueChanged(QTValueID);
-    void valueRefreshed(QTValueID);
-    void valuePollingEnabled(QTValueID);
-    void valuePollingDisabled(QTValueID);
+    void valueAdded(uint64_t vidKey);
+    void valueRemoved(uint64_t vidKey);
+    void valueChanged(uint64_t vidKey);
+    void valueRefreshed(uint64_t vidKey);
+    void valuePollingEnabled(uint64_t vidKey);
+    void valuePollingDisabled(uint64_t vidKey);
     void nodeGroupChanged(uint8_t node, uint8_t group);
     void nodeNew(uint8_t node);
     void nodeAdded(uint8_t node);

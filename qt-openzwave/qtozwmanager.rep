@@ -7,6 +7,7 @@ class QTOZWManager {
     SLOT(bool refreshNodeInfo(uint8_t _node))
     SLOT(bool requestNodeState(uint8_t _node))
     SLOT(bool requestNodeDynamic(uint8_t _node))
+    SIGNAL(valueAdded(uint64_t vidKey))
     SIGNAL(nodeNew(uint8_t node))
     SIGNAL(nodeAdded(uint8_t node))
     SIGNAL(nodeRemoved(uint8_t node))

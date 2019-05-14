@@ -24,36 +24,50 @@ void OZWNotification::processNotification
     Q_UNUSED(_context);
     qDebug() << QString(_notification->GetAsString().c_str());
     //qDebug() << _notification;
+#if 0
+    void valueAdded(uint64_t vidKey);
+    void valueRemoved(uint64_t vidKey);
+    void valueChanged(uint64_t vidKey);
+    void valueRefreshed(uint64_t vidKey);
+    void valuePollingEnabled(uint64_t vidKey);
+    void valuePollingDisabled(uint64_t vidKey);
+#endif
 
     switch( _notification->GetType() )
         {
         case OpenZWave::Notification::Type_ValueAdded:
         {
+            emit Get()->valueAdded(_notification->GetValueID().GetId());
             break;
         }
 
         case OpenZWave::Notification::Type_ValueRemoved:
         {
+            emit Get()->valueRemoved(_notification->GetValueID().GetId());
             break;
         }
 
         case OpenZWave::Notification::Type_ValueChanged:
         {
+            emit Get()->valueChanged(_notification->GetValueID().GetId());
             break;
         }
 
         case OpenZWave::Notification::Type_ValueRefreshed:
         {
+            emit Get()->valueRefreshed(_notification->GetValueID().GetId());
             break;
         }
 
         case OpenZWave::Notification::Type_PollingDisabled:
         {
+            emit Get()->valuePollingDisabled(_notification->GetValueID().GetId());
             break;
         }
 
         case OpenZWave::Notification::Type_PollingEnabled:
         {
+            emit Get()->valuePollingEnabled(_notification->GetValueID().GetId());
             break;
         }
 
