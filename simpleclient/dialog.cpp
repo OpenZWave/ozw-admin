@@ -2,6 +2,7 @@
 #include "ui_dialog.h"
 #include <QScopedPointer>
 #include "websocketiodevice.h"
+#include <qtozwvalueidmodel.h>
 
 
 void printSignal() {
@@ -33,6 +34,11 @@ Dialog::Dialog(QWidget *parent) :
         socket->open(QIODevice::ReadWrite);
     };
     //node.registerExternalSchema(QStringLiteral("ws"), setupTcp);
+
+    qRegisterMetaType<QTOZW_ValueIDList>("QTOZW_ValueIDList");
+    qRegisterMetaTypeStreamOperators<QTOZW_ValueIDList>("QTOZW_ValueIDList");
+    qRegisterMetaType<QTOZW_ValueIDBitSet>("QTOZW_ValueIDBitSet");
+    qRegisterMetaTypeStreamOperators<QTOZW_ValueIDBitSet>("QTOZW_ValueIDBitSet");
 
 
 

@@ -38,9 +38,9 @@ int main(int argc, char *argv[])
                                      "qt.remoteobjects.models.debug=true\n"
                                      "qt.remoteobjects.io.debug=true\n"
                                      "default.debug=true");
-#endif
+#else
     QLoggingCategory::setFilterRules("default.debug=true");
-
+#endif
 
     qRegisterMetaType<QtValueID>();
     qRegisterMetaType<uint8>("uint8");
@@ -59,6 +59,12 @@ int main(int argc, char *argv[])
     view.resize(640,480);
     view.setModel(manager->getNodeModel());
     view.show();
+
+    QTreeView view2;
+    view2.setWindowTitle(QStringLiteral("LocalView"));
+    view2.resize(640,480);
+    view2.setModel(manager->getValueModel());
+    view2.show();
 
 
 

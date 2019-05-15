@@ -1,6 +1,7 @@
 #include <QDebug>
 #include <QBitArray>
 #include "qtozwnodemodel.h"
+#include "qtopenzwave.h"
 
 
 QTOZW_Nodes::QTOZW_Nodes(QObject *parent)
@@ -121,13 +122,31 @@ QVariant QTOZW_Nodes::headerData(int section, Qt::Orientation orientation, int r
 Qt::ItemFlags QTOZW_Nodes::flags(const QModelIndex &index) const {
     if (!index.isValid())
         return Qt::ItemIsEnabled;
-
-    return QAbstractTableModel::flags(index) | Qt::ItemIsEditable;
+    switch (static_cast<NodeColumns>(index.column())) {
+        case NodeName:
+        case NodeLocation:
+            return QAbstractTableModel::flags(index) | Qt::ItemIsEditable;
+        default:
+            return QAbstractTableModel::flags(index);
+    }
 }
 bool QTOZW_Nodes::setData(const QModelIndex &index, const QVariant &value, int role) {
-    Q_UNUSED(index);
-    Q_UNUSED(value);
-    Q_UNUSED(role);
+    if (role != Qt::EditRole) {
+        return false;
+    }
+    switch (static_cast<NodeColumns>(index.column())) {
+        case NodeName:
+        case NodeLocation:
+            if (this->m_nodeData[index.row()][static_cast<NodeColumns>(index.column())] != value) {
+                this->m_nodeData[index.row()][static_cast<NodeColumns>(index.column())] = value;
+                QVector<int> roles;
+                roles << Qt::DisplayRole << QTOZW_UserRoles::ModelDataChanged;
+                this->dataChanged(index, index, roles);
+            }
+        break;
+        default:
+            return false;
+    }
     return true;
 }
 
@@ -186,8 +205,12 @@ void QTOZW_Nodes_internal::setNodeData(uint8_t _nodeID, QTOZW_Nodes::NodeColumns
         qWarning() << "setNodeData: Node " << _nodeID << " does not exist";
         return;
     }
-    this->m_nodeData[row][column] = data;
-    this->dataChanged(this->createIndex(row, column), this->createIndex(row, column));
+    if (this->m_nodeData[row][column] != data) {
+        this->m_nodeData[row][column] = data;
+        QVector<int> roles;
+        roles << Qt::DisplayRole;
+        this->dataChanged(this->createIndex(row, column), this->createIndex(row, column), roles);
+    }
 }
 
 void QTOZW_Nodes_internal::setNodeFlags(uint8_t _nodeID, QTOZW_Nodes::nodeFlags _flags, bool _value)
@@ -198,7 +221,11 @@ void QTOZW_Nodes_internal::setNodeFlags(uint8_t _nodeID, QTOZW_Nodes::nodeFlags 
         return;
     }
     QBitArray flag = this->m_nodeData[row][QTOZW_Nodes::NodeFlags].toBitArray();
-    flag.setBit(_flags, _value);
-    this->m_nodeData[row][QTOZW_Nodes::NodeFlags] = flag;
-    this->dataChanged(this->createIndex(row, QTOZW_Nodes::NodeFlags), this->createIndex(row, QTOZW_Nodes::NodeFlags));
+    if (flag.at(_flags) != _value) {
+        flag.setBit(_flags, _value);
+        this->m_nodeData[row][QTOZW_Nodes::NodeFlags] = flag;
+        QVector<int> roles;
+        roles << Qt::DisplayRole;
+        this->dataChanged(this->createIndex(row, QTOZW_Nodes::NodeFlags), this->createIndex(row, QTOZW_Nodes::NodeFlags), roles);
+    }
 }

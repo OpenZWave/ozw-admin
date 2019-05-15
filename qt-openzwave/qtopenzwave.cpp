@@ -9,6 +9,10 @@ QTOpenZwave::QTOpenZwave
     m_manager(nullptr)
 {
     qRegisterMetaType<uint32_t>("uint32_t");
+    qRegisterMetaType<QTOZW_ValueIDList>("QTOZW_ValueIDList");
+    qRegisterMetaTypeStreamOperators<QTOZW_ValueIDList>("QTOZW_ValueIDList");
+    qRegisterMetaType<QTOZW_ValueIDBitSet>("QTOZW_ValueIDBitSet");
+    qRegisterMetaTypeStreamOperators<QTOZW_ValueIDBitSet>("QTOZW_ValueIDBitSet");
 
     this->m_websockserver = new WebSocketServer(1984, this);
 

@@ -22,7 +22,7 @@ void OZWNotification::processNotification
 )
 {
     Q_UNUSED(_context);
-    qDebug() << QString(_notification->GetAsString().c_str());
+    //qDebug() << QString(_notification->GetAsString().c_str());
     //qDebug() << _notification;
 #if 0
     void valueAdded(uint64_t vidKey);

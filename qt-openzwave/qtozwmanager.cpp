@@ -48,7 +48,9 @@ QTOZWManager::QTOZWManager()
     this->m_options->AddOptionBool( "ValidateValueChanges", true);
 
     this->m_nodeModel = new QTOZW_Nodes_internal(this);
+    QObject::connect(this->m_nodeModel, &QTOZW_Nodes_internal::dataChanged, this, &QTOZWManager::pvt_nodeModelDataChanged);
     this->m_valueModel = new QTOZW_ValueIds_internal(this);
+    QObject::connect(this->m_valueModel, &QTOZW_ValueIds_internal::dataChanged, this, &QTOZWManager::pvt_valueModelDataChanged);
 
 }
 
@@ -501,6 +503,9 @@ ValueIDKey,
 ValueFlags,
 #endif
 
+
+
+
 bool QTOZWManager::convertValueID(uint64_t vidKey) {
     OpenZWave::ValueID vid(this->homeId(), vidKey);
     switch (vid.GetType()) {
@@ -510,7 +515,7 @@ bool QTOZWManager::convertValueID(uint64_t vidKey) {
             this->m_manager->GetValueAsBool(vid, &value);
             this->m_valueModel->setValueData(vidKey, QTOZW_ValueIds::ValueIdColumns::Value, QVariant::fromValue(value));
             this->m_valueModel->setValueData(vidKey, QTOZW_ValueIds::ValueIdColumns::Type, QTOZW_ValueIds::ValueIdTypes::Bool);
-            break;
+            return true;
         }
         case OpenZWave::ValueID::ValueType_Byte:
         {
@@ -518,7 +523,7 @@ bool QTOZWManager::convertValueID(uint64_t vidKey) {
             this->m_manager->GetValueAsByte(vid, &value);
             this->m_valueModel->setValueData(vidKey, QTOZW_ValueIds::ValueIdColumns::Value, QVariant::fromValue((int32)value));
             this->m_valueModel->setValueData(vidKey, QTOZW_ValueIds::ValueIdColumns::Type, QTOZW_ValueIds::ValueIdTypes::Byte);
-            break;
+            return true;
         }
         case OpenZWave::ValueID::ValueType_Decimal:
         {
@@ -526,7 +531,7 @@ bool QTOZWManager::convertValueID(uint64_t vidKey) {
             this->m_manager->GetValueAsString(vid, &value);
             this->m_valueModel->setValueData(vidKey, QTOZW_ValueIds::ValueIdColumns::Value, QVariant::fromValue(QString(value.c_str()).toFloat()));
             this->m_valueModel->setValueData(vidKey, QTOZW_ValueIds::ValueIdColumns::Type, QTOZW_ValueIds::ValueIdTypes::Decimal);
-            break;
+            return true;
         }
         case OpenZWave::ValueID::ValueType_Int:
         {
@@ -534,17 +539,37 @@ bool QTOZWManager::convertValueID(uint64_t vidKey) {
             this->m_manager->GetValueAsInt(vid, &value);
             this->m_valueModel->setValueData(vidKey, QTOZW_ValueIds::ValueIdColumns::Value, QVariant::fromValue(value));
             this->m_valueModel->setValueData(vidKey, QTOZW_ValueIds::ValueIdColumns::Type, QTOZW_ValueIds::ValueIdTypes::Int);
-            break;
+            return true;
         }
         case OpenZWave::ValueID::ValueType_List:
         {
+            std::vector<std::string> items;
+            std::vector<int32> values;
+            this->m_manager->GetValueListItems(vid, &items);
+            this->m_manager->GetValueListValues(vid, &values);
+            if (items.size() != values.size()) {
+                qWarning() << "ValueList Item Size Does not equal Value Size";
+            } else {
+                std::vector<std::string>::iterator it;
+                size_t i = 0;
+                QTOZW_ValueIDList vidlist;
+                for(it = items.begin(); it != items.end(); it++) {
+                    vidlist.labels.push_back(QString::fromStdString(*it));
+                    vidlist.values.push_back(values.at(i));
+                    i++;
+                }
+                std::string selectedItem;
+                this->m_manager->GetValueListSelection(vid, &selectedItem);
+                vidlist.selectedItem = QString::fromStdString(selectedItem);
+                this->m_valueModel->setValueData(vidKey, QTOZW_ValueIds::ValueIdColumns::Value, QVariant::fromValue(vidlist));
+            }
             this->m_valueModel->setValueData(vidKey, QTOZW_ValueIds::ValueIdColumns::Type, QTOZW_ValueIds::ValueIdTypes::List);
-            break;
+            return true;
         }
         case OpenZWave::ValueID::ValueType_Schedule:
         {
             this->m_valueModel->setValueData(vidKey, QTOZW_ValueIds::ValueIdColumns::Type, QTOZW_ValueIds::ValueIdTypes::Schedule);
-            break;
+            return true;
         }
         case OpenZWave::ValueID::ValueType_Short:
         {
@@ -552,7 +577,7 @@ bool QTOZWManager::convertValueID(uint64_t vidKey) {
             this->m_manager->GetValueAsShort(vid, &value);
             this->m_valueModel->setValueData(vidKey, QTOZW_ValueIds::ValueIdColumns::Value, QVariant::fromValue(value));
             this->m_valueModel->setValueData(vidKey, QTOZW_ValueIds::ValueIdColumns::Type, QTOZW_ValueIds::ValueIdTypes::Short);
-            break;
+            return true;
         }
         case OpenZWave::ValueID::ValueType_String:
         {
@@ -560,25 +585,44 @@ bool QTOZWManager::convertValueID(uint64_t vidKey) {
             this->m_manager->GetValueAsString(vid, &value);
             this->m_valueModel->setValueData(vidKey, QTOZW_ValueIds::ValueIdColumns::Value, QVariant::fromValue(QString(value.c_str())));
             this->m_valueModel->setValueData(vidKey, QTOZW_ValueIds::ValueIdColumns::Type, QTOZW_ValueIds::ValueIdTypes::String);
-            break;
+            return true;
         }
         case OpenZWave::ValueID::ValueType_Button:
         {
             this->m_valueModel->setValueData(vidKey, QTOZW_ValueIds::ValueIdColumns::Type, QTOZW_ValueIds::ValueIdTypes::Button);
-            break;
+            return true;
         }
         case OpenZWave::ValueID::ValueType_Raw:
         {
             this->m_valueModel->setValueData(vidKey, QTOZW_ValueIds::ValueIdColumns::Type, QTOZW_ValueIds::ValueIdTypes::Raw);
-            break;
+            return true;
         }
         case OpenZWave::ValueID::ValueType_BitSet:
         {
+            uint8_t bssize;
+            int32_t bsmask;
+            this->m_manager->GetBitSetSize(vid, &bssize);
+            this->m_manager->GetBitMask(vid, &bsmask);
+            QTOZW_ValueIDBitSet vidbs;
+            vidbs.mask.resize(INT32_MAX);
+            for (int i = 0; i < 32; ++i) {
+                vidbs.mask[i] = bsmask & (1 << i);
+            }
+            vidbs.values.resize(bssize * 8);
+            qDebug() << vidbs.values.size();
+            for (uint8_t i = 0; i < 32; ++i) {
+                bool value;
+                this->m_manager->GetValueAsBitSet(vid, i, &value);
+                vidbs.values[i] = value;
+                vidbs.label[i] = QString::fromStdString(this->m_manager->GetValueLabel(vid, i));
+                vidbs.help[i] = QString::fromStdString(this->m_manager->GetValueHelp(vid, i));
+            }
+            this->m_valueModel->setValueData(vidKey, QTOZW_ValueIds::ValueIdColumns::Value, QVariant::fromValue(vidbs));
             this->m_valueModel->setValueData(vidKey, QTOZW_ValueIds::ValueIdColumns::Type, QTOZW_ValueIds::ValueIdTypes::BitSet);
-            break;
+            return true;
         }
     }
-
+    return false;
 }
 
 
@@ -598,6 +642,15 @@ void QTOZWManager::pvt_valueAdded(uint64_t vidKey)
         this->m_valueModel->setValueData(vidKey, QTOZW_ValueIds::ValueIdColumns::Node, vid.GetNodeId());
         this->m_valueModel->setValueData(vidKey, QTOZW_ValueIds::ValueIdColumns::Genre, vid.GetGenre());
         this->m_valueModel->setValueData(vidKey, QTOZW_ValueIds::ValueIdColumns::Help, this->m_manager->GetValueHelp(vid).c_str());
+        this->m_valueModel->setValueData(vidKey, QTOZW_ValueIds::ValueIdColumns::Units, this->m_manager->GetValueUnits(vid).c_str());
+        this->m_valueModel->setValueData(vidKey, QTOZW_ValueIds::ValueIdColumns::Min, this->m_manager->GetValueMin(vid));
+        this->m_valueModel->setValueData(vidKey, QTOZW_ValueIds::ValueIdColumns::Max, this->m_manager->GetValueMax(vid));
+        this->m_valueModel->setValueFlags(vidKey, QTOZW_ValueIds::ValueIDFlags::ReadOnly, this->m_manager->IsValueReadOnly(vid));
+        this->m_valueModel->setValueFlags(vidKey, QTOZW_ValueIds::ValueIDFlags::WriteOnly, this->m_manager->IsValueWriteOnly(vid));
+        this->m_valueModel->setValueFlags(vidKey, QTOZW_ValueIds::ValueIDFlags::ValueSet, this->m_manager->IsValueSet(vid));
+        this->m_valueModel->setValueFlags(vidKey, QTOZW_ValueIds::ValueIDFlags::ValuePolled, this->m_manager->IsValuePolled(vid));
+        this->m_valueModel->setValueFlags(vidKey, QTOZW_ValueIds::ValueIDFlags::ChangeVerified, this->m_manager->GetChangeVerified(vid));
+
         this->convertValueID(vidKey);
     } catch (OpenZWave::OZWException &e) {
         emit this->error(QTOZWErrorCodes::OZWException);
@@ -940,6 +993,97 @@ void QTOZWManager::pvt_manufacturerSpecificDBReady()
     emit this->manufacturerSpecificDBReady();
 }
 
+void QTOZWManager::pvt_nodeModelDataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight, const QVector<int> &roles)
+{
+    Q_UNUSED(bottomRight);
+    if (!roles.contains(QTOZW_UserRoles::ModelDataChanged)) {
+        return;
+    }
+    qDebug() << "nodeModel Changed!" << static_cast<QTOZW_Nodes::NodeColumns>(topLeft.column()) << ": "<< topLeft.data();
+    /* get the Node Number */
+    QModelIndex nodeIdIndex = topLeft.siblingAtColumn(QTOZW_Nodes::NodeColumns::NodeID);
+    uint8_t nodeId = this->m_nodeModel->data(nodeIdIndex, Qt::DisplayRole).value<uint8_t>();
+    switch (static_cast<QTOZW_Nodes::NodeColumns>(topLeft.column())) {
+        case QTOZW_Nodes::NodeColumns::NodeName:
+            this->m_manager->SetNodeName(this->homeId(), nodeId, topLeft.data().toString().toStdString());
+            break;
+        case QTOZW_Nodes::NodeColumns::NodeLocation:
+            this->m_manager->SetNodeLocation(this->homeId(), nodeId, topLeft.data().toString().toStdString());
+            break;
+        default:
+            qWarning() << "Got a nodeModelDataChanged Singal but not a Column we handle: " << static_cast<QTOZW_Nodes::NodeColumns>(topLeft.column()) ;
+            return;
+    }
+}
+
+void QTOZWManager::pvt_valueModelDataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight, const QVector<int> &roles) {
+    Q_UNUSED(bottomRight);
+    if (!roles.contains(QTOZW_UserRoles::ModelDataChanged)) {
+        return;
+    }
+    qDebug() << "valueModel Changed!" << static_cast<QTOZW_ValueIds::ValueIdColumns>(topLeft.column()) << ": "<< topLeft.data();
+    /* get the Node Number */
+    uint64_t vidKey = this->m_valueModel->data(topLeft.siblingAtColumn(QTOZW_ValueIds::ValueIdColumns::ValueIDKey), Qt::DisplayRole).value<uint8_t>();
+    OpenZWave::ValueID vid(this->homeId(), vidKey);
+    switch (static_cast<OpenZWave::ValueID::ValueType>(vid.GetType())) {
+        case OpenZWave::ValueID::ValueType_Bool:
+        {
+            this->m_manager->SetValue(vid, topLeft.data().toBool());
+            return;
+        }
+        case OpenZWave::ValueID::ValueType_Byte:
+        {
+            this->m_manager->SetValue(vid, topLeft.data().value<uint8_t>());
+            return;
+        }
+        case OpenZWave::ValueID::ValueType_Decimal:
+        {
+            this->m_manager->SetValue(vid, topLeft.data().toFloat());
+            return;
+        }
+        case OpenZWave::ValueID::ValueType_Int:
+        {
+            this->m_manager->SetValue(vid, topLeft.data().value<int32>());
+            return;
+        }
+        case OpenZWave::ValueID::ValueType_List:
+        {
+            qWarning() << "ValueType List TODO";
+            return;
+        }
+        case OpenZWave::ValueID::ValueType_Schedule:
+        {
+            qWarning() << "ValueType_Schedule TODO";
+            return;
+        }
+        case OpenZWave::ValueID::ValueType_Short:
+        {
+            this->m_manager->SetValue(vid, topLeft.data().value<int16>());
+            return;
+        }
+        case OpenZWave::ValueID::ValueType_String:
+        {
+            this->m_manager->SetValue(vid, topLeft.data().toString().toStdString());
+            return;
+        }
+        case OpenZWave::ValueID::ValueType_Button:
+        {
+            qWarning() << "ValueType_Button TODO";
+            return;
+        }
+        case OpenZWave::ValueID::ValueType_Raw:
+        {
+            qWarning() << "ValueType_Raw TODO";
+            return;
+        }
+        case OpenZWave::ValueID::ValueType_BitSet:
+        {
+            qWarning() << "ValueType_BitSet TODO";
+            return;
+        }
+
+    }
+}
 
 
 

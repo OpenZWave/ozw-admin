@@ -59,14 +59,6 @@ public:
     Qt::ItemFlags flags(const QModelIndex &index) const;
     bool setData(const QModelIndex &index, const QVariant &value, int role=Qt::EditRole);
 
-    //QList< QPair<QString, QString> > getList();
-    //void addNode(Node *);
-    //Node *getNode(qint8);
-    //QModelIndex getNodeValueIndex(qint8, NodeColumnNames);
-    //void updateQueryStage(qint8);
-    //void updateGroups(qint8);
-    //void ValueAdded(QtValueID *vid);
-    //void addNode(uint8_t nodeID);
 protected:
     QVariant getNodeData(uint8_t, NodeColumns);
     int32_t getNodeRow(uint8_t _node);

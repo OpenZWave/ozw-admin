@@ -8,6 +8,7 @@
 #include "websocketiodevice.h"
 
 
+
 class QTOPENZWAVESHARED_EXPORT QTOpenZwave : public QObject
 {
     Q_OBJECT

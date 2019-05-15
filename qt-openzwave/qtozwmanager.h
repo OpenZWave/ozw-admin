@@ -9,6 +9,10 @@
 
 void setupOZW();
 
+enum QTOZW_UserRoles {
+    ModelDataChanged = Qt::UserRole
+};
+
 
 namespace OpenZWave {
 
@@ -91,6 +95,9 @@ public slots:
     void pvt_ozwNotification(OpenZWave::Notification::NotificationCode event);
     void pvt_ozwUserAlert(OpenZWave::Notification::UserAlertNotification event);
     void pvt_manufacturerSpecificDBReady();
+
+    void pvt_nodeModelDataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight, const QVector<int> &roles);
+    void pvt_valueModelDataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight, const QVector<int> &roles);
 
 private:
     bool Lock();

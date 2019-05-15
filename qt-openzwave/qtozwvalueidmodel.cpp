@@ -1,7 +1,34 @@
 #include <QDebug>
 #include <QBitArray>
+#include <QDataStream>
+
 
 #include "qtozwvalueidmodel.h"
+#include "qtozwmanager.h"
+
+
+QDataStream & operator<<( QDataStream & dataStream, const QTOZW_ValueIDList & list )
+{
+    dataStream << list.values << list.labels << list.selectedItem;
+    return dataStream;
+}
+
+QDataStream & operator>>(QDataStream & dataStream, QTOZW_ValueIDList & list) {
+    dataStream >> list.values >> list.labels >> list.selectedItem;
+    return dataStream;
+}
+
+QDataStream & operator<<( QDataStream & dataStream, const QTOZW_ValueIDBitSet & list )
+{
+    dataStream << list.values << list.mask << list.label << list.help;
+    return dataStream;
+}
+
+QDataStream & operator>>(QDataStream & dataStream, QTOZW_ValueIDBitSet & list) {
+    dataStream >> list.values >> list.mask >> list.label >> list.help;
+    return dataStream;
+}
+
 
 QTOZW_ValueIds::QTOZW_ValueIds(QObject *parent)
     : QAbstractTableModel(parent)
@@ -42,8 +69,18 @@ QVariant QTOZW_ValueIds::headerData(int section, Qt::Orientation orientation, in
         switch (static_cast<ValueIdColumns>(section)) {
             case Label:
                 return tr("Label");
+
             case Value:
                 return tr("Value");
+
+            case Units:
+                return tr("Units");
+
+            case Min:
+                return tr("Min");
+
+            case Max:
+                return tr("Max");
 
             case Type:
                 return tr("Type");
@@ -81,13 +118,29 @@ QVariant QTOZW_ValueIds::headerData(int section, Qt::Orientation orientation, in
 Qt::ItemFlags QTOZW_ValueIds::flags(const QModelIndex &index) const {
     if (!index.isValid())
         return Qt::ItemIsEnabled;
-
-    return QAbstractTableModel::flags(index) | Qt::ItemIsEditable;
+    switch (static_cast<ValueIdColumns>(index.column())) {
+        case Value:
+            return QAbstractTableModel::flags(index) | Qt::ItemIsEditable;
+        default:
+            return QAbstractTableModel::flags(index);
+    }
 }
 bool QTOZW_ValueIds::setData(const QModelIndex &index, const QVariant &value, int role) {
-    Q_UNUSED(index);
-    Q_UNUSED(value);
-    Q_UNUSED(role);
+    if (role != Qt::EditRole) {
+        return false;
+    }
+    switch (static_cast<ValueIdColumns>(index.column())) {
+        case Value:
+            if (this->m_valueData[index.row()][static_cast<ValueIdColumns>(index.column())] != value) {
+                this->m_valueData[index.row()][static_cast<ValueIdColumns>(index.column())] = value;
+                QVector<int> roles;
+                roles << Qt::DisplayRole << QTOZW_UserRoles::ModelDataChanged;
+                this->dataChanged(index, index, roles);
+            }
+        break;
+        default:
+            return false;
+    }
     return true;
 }
 
@@ -145,8 +198,10 @@ void QTOZW_ValueIds_internal::setValueData(uint64_t _vidKey, QTOZW_ValueIds::Val
         qWarning() << "setValueData: Value " << _vidKey << " does not exist";
         return;
     }
-    this->m_valueData[row][column] = data;
-    this->dataChanged(this->createIndex(row, column), this->createIndex(row, column));
+    if (this->m_valueData[row][column] != data) {
+        this->m_valueData[row][column] = data;
+        this->dataChanged(this->createIndex(row, column), this->createIndex(row, column));
+    }
 }
 
 void QTOZW_ValueIds_internal::setValueFlags(uint64_t _vidKey, QTOZW_ValueIds::ValueIDFlags _flags, bool _value)
@@ -157,7 +212,10 @@ void QTOZW_ValueIds_internal::setValueFlags(uint64_t _vidKey, QTOZW_ValueIds::Va
         return;
     }
     QBitArray flag = this->m_valueData[row][QTOZW_ValueIds::ValueFlags].toBitArray();
-    flag.setBit(_flags, _value);
-    this->m_valueData[row][QTOZW_ValueIds::ValueFlags] = flag;
-    this->dataChanged(this->createIndex(row, QTOZW_ValueIds::ValueFlags), this->createIndex(row, QTOZW_ValueIds::ValueFlags));
+    if (flag.at(_flags) != _value) {
+        flag.setBit(_flags, _value);
+        this->m_valueData[row][QTOZW_ValueIds::ValueFlags] = flag;
+        this->dataChanged(this->createIndex(row, QTOZW_ValueIds::ValueFlags), this->createIndex(row, QTOZW_ValueIds::ValueFlags));
+
+    }
 }

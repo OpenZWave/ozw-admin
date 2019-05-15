@@ -3,6 +3,31 @@
 
 #include <QObject>
 #include <QAbstractItemModel>
+#include <QAbstractListModel>
+#include <QBitArray>
+
+
+struct QTOZW_ValueIDList {
+    QList< uint32_t > values;
+    QStringList labels;
+    QString selectedItem;
+};
+QDataStream & operator<<( QDataStream & dataStream, const QTOZW_ValueIDList & list );
+QDataStream & operator>>(QDataStream & dataStream, QTOZW_ValueIDList & list);
+
+Q_DECLARE_METATYPE(QTOZW_ValueIDList);
+
+struct QTOZW_ValueIDBitSet {
+    QBitArray values;
+    QBitArray mask;
+    QMap<uint32_t, QString> label;
+    QMap<uint32_t, QString> help;
+};
+QDataStream & operator<<( QDataStream & dataStream, const QTOZW_ValueIDBitSet & list );
+QDataStream & operator>>(QDataStream & dataStream, QTOZW_ValueIDBitSet & list);
+
+Q_DECLARE_METATYPE(QTOZW_ValueIDBitSet);
+
 
 class QTOZW_ValueIds : public QAbstractTableModel {
     Q_OBJECT
@@ -10,6 +35,9 @@ public:
     enum ValueIdColumns {
         Label,
         Value,
+        Units,
+        Min,
+        Max,
         Type,
         Instance,
         CommandClass,
@@ -46,6 +74,11 @@ public:
     };
     Q_ENUM(ValueIdTypes)
     enum ValueIDFlags {
+        ReadOnly,
+        WriteOnly,
+        ValueSet,
+        ValuePolled,
+        ChangeVerified,
         FlagCount
     };
     Q_ENUM(ValueIDFlags)
