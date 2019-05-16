@@ -93,7 +93,7 @@ protected:
     QVariant getValueData(uint64_t, ValueIdColumns);
     int32_t getValueRow(uint64_t _node);
 
-    QHash<int32_t, QHash<ValueIdColumns, QVariant> > m_valueData;
+    QMap<int32_t, QMap<ValueIdColumns, QVariant> > m_valueData;
 };
 
 class QTOZW_ValueIds_internal : public QTOZW_ValueIds {
@@ -104,7 +104,9 @@ public Q_SLOTS:
     void addValue(uint64_t _vidKey);
     void setValueData(uint64_t _vidKey, QTOZW_ValueIds::ValueIdColumns column, QVariant data);
     void setValueFlags(uint64_t _vidKey, QTOZW_ValueIds::ValueIDFlags _flags, bool _value);
-
+    void delValue(uint64_t _vidKey);
+    void delNodeValues(uint8_t _node);
+    void resetModel();
 };
 
 

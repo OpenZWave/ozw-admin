@@ -40,6 +40,7 @@ QTOZWManager *QTOpenZwave::GetManager
         roles << Qt::DisplayRole << Qt::BackgroundRole << Qt::EditRole;
         this->m_srcNode->enableRemoting(this->m_manager->getNodeModel(), "nodeModel", roles);
         this->m_srcNode->enableRemoting(this->m_manager->getValueModel(), "valueModel", roles);
+        this->m_srcNode->enableRemoting(this->m_manager->getAssociationModel(), "associationModel", roles);
     }
     return this->m_manager;
 }

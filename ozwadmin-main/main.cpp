@@ -66,6 +66,11 @@ int main(int argc, char *argv[])
     view2.setModel(manager->getValueModel());
     view2.show();
 
+    QTreeView view3;
+    view3.setWindowTitle(QStringLiteral("Associations"));
+    view3.resize(640,480);
+    view3.setModel(manager->getAssociationModel());
+    view3.show();
 
 
     a.exec();

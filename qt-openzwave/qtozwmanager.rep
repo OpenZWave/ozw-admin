@@ -8,6 +8,9 @@ class QTOZWManager {
     SLOT(bool requestNodeState(uint8_t _node))
     SLOT(bool requestNodeDynamic(uint8_t _node))
     SIGNAL(valueAdded(uint64_t vidKey))
+    SIGNAL(valueRemoved(uint64_t vidKey))
+    SIGNAL(valueChanged(uint64_t vidKey))
+    SIGNAL(valueRefreshed(uint64_t vidKey))
     SIGNAL(nodeNew(uint8_t node))
     SIGNAL(nodeAdded(uint8_t node))
     SIGNAL(nodeRemoved(uint8_t node))
@@ -36,6 +39,7 @@ class QTOZWManager {
     ENUM QTOZWErrorCodes {
         homeId_Invalid,
         nodeId_Invalid,
+        valueIDKey_Invalid,
         Manager_Not_Started,
         OZWException,
         setupFailed,

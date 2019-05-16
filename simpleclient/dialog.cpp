@@ -47,6 +47,7 @@ Dialog::Dialog(QWidget *parent) :
 //    node.setHeartbeatInterval(2000);
     model.reset(node.acquireModel(QStringLiteral("nodeModel")));
     valuemodel.reset(node.acquireModel(QStringLiteral("valueModel")));
+    assocmodel.reset(node.acquireModel(QStringLiteral("associationModel")));
     manager.reset(node.acquire<QTOZWManagerReplica>(QStringLiteral("Manager")));
     QObject::connect(manager.data(), &QTOZWManagerReplica::stateChanged, this, &Dialog::managerReady);
 //    manager->waitForSource(5000);
@@ -55,6 +56,12 @@ Dialog::Dialog(QWidget *parent) :
     valuetree->resize(640,480);
     valuetree->setModel(valuemodel.data());
     valuetree->show();
+
+    QTreeView *atree = new QTreeView();
+    atree->resize(640,480);
+    atree->setModel(assocmodel.data());
+    atree->show();
+
     qDebug() << node.lastError();
 
 

@@ -31,6 +31,7 @@ public:
         NodeProductID,
         NodeBaudRate,
         NodeVersion,
+        NodeGroups,
         NodeFlags,
         NodeCount
     };
@@ -63,7 +64,7 @@ protected:
     QVariant getNodeData(uint8_t, NodeColumns);
     int32_t getNodeRow(uint8_t _node);
 
-    QHash<int32_t, QHash<NodeColumns, QVariant> > m_nodeData;
+    QMap<int32_t, QMap<NodeColumns, QVariant> > m_nodeData;
 };
 
 class QTOZW_Nodes_internal : public QTOZW_Nodes {
@@ -74,6 +75,8 @@ public Q_SLOTS:
     void addNode(uint8_t _nodeID);
     void setNodeData(uint8_t _nodeID, QTOZW_Nodes::NodeColumns column, QVariant data);
     void setNodeFlags(uint8_t _nodeID, QTOZW_Nodes::nodeFlags _flags, bool _value);
+    void delNode(uint8_t _nodeID);
+    void resetModel();
 
 };
 

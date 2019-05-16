@@ -29,6 +29,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         qtopenzwave.cpp \
+    qtozwassociations.cpp \
     qtozwmanager.cpp \
     qtozwnotification.cpp \
     websocketiodevice.cpp \
@@ -38,6 +39,7 @@ SOURCES += \
 HEADERS += \
         qtopenzwave.h \
         qt-openzwave_global.h \  \
+        qtozwassociations.h \
         websocketiodevice.h \
         qtozwmanager.h \
         qtozwnotification.h \

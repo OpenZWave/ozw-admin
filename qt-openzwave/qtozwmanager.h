@@ -6,6 +6,7 @@
 #include "qtozwnotification.h"
 #include "qtozwnodemodel.h"
 #include "qtozwvalueidmodel.h"
+#include "qtozwassociations.h"
 
 void setupOZW();
 
@@ -31,6 +32,7 @@ public:
     bool Start(QString SerialPort);
     QTOZW_Nodes *getNodeModel();
     QTOZW_ValueIds *getValueModel();
+    QTOZW_Associations *getAssociationModel();
 
     bool refreshNodeInfo(uint8_t _node);
     bool requestNodeState(uint8_t _node);
@@ -107,6 +109,7 @@ private:
 
     bool checkHomeId();
     bool checkNodeId(uint8_t _node);
+    bool checkValueKey(uint64_t _vidKey);
     bool convertValueID(uint64_t vidKey);
 
 
@@ -114,9 +117,11 @@ private:
     OpenZWave::Manager *m_manager;
     QTOZW_Nodes_internal *m_nodeModel;
     QTOZW_ValueIds_internal *m_valueModel;
+    QTOZW_Associations_internal *m_associationsModel;
     pthread_mutex_t m_manager_mutex;
     QVector<uint8_t> m_validNodes;
     QVector<uint64_t> m_validValues;
+    QMap<uint8_t, QMap<uint8_t, bool > > m_associationDefaultsSet;
 
 };
 

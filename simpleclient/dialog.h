@@ -31,6 +31,8 @@ private:
     QRemoteObjectNode node;
     QScopedPointer<QAbstractItemModelReplica> model;
     QScopedPointer<QAbstractItemModelReplica> valuemodel;
+    QScopedPointer<QAbstractItemModelReplica> assocmodel;
+
     QScopedPointer<QTOZWManagerReplica> manager;
     WebSocketIODevice test;
 };
