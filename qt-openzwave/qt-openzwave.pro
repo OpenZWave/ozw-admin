@@ -57,11 +57,6 @@ unix {
     INSTALLS += target
 }
 
-remote {
-  TARGET = qt-openzwave_remote
-  DEFINES += BUILD_REP
-}
-
 macx {
     QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.14
 }

@@ -55,7 +55,7 @@
 
 #include "qtozwmanager.h"
 
-#include "dialog.h"
+#include "mainwindow.h"
 
 
 
@@ -75,8 +75,10 @@ int main(int argc, char **argv)
 
     QApplication app(argc, argv);
 
-
-    Dialog window;
+    MainWindow window;
+    window.resize(640, 480);
     window.show();
+    window.start();
+
     return app.exec();
 }

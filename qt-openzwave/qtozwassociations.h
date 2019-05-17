@@ -26,7 +26,7 @@ public:
 
     Q_ENUM(associationFlags)
 
-    friend class QTOZWManager;
+    friend class QTOZWManager_Internal;
 
     QTOZW_Associations(QObject *parent=nullptr);
     int rowCount(const QModelIndex &parent) const;

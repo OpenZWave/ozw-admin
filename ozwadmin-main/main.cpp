@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
     QTOpenZwave *ozw = new QTOpenZwave();
     QTOZWManager *manager = ozw->GetManager();
     qDebug() << manager;
-
+#if 0
     QTreeView view;
     view.setWindowTitle(QStringLiteral("LocalView"));
     view.resize(640,480);
@@ -71,7 +71,7 @@ int main(int argc, char *argv[])
     view3.resize(640,480);
     view3.setModel(manager->getAssociationModel());
     view3.show();
-
+#endif
 
     a.exec();
 #if 0

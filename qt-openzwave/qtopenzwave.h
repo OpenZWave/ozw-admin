@@ -20,8 +20,6 @@ private Q_SLOT:
     void newWSConnection();
 
 private:
-    WebSocketServer *m_websockserver;
-    QRemoteObjectHost *m_srcNode;
     QTOZWManager *m_manager;
 };
 

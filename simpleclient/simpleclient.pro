@@ -1,7 +1,8 @@
 QT += widgets remoteobjects websockets
 
 SOURCES = main.cpp \
-    dialog.cpp
+    mainwindow.cpp \
+    startup.cpp
 
 CONFIG   -= app_bundle
 DEFINES  += remote
@@ -22,7 +23,9 @@ macx {
 }
 
 FORMS += \
-    dialog.ui
+    mainwindow.ui \
+    startup.ui
 
 HEADERS += \
-    dialog.h
+    mainwindow.h \
+    startup.h

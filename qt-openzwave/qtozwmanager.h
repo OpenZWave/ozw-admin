@@ -2,7 +2,9 @@
 #define QTOZWMANAGER_H
 
 #include <QObject>
+#include <QUrl>
 #include "rep_qtozwmanager_source.h"
+#include "rep_qtozwmanager_replica.h"
 #include "qtozwnotification.h"
 #include "qtozwnodemodel.h"
 #include "qtozwvalueidmodel.h"
@@ -23,17 +25,20 @@ class Options;
 class Notification;
 }
 
-class QTOZWManager : public QTOZWManagerSimpleSource
+
+class QTOZWManager_Internal : public QTOZWManagerSimpleSource
 {
+    Q_OBJECT
 public:
     friend class OZWNotification;
-    QTOZWManager();
+    QTOZWManager_Internal(QObject *parent = nullptr);
 
-    bool Start(QString SerialPort);
     QTOZW_Nodes *getNodeModel();
     QTOZW_ValueIds *getValueModel();
     QTOZW_Associations *getAssociationModel();
 
+public Q_SLOTS:
+    bool open(QString serialPort);
     bool refreshNodeInfo(uint8_t _node);
     bool requestNodeState(uint8_t _node);
     bool requestNodeDynamic(uint8_t _node);
@@ -68,7 +73,6 @@ public:
     bool downloadLatestMFSRevision();
 
 
-public slots:
     /* these slots are called from our OZWNotification Class. Applications should not call them */
     void pvt_valueAdded(uint64_t vidKey);
     void pvt_valueRemoved(uint64_t vidKey);
@@ -124,5 +128,115 @@ private:
     QMap<uint8_t, QMap<uint8_t, bool > > m_associationDefaultsSet;
 
 };
+
+
+
+class QTOZWManager : public QObject {
+    Q_OBJECT
+public:
+    enum connectionType {
+        Local,
+        Remote,
+        Invalid
+    };
+    Q_ENUM(connectionType)
+
+    QTOZWManager(QObject *parent = nullptr);
+    bool initilizeBase();
+    bool initilizeSource();
+    bool initilizeReplica(QUrl remoteaddress);
+
+    /* OpenZWave::Manager methods */
+    bool open(QString serialPort);
+    bool refreshNodeInfo(uint8_t _node);
+    bool requestNodeState(uint8_t _node);
+    bool requestNodeDynamic(uint8_t _node);
+
+    bool setConfigParam(uint8_t _node, uint8_t _param, int32_t _value, uint8_t const _size);
+    void requestConfigParam(uint8_t _node, uint8_t _param);
+    void requestAllConfigParam(uint8_t _node);
+
+    void softResetController();
+    void hardResetController();
+
+    bool cancelControllerCommand();
+
+    void testNetworkNode(uint8_t _node, uint32_t const _count);
+    void testNetwork(uint32_t const _count);
+    void healNetworkNode(uint8_t _node, bool _doRR);
+    void healNetwork(bool _doRR);
+    bool addNode(bool _doSecure);
+    bool removeNode();
+    bool removeFailedNode(uint8_t _node);
+    bool hasNodeFailed(uint8_t _node);
+    bool requestNodeNeighborUpdate(uint8_t _node);
+    bool assignReturnRoute(uint8_t _node);
+    bool deleteAllReturnRoute(uint8_t _node);
+    bool sendNodeInfomation(uint8_t _node);
+    bool replaceFailedNode(uint8_t _node);
+    bool requestNetworkUpdate(uint8_t _node);
+
+    bool checkLatestConfigFileRevision(uint8_t const _node);
+    bool checkLatestMFSRevision();
+    bool downloadLatestConfigFileRevision(uint8_t const _node);
+    bool downloadLatestMFSRevision();
+
+
+Q_SIGNALS:
+    void ready();
+    void valueAdded(uint64_t vidKey);
+    void valueRemoved(uint64_t vidKey);
+    void valueChanged(uint64_t vidKey);
+    void valueRefreshed(uint64_t vidKey);
+    void nodeNew(uint8_t node);
+    void nodeAdded(uint8_t node);
+    void nodeRemoved(uint8_t node);
+    void nodeReset(uint8_t node);
+    void nodeNaming(uint8_t node);
+    void nodeEvent(uint8_t node, uint8_t event);
+    void nodeProtocolInfo(uint8_t node);
+    void nodeEssentialNodeQueriesComplete(uint8_t node);
+    void nodeQueriesComplete(uint8_t node);
+    void driverReady(uint32_t homeID);
+    void driverFailed(uint32_t homeID);
+    void driverReset(uint32_t homeID);
+    void driverRemoved(uint32_t homeID);
+    void driverAllNodesQueriedSomeDead();
+    void driverAllNodesQueried();
+    void driverAwakeNodesQueried();
+    void controllerCommand(uint8_t command);
+//    void ozwNotification(OpenZWave::Notification::NotificationCode event);
+// void ozwUserAlert(OpenZWave::Notification::UserAlertNotification event);
+    void manufacturerSpecificDBReady();
+
+    void starting();
+    void started(uint32_t homeID);
+    void stopped(uint32_t homeID);
+//    void error(QTOZWErrorCodes errorcode);
+
+
+private Q_SLOTS:
+    void onReplicaError(QRemoteObjectNode::ErrorCode);
+    void onSourceError(QRemoteObjectHost::ErrorCode);
+    void onManagerStateChange(QRemoteObjectReplica::State);
+    void onNodeStateChange(QRemoteObjectReplica::State);
+    void onValueStateChange(QRemoteObjectReplica::State);
+    void onAssociationStateChange(QRemoteObjectReplica::State);
+private:
+
+    void checkReplicaReady();
+    connectionType m_connectionType;
+    QRemoteObjectNode *m_replicaNode;
+    QRemoteObjectHost *m_sourceNode;
+    QTOZWManager_Internal *d_ptr_internal;
+    QTOZWManagerReplica *d_ptr_replica;
+    QRemoteObjectReplica::State m_managerState;
+    QRemoteObjectReplica::State m_nodeState;
+    QRemoteObjectReplica::State m_valuesState;
+    QRemoteObjectReplica::State m_associationsState;
+
+};
+
+
 
 #endif // QTOZWMANAGER_H
