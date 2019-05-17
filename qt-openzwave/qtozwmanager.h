@@ -143,8 +143,14 @@ public:
 
     QTOZWManager(QObject *parent = nullptr);
     bool initilizeBase();
-    bool initilizeSource();
+    bool initilizeSource(bool enableServer);
     bool initilizeReplica(QUrl remoteaddress);
+
+    bool isRunning();
+
+    QAbstractItemModel *getNodeModel();
+    QAbstractItemModel *getValueModel();
+    QAbstractItemModel *getAssociationModel();
 
     /* OpenZWave::Manager methods */
     bool open(QString serialPort);
@@ -219,22 +225,30 @@ private Q_SLOTS:
     void onReplicaError(QRemoteObjectNode::ErrorCode);
     void onSourceError(QRemoteObjectHost::ErrorCode);
     void onManagerStateChange(QRemoteObjectReplica::State);
-    void onNodeStateChange(QRemoteObjectReplica::State);
-    void onValueStateChange(QRemoteObjectReplica::State);
-    void onAssociationStateChange(QRemoteObjectReplica::State);
+    void onNodeInitialized();
+    void onValueInitialized();
+    void onAssociationInitialized();
+    void setStarted();
+    void setStopped();
 private:
 
     void checkReplicaReady();
+    void connectSignals();
     connectionType m_connectionType;
     QRemoteObjectNode *m_replicaNode;
     QRemoteObjectHost *m_sourceNode;
     QTOZWManager_Internal *d_ptr_internal;
     QTOZWManagerReplica *d_ptr_replica;
     QRemoteObjectReplica::State m_managerState;
-    QRemoteObjectReplica::State m_nodeState;
-    QRemoteObjectReplica::State m_valuesState;
-    QRemoteObjectReplica::State m_associationsState;
+    bool m_nodeState;
+    bool m_valuesState;
+    bool m_associationsState;
 
+    QAbstractItemModel *m_nodeModel;
+    QAbstractItemModel *m_valueModel;
+    QAbstractItemModel *m_associationModel;
+
+    bool m_running;
 };
 
 

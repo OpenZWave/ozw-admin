@@ -1,5 +1,7 @@
 #include <unistd.h>
 #include <QDebug>
+#include <QAbstractItemModel>
+#include <QAbstractItemModelReplica>
 #include "qtozwmanager.h"
 #include "qtozwnodemodel.h"
 #include "qtozwassociations.h"
@@ -600,7 +602,8 @@ bool QTOZWManager_Internal::convertValueID(uint64_t vidKey) {
             }
             vidbs.values.resize(bssize * 8);
             qDebug() << vidbs.values.size();
-            for (uint8_t i = 0; i < 32; ++i) {
+            for (uint8_t i = 0; i < bssize * 8; ++i) {
+                qDebug() << "doing " << i;
                 bool value;
                 this->m_manager->GetValueAsBitSet(vid, i, &value);
                 vidbs.values[i] = value;
@@ -1182,24 +1185,41 @@ QTOZWManager::QTOZWManager(QObject *parent)
 bool QTOZWManager::initilizeBase() {
     return true;
 }
-bool QTOZWManager::initilizeSource() {
+bool QTOZWManager::initilizeSource(bool enableServer) {
+    initilizeBase();
+    this->m_connectionType = connectionType::Local;
     this->d_ptr_internal = new QTOZWManager_Internal(this);
-    this->m_sourceNode = new QRemoteObjectHost(QUrl(QStringLiteral("tcp://0.0.0.0:1983")), this);
-    QObject::connect(this->m_replicaNode, &QRemoteObjectHost::error, this, &QTOZWManager::onSourceError);
-    this->m_sourceNode->setHeartbeatInterval(1000);
-    this->m_sourceNode->enableRemoting<QTOZWManagerSourceAPI>(this->d_ptr_internal);
-    QVector<int> roles;
-    roles << Qt::DisplayRole << Qt::BackgroundRole << Qt::EditRole;
-    this->m_sourceNode->enableRemoting(this->d_ptr_internal->getNodeModel(), "QTOZW_nodeModel", roles);
-    this->m_sourceNode->enableRemoting(this->d_ptr_internal->getValueModel(), "QTOZW_valueModel", roles);
-    this->m_sourceNode->enableRemoting(this->d_ptr_internal->getAssociationModel(), "QTOZW_associationModel", roles);
+    if (enableServer) {
+        this->m_sourceNode = new QRemoteObjectHost(QUrl(QStringLiteral("tcp://0.0.0.0:1983")), this);
+        QObject::connect(this->m_sourceNode, &QRemoteObjectHost::error, this, &QTOZWManager::onSourceError);
+        this->m_sourceNode->setHeartbeatInterval(1000);
+        this->m_sourceNode->enableRemoting<QTOZWManagerSourceAPI>(this->d_ptr_internal);
+        QVector<int> roles;
+        roles << Qt::DisplayRole << Qt::BackgroundRole << Qt::EditRole;
+        this->m_sourceNode->enableRemoting(this->d_ptr_internal->getNodeModel(), "QTOZW_nodeModel", roles);
+        this->m_sourceNode->enableRemoting(this->d_ptr_internal->getValueModel(), "QTOZW_valueModel", roles);
+        this->m_sourceNode->enableRemoting(this->d_ptr_internal->getAssociationModel(), "QTOZW_associationModel", roles);
+    }
+    connectSignals();
+    emit this->ready();
     return true;
 }
 
 bool QTOZWManager::initilizeReplica(QUrl remote) {
+    initilizeBase();
+    this->m_connectionType = connectionType::Remote;
     this->m_replicaNode = new QRemoteObjectNode(this);
     QObject::connect(this->m_replicaNode, &QRemoteObjectNode::error, this, &QTOZWManager::onReplicaError);
-    this->m_replicaNode->connectToNode(remote);
+    if (this->m_replicaNode->connectToNode(remote)) {
+        this->d_ptr_replica = this->m_replicaNode->acquire<QTOZWManagerReplica>("QTOZWManager");
+        QObject::connect(this->d_ptr_replica, &QTOZWManagerReplica::stateChanged, this, &QTOZWManager::onManagerStateChange);
+        this->m_nodeModel = this->m_replicaNode->acquireModel("QTOZW_nodeModel");
+        QObject::connect(qobject_cast<QAbstractItemModelReplica*>(this->m_nodeModel), &QAbstractItemModelReplica::initialized, this, &QTOZWManager::onNodeInitialized);
+        this->m_valueModel= this->m_replicaNode->acquireModel("QTOZW_valueModel");
+        QObject::connect(qobject_cast<QAbstractItemModelReplica*>(this->m_valueModel), &QAbstractItemModelReplica::initialized, this, &QTOZWManager::onValueInitialized);
+        this->m_associationModel= this->m_replicaNode->acquireModel("QTOZW_associationModel");
+        QObject::connect(qobject_cast<QAbstractItemModelReplica*>(this->m_associationModel), &QAbstractItemModelReplica::initialized, this, &QTOZWManager::onAssociationInitialized);
+    }
     return true;
 }
 
@@ -1217,56 +1237,116 @@ void QTOZWManager::onManagerStateChange(QRemoteObjectReplica::State state) {
     this->m_managerState = state;
     this->checkReplicaReady();
 }
-void QTOZWManager::onNodeStateChange(QRemoteObjectReplica::State state) {
-    this->m_nodeState = state;
+void QTOZWManager::onNodeInitialized() {
+    this->m_nodeState = true;
     this->checkReplicaReady();
 }
-void QTOZWManager::onValueStateChange(QRemoteObjectReplica::State state) {
-    this->m_valuesState = state;
+void QTOZWManager::onValueInitialized() {
+    this->m_valuesState = true;
     this->checkReplicaReady();
 }
-void QTOZWManager::onAssociationStateChange(QRemoteObjectReplica::State state) {
-    this->m_associationsState = state;
+void QTOZWManager::onAssociationInitialized() {
+    this->m_associationsState = true;
     this->checkReplicaReady();
 }
 
 void QTOZWManager::checkReplicaReady() {
     if ((this->m_managerState == QRemoteObjectReplica::State::Valid) &&
-            (this->m_nodeState == QRemoteObjectReplica::State::Valid) &&
-                (this->m_valuesState == QRemoteObjectReplica::State::Valid) &&
-                    (this->m_associationsState == QRemoteObjectReplica::State::Valid)) {
+            (this->m_nodeState == true) &&
+                (this->m_valuesState == true) &&
+                    (this->m_associationsState == true)) {
         /* have to connect all the d_ptr SIGNALS to our SIGNALS now */
-        QObject::connect(this->d_ptr_replica, &QTOZWManagerReplica::valueAdded, this, &QTOZWManager::valueAdded);
-        QObject::connect(this->d_ptr_replica, &QTOZWManagerReplica::valueRemoved, this, &QTOZWManager::valueRemoved);
-        QObject::connect(this->d_ptr_replica, &QTOZWManagerReplica::valueChanged, this, &QTOZWManager::valueChanged);
-        QObject::connect(this->d_ptr_replica, &QTOZWManagerReplica::valueRefreshed, this, &QTOZWManager::valueRefreshed);
-        QObject::connect(this->d_ptr_replica, &QTOZWManagerReplica::nodeNew, this, &QTOZWManager::nodeNew);
-        QObject::connect(this->d_ptr_replica, &QTOZWManagerReplica::nodeAdded, this, &QTOZWManager::nodeAdded);
-        QObject::connect(this->d_ptr_replica, &QTOZWManagerReplica::nodeRemoved, this, &QTOZWManager::nodeRemoved);
-        QObject::connect(this->d_ptr_replica, &QTOZWManagerReplica::nodeReset, this, &QTOZWManager::nodeReset);
-        QObject::connect(this->d_ptr_replica, &QTOZWManagerReplica::nodeNaming, this, &QTOZWManager::nodeNaming);
-        QObject::connect(this->d_ptr_replica, &QTOZWManagerReplica::nodeEvent, this, &QTOZWManager::nodeEvent);
-        QObject::connect(this->d_ptr_replica, &QTOZWManagerReplica::nodeProtocolInfo, this, &QTOZWManager::nodeProtocolInfo);
-        QObject::connect(this->d_ptr_replica, &QTOZWManagerReplica::nodeEssentialNodeQueriesComplete, this, &QTOZWManager::nodeEssentialNodeQueriesComplete);
-        QObject::connect(this->d_ptr_replica, &QTOZWManagerReplica::nodeQueriesComplete, this, &QTOZWManager::nodeQueriesComplete);
-        QObject::connect(this->d_ptr_replica, &QTOZWManagerReplica::driverReady, this, &QTOZWManager::driverReady);
-        QObject::connect(this->d_ptr_replica, &QTOZWManagerReplica::driverFailed, this, &QTOZWManager::driverFailed);
-        QObject::connect(this->d_ptr_replica, &QTOZWManagerReplica::driverReset, this, &QTOZWManager::driverReset);
-        QObject::connect(this->d_ptr_replica, &QTOZWManagerReplica::driverRemoved, this, &QTOZWManager::driverRemoved);
-        QObject::connect(this->d_ptr_replica, &QTOZWManagerReplica::driverAllNodesQueriedSomeDead, this, &QTOZWManager::driverAllNodesQueriedSomeDead);
-        QObject::connect(this->d_ptr_replica, &QTOZWManagerReplica::driverAllNodesQueried, this, &QTOZWManager::driverAllNodesQueried);
-        QObject::connect(this->d_ptr_replica, &QTOZWManagerReplica::driverAwakeNodesQueried, this, &QTOZWManager::driverAwakeNodesQueried);
-        QObject::connect(this->d_ptr_replica, &QTOZWManagerReplica::controllerCommand, this, &QTOZWManager::controllerCommand);
-//        QObject::connect(this->d_ptr_replica, &QTOZWManagerReplica::ozwNotification, this, &QTOZWManager::ozwNotification);
-//        QObject::connect(this->d_ptr_replica, &QTOZWManagerReplica::ozwUserAlert, this, &QTOZWManager::ozwUserAlert);
-
-        QObject::connect(this->d_ptr_replica, &QTOZWManagerReplica::manufacturerSpecificDBReady, this, &QTOZWManager::manufacturerSpecificDBReady);
-        QObject::connect(this->d_ptr_replica, &QTOZWManagerReplica::starting, this, &QTOZWManager::starting);
-        QObject::connect(this->d_ptr_replica, &QTOZWManagerReplica::started, this, &QTOZWManager::started);
-        QObject::connect(this->d_ptr_replica, &QTOZWManagerReplica::stopped, this, &QTOZWManager::stopped);
-//        QObject::connect(this->d_ptr_replica, &QTOZWManagerReplica::error, this, &QTOZWManager::error);
+        connectSignals();
         emit this->ready();
     }
+}
+
+bool QTOZWManager::isRunning() {
+    return this->m_running;
+}
+
+void QTOZWManager::setStarted() {
+    qDebug() << "setStarted";
+    this->m_running = true;
+}
+
+void QTOZWManager::setStopped() {
+    this->m_running = false;
+}
+
+QAbstractItemModel *QTOZWManager::getNodeModel() {
+    if (this->m_connectionType == connectionType::Local) {
+        return this->d_ptr_internal->getNodeModel();
+    } else {
+        return this->m_nodeModel;
+    }
+}
+QAbstractItemModel *QTOZWManager::getValueModel() {
+    if (this->m_connectionType == connectionType::Local) {
+        return this->d_ptr_internal->getValueModel();
+    } else {
+        return this->m_valueModel;
+    }
+
+}
+QAbstractItemModel *QTOZWManager::getAssociationModel() {
+    if (this->m_connectionType == connectionType::Local) {
+        return this->d_ptr_internal->getAssociationModel();
+    } else {
+        return this->m_associationModel;
+    }
+}
+
+
+
+
+#define CONNECT_DPTR(x)     if (this->m_connectionType == connectionType::Local) { \
+        QObject::connect(this->d_ptr_internal, &QTOZWManager_Internal::x, this, &QTOZWManager::x);\
+    } else { \
+        QObject::connect(this->d_ptr_replica, &QTOZWManagerReplica::x, this, &QTOZWManager::x); \
+    };
+
+#define CONNECT_DPTR1(x, y)     if (this->m_connectionType == connectionType::Local) { \
+        QObject::connect(this->d_ptr_internal, &QTOZWManager_Internal::x, this, &QTOZWManager::y);\
+    } else { \
+        QObject::connect(this->d_ptr_replica, &QTOZWManagerReplica::x, this, &QTOZWManager::y); \
+    };
+
+
+void QTOZWManager::connectSignals() {
+    CONNECT_DPTR(valueAdded);
+    CONNECT_DPTR(valueRemoved);
+    CONNECT_DPTR(valueChanged);
+    CONNECT_DPTR(valueRefreshed);
+    CONNECT_DPTR(nodeNew);
+    CONNECT_DPTR(nodeAdded);
+    CONNECT_DPTR(nodeRemoved);
+    CONNECT_DPTR(nodeReset);
+    CONNECT_DPTR(nodeNaming);
+    CONNECT_DPTR(nodeEvent);
+    CONNECT_DPTR(nodeProtocolInfo);
+    CONNECT_DPTR(nodeEssentialNodeQueriesComplete);
+    CONNECT_DPTR(nodeQueriesComplete);
+    CONNECT_DPTR(driverReady);
+    CONNECT_DPTR(driverFailed);
+    CONNECT_DPTR(driverReset);
+    CONNECT_DPTR(driverRemoved);
+    CONNECT_DPTR(driverAllNodesQueriedSomeDead);
+    CONNECT_DPTR(driverAllNodesQueried);
+    CONNECT_DPTR(driverAwakeNodesQueried);
+    CONNECT_DPTR(controllerCommand);
+//        CONNECT_DPTR(ozwNotification);
+//        CONNECT_DPTR(ozwUserAlert);
+    CONNECT_DPTR(manufacturerSpecificDBReady);
+    CONNECT_DPTR(starting);
+    CONNECT_DPTR(started);
+    CONNECT_DPTR(stopped);
+//        CONNECT_DPTR(error);
+
+    /* some extra internal Signals we need to track */
+    CONNECT_DPTR1(started, setStarted);
+    CONNECT_DPTR1(stopped, setStopped)
+
 }
 
 #define CALL_DPTR(x) if (this->m_connectionType == QTOZWManager::connectionType::Local) this->d_ptr_internal->x; else this->d_ptr_replica->x;

@@ -7,7 +7,7 @@ SOURCES = main.cpp \
 CONFIG   -= app_bundle
 DEFINES  += remote
 
-LIBS += ../qt-openzwave/libqt-openzwave_remote.a
+LIBS += ../qt-openzwave/libqt-openzwave.a ../open-zwave/libopenzwave.a -lresolv
 INCLUDEPATH += ../qt-openzwave ../open-zwave/cpp/src
 
 REPC_REPLICA = ../qt-openzwave/qtozwmanager.rep
