@@ -32,6 +32,7 @@ SOURCES += \
     qtozwassociations.cpp \
     qtozwmanager.cpp \
     qtozwnotification.cpp \
+    qtozwproxymodels.cpp \
     websocketiodevice.cpp \
     qtozwnodemodel.cpp \
     qtozwvalueidmodel.cpp
@@ -40,6 +41,7 @@ HEADERS += \
         qtopenzwave.h \
         qt-openzwave_global.h \  \
         qtozwassociations.h \
+        qtozwproxymodels.h \
         websocketiodevice.h \
         qtozwmanager.h \
         qtozwnotification.h \

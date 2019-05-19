@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "startup.h"
+#include <qtozwproxymodels.h>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -45,10 +46,60 @@ void MainWindow::QTOZW_Ready() {
     if (this->m_qtozwmanager->isRunning() == false) {
         this->m_qtozwmanager->open(this->m_serialPort);
     }
-    this->ui->nodeView->setModel(this->m_qtozwmanager->getNodeModel());
-    this->ui->userView->setModel(this->m_qtozwmanager->getValueModel());
-    this->ui->configView->setModel(this->m_qtozwmanager->getValueModel());
-    this->ui->systemView->setModel(this->m_qtozwmanager->getValueModel());
-    this->ui->AssociationView->setModel(this->m_qtozwmanager->getAssociationModel());
+    QTOZW_proxyNodeModel *proxyNodeModel = new QTOZW_proxyNodeModel(this);
+    proxyNodeModel->setSourceModel(this->m_qtozwmanager->getNodeModel());
+    this->ui->nodeView->setModel(proxyNodeModel);
+    this->ui->nodeView->setSortingEnabled(true);
+    this->ui->nodeView->horizontalHeader()->setSectionsMovable(true);
+    this->ui->nodeView->verticalHeader()->hide();
+    this->ui->nodeView->setSelectionBehavior(QAbstractItemView::SelectRows);
+    this->ui->nodeView->setSelectionMode(QAbstractItemView::SingleSelection);
+    QItemSelectionModel *selectNodeModel = this->ui->nodeView->selectionModel();
+
+
+    QTOZW_proxyValueModel *proxyUserValueModel = new QTOZW_proxyValueModel(this);
+    proxyUserValueModel->setSourceModel(this->m_qtozwmanager->getValueModel());
+    proxyUserValueModel->setSelectionModel(selectNodeModel);
+    proxyUserValueModel->setFilterGenre(QTOZW_ValueIds::ValueIdGenres::User);
+    this->ui->userView->setModel(proxyUserValueModel);
+    this->ui->userView->setSortingEnabled(true);
+    this->ui->userView->horizontalHeader()->setSectionsMovable(true);
+    this->ui->userView->verticalHeader()->hide();
+    this->ui->userView->setSelectionBehavior(QAbstractItemView::SelectRows);
+    this->ui->userView->setSelectionMode(QAbstractItemView::SingleSelection);
+
+    QTOZW_proxyValueModel *proxyConfigValueModel = new QTOZW_proxyValueModel(this);
+    proxyConfigValueModel->setSourceModel(this->m_qtozwmanager->getValueModel());
+    proxyConfigValueModel->setSelectionModel(selectNodeModel);
+    proxyConfigValueModel->setFilterGenre(QTOZW_ValueIds::ValueIdGenres::Config);
+    this->ui->configView->setModel(proxyConfigValueModel);
+    this->ui->configView->setSortingEnabled(true);
+    this->ui->configView->horizontalHeader()->setSectionsMovable(true);
+    this->ui->configView->verticalHeader()->hide();
+    this->ui->configView->setSelectionBehavior(QAbstractItemView::SelectRows);
+    this->ui->configView->setSelectionMode(QAbstractItemView::SingleSelection);
+
+    QTOZW_proxyValueModel *proxySystemValueModel = new QTOZW_proxyValueModel(this);
+    proxySystemValueModel->setSourceModel(this->m_qtozwmanager->getValueModel());
+    proxySystemValueModel->setSelectionModel(selectNodeModel);
+    proxySystemValueModel->setFilterGenre(QTOZW_ValueIds::ValueIdGenres::System);
+    this->ui->systemView->setModel(proxySystemValueModel);
+    this->ui->systemView->setSortingEnabled(true);
+    this->ui->systemView->horizontalHeader()->setSectionsMovable(true);
+    this->ui->systemView->verticalHeader()->hide();
+    this->ui->systemView->setSelectionBehavior(QAbstractItemView::SelectRows);
+    this->ui->systemView->setSelectionMode(QAbstractItemView::SingleSelection);
+
+
+    QTOZW_proxyAssociationModel *proxyAssociationModel = new QTOZW_proxyAssociationModel(this);
+    proxyAssociationModel->setSourceModel(this->m_qtozwmanager->getAssociationModel());
+    proxyAssociationModel->setSelectionModel(selectNodeModel);
+    this->ui->AssociationView->setModel(proxyAssociationModel);
+    this->ui->AssociationView->setSortingEnabled(true);
+    this->ui->AssociationView->horizontalHeader()->setSectionsMovable(true);
+    this->ui->AssociationView->verticalHeader()->hide();
+    this->ui->AssociationView->setSelectionBehavior(QAbstractItemView::SelectRows);
+    this->ui->AssociationView->setSelectionMode(QAbstractItemView::SingleSelection);
+
 }
 
