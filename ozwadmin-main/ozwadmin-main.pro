@@ -41,7 +41,7 @@ INCLUDEPATH += ../devicedb-lib ../ozwadmin-widgets ../qt-openzwave
 unix {
      LIBS += $$top_srcdir/open-zwave/libopenzwave.a -lresolv
      INCLUDEPATH += $$top_srcdir/open-zwave/cpp/src/
-     libopenzwave.commands = cd $$top_srcdir/open-zwave && make -f Makefile
+     libopenzwave.commands = cd $$top_srcdir/open-zwave && make -f Makefile && rm *.dylib
      QMAKE_EXTRA_TARGETS += libopenzwave
      PRE_TARGETDEPS += libopenzwave
 }

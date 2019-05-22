@@ -72,10 +72,10 @@ int main(int argc, char **argv)
 #else
     QLoggingCategory::setFilterRules("default.debug=true");
 #endif
-
     QApplication app(argc, argv);
-
+    QIcon icon(":res/ozw_SF2_notext.png");
     MainWindow window;
+    window.setWindowIcon(icon);
     window.resize(640, 480);
     window.show();
     window.start();

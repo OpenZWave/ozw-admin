@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "startup.h"
+#include "qtozw_itemdelegate.h"
 #include <qtozwproxymodels.h>
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -61,6 +62,11 @@ void MainWindow::QTOZW_Ready() {
     proxyUserValueModel->setSourceModel(this->m_qtozwmanager->getValueModel());
     proxyUserValueModel->setSelectionModel(selectNodeModel);
     proxyUserValueModel->setFilterGenre(QTOZW_ValueIds::ValueIdGenres::User);
+
+    QTOZW_ItemDelegate *delegate = new QTOZW_ItemDelegate(this);
+    this->ui->userView->setItemDelegateForColumn(QTOZW_ValueIds::ValueIdColumns::Value, delegate);
+
+
     this->ui->userView->setModel(proxyUserValueModel);
     this->ui->userView->setSortingEnabled(true);
     this->ui->userView->horizontalHeader()->setSectionsMovable(true);

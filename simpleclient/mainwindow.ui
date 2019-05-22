@@ -13,6 +13,10 @@
   <property name="windowTitle">
    <string>OpenZWave Sample Client</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="simpleclient.qrc">
+    <normaloff>:/res/ozw_SF2_notext.png</normaloff>:/res/ozw_SF2_notext.png</iconset>
+  </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
@@ -79,6 +83,8 @@
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
- <resources/>
+ <resources>
+  <include location="simpleclient.qrc"/>
+ </resources>
  <connections/>
 </ui>
