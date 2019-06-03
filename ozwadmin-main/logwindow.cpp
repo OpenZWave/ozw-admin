@@ -31,6 +31,7 @@
 #include <QDebug>
 #include "logwindow.h"
 
+#if 0
 ozwAdminLog::ozwAdminLog()
 {
 }
@@ -253,3 +254,5 @@ void LogBrowser::show() {
     //win->addSubWindow(browserDialog);
     browserDialog->show();
 }
+
+#endif

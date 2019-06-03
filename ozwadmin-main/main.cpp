@@ -24,10 +24,6 @@
 #include <QDebug>
 #include <QLoggingCategory>
 #include <QTreeView>
-#include "valueid.h"
-#include "qtopenzwave.h"
-#include "qtozwmanager.h"
-#include "websocketiodevice.h"
 
 int main(int argc, char *argv[])
 {
@@ -42,49 +38,12 @@ int main(int argc, char *argv[])
     QLoggingCategory::setFilterRules("default.debug=true");
 #endif
 
-    qRegisterMetaType<QtValueID>();
-    qRegisterMetaType<uint8>("uint8");
-    qRegisterMetaType<QVector<int>>("QVector<int>");
     QCoreApplication::setOrganizationName("OpenZWave");
     QCoreApplication::setOrganizationDomain("openzwave.net");
     QCoreApplication::setApplicationName("ozw-admin");
     QApplication a(argc, argv);
 
-    QTOpenZwave *ozw = new QTOpenZwave();
-    QTOZWManager *manager = ozw->GetManager();
-    qDebug() << manager;
-#if 0
-    QTreeView view;
-    view.setWindowTitle(QStringLiteral("LocalView"));
-    view.resize(640,480);
-    view.setModel(manager->getNodeModel());
-    view.show();
-
-    QTreeView view2;
-    view2.setWindowTitle(QStringLiteral("LocalView"));
-    view2.resize(640,480);
-    view2.setModel(manager->getValueModel());
-    view2.show();
-
-    QTreeView view3;
-    view3.setWindowTitle(QStringLiteral("Associations"));
-    view3.resize(640,480);
-    view3.setModel(manager->getAssociationModel());
-    view3.show();
-#endif
-
-    a.exec();
-#if 0
-    try {
-
-        MainWindow w;
-        w.show();
-        return a.exec();
-    } catch (OpenZWave::OZWException &e) {
-        QMessageBox::critical(nullptr, "Exception",
-                              QString("A unhandled Exception was caught: ").append(e.GetMsg().c_str()),
-                              QMessageBox::Abort);
-        exit(-1);
-    }
-#endif
+    MainWindow w;
+    w.show();
+    return a.exec();
 }

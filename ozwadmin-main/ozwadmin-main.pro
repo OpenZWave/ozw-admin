@@ -14,44 +14,18 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    nodes.cpp \
     util.cpp \
-    logwindow.cpp \
-    associations.cpp \
-    valueid.cpp \
-    qtvalueidlists.cpp \
-    valueiddelegate.cpp
+    logwindow.cpp
 
 HEADERS  += mainwindow.h \
-    nodes.h \
     util.h \
     logwindow.h \
-    associations.h \
-    valueid.h \
-    qtvalueidlists.h \
-    valueiddelegate.h \
 
 FORMS    += mainwindow.ui
 
-LIBS += ../devicedb-lib/libdevicedb-lib.a ../ozwadmin-widgets/libozwadmin-widgets.a ../qt-openzwave/libqt-openzwave.a
-INCLUDEPATH += ../devicedb-lib ../ozwadmin-widgets ../qt-openzwave
+LIBS += ../devicedb-lib/libdevicedb-lib.a ../ozwadmin-widgets/libozwadmin-widgets.a -L../../qt-openzwave/qt-openzwave/ -lqt-openzwave
+INCLUDEPATH += ../devicedb-lib ../ozwadmin-widgets ../../qt-openzwave/qt-openzwave/include/
 
-
-#for now, we will link against a static version of openzwave (Dev branch)
-unix {
-     LIBS += $$top_srcdir/open-zwave/libopenzwave.a -lresolv
-     INCLUDEPATH += $$top_srcdir/open-zwave/cpp/src/
-     libopenzwave.commands = cd $$top_srcdir/open-zwave && make -f Makefile && rm *.dylib
-     QMAKE_EXTRA_TARGETS += libopenzwave
-     PRE_TARGETDEPS += libopenzwave
-}
-
-
-unix:!macx  {
-#    CONFIG += link_pkgconfig
-#    PKGCONFIG += libopenzwave
-     LIBS += -ludev
-}
 macx: {
     CONFIG += c++11
     LIBS += -framework IOKit -framework CoreFoundation

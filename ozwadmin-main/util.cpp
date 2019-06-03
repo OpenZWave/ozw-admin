@@ -31,18 +31,3 @@ const char *nodeBasicStr (qint8 basic)
   }
   return "unknown";
 }
-
-void SetCBReadOnly(QCheckBox* checkBox, bool readOnly)
-{
-   checkBox->setAttribute(Qt::WA_TransparentForMouseEvents, readOnly);
-   checkBox->setFocusPolicy(readOnly ? Qt::NoFocus : Qt::StrongFocus);
-}
-
-QStringList VectorString_to_QStringList(const std::vector<std::string>& svector) {
-  QStringList result;
-  for (uint i=0; i<svector.size(); i++) {
-    result << QString::fromUtf8(svector.at(i).c_str(),
-                                svector.at(i).size());
-  }
-  return result;
-}

@@ -20,11 +20,10 @@
 #include <QObject>
 #include <QDialog>
 #include <QMdiArea>
-#include <platform/Log.h>
 #include <string>
 
 /* our Custom Logging Class */
-
+#if 0
 class ozwAdminLog : public QObject, public OpenZWave::i_LogImpl
 {
         Q_OBJECT
@@ -39,7 +38,6 @@ public:
 signals:
         void newLogMsg(OpenZWave::LogLevel, uint8, const QString);
 };
-
 
 
 
@@ -93,5 +91,7 @@ protected:
     QPushButton *clearButton;
     QPushButton *saveButton;
 };
+
+#endif
 
 #endif // LOGWINDOW_H

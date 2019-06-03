@@ -8,9 +8,7 @@ TEMPLATE = subdirs
 
 CONFIG += ordered silent
 
-#SUBDIRS = qt-openzwave simpleclient ozwadmin-widgets devicedb-lib ozwadmin-main
-
-SUBDIRS = qt-openzwave simpleclient
+SUBDIRS = ozwadmin-widgets devicedb-lib ozwadmin-main
 
 
 ozwadmin-main.depends = qt-openzwave ozwadmin-widgets devicedb-lib

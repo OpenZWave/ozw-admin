@@ -22,8 +22,11 @@
 #include <QSettings>
 #include <QModelIndex>
 #include <QDir>
+
+#include <qt-openzwave/qtopenzwave.h>
+#include <qt-openzwave/qtozwmanager.h>
+
 #include "logwindow.h"
-#include "qtvalueidlists.h"
 
 namespace Ui {
 class MainWindow;
@@ -33,29 +36,25 @@ class MainWindow : public QMainWindow
 {
     Q_OBJECT
 public:
-    explicit MainWindow(QWidget *parent = 0);
+    explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
     Q_PROPERTY(QString SerialPort MEMBER m_serialport)
 public slots:
     void OpenSerialPort();
-    void newNode(qint8 nodeID);
-    void saveCache();
     void resizeColumns();
     void NodeSelected(QModelIndex,QModelIndex);
     void openLogWindow();
-    void updateGroups(qint8, qint8);
     void OpenDeviceDB();
-
+    void QTOZW_Ready();
 
 
 private:
     Ui::MainWindow *ui;
     QString m_serialport;
     QSettings settings;
-    LogBrowser *logBrowser;
-    ValueIdFilterProxyModel *m_VFproxyModel_System;
-    ValueIdFilterProxyModel *m_VFproxyModel_User;
-    ValueIdFilterProxyModel *m_VFproxyModel_Config;
+
+    QTOpenZwave *m_openzwave;
+    QTOZWManager *m_qtozwmanager;
     QDir m_configpath;
     QDir m_userpath;
 };

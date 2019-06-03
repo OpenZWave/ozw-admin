@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>660</width>
-    <height>524</height>
+    <width>1024</width>
+    <height>800</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -22,246 +22,102 @@
    </property>
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
-     <widget class="QTableView" name="nodeList"/>
-    </item>
-    <item>
-     <widget class="QTabWidget" name="NodePane">
-      <property name="currentIndex">
-       <number>3</number>
-      </property>
-      <widget class="QWidget" name="n_info">
-       <attribute name="title">
-        <string>Node Info</string>
-       </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_2">
-        <item>
-         <widget class="QScrollArea" name="scrollArea">
-          <property name="widgetResizable">
-           <bool>true</bool>
-          </property>
-          <widget class="QWidget" name="scrollAreaWidgetContents">
-           <property name="geometry">
-            <rect>
-             <x>0</x>
-             <y>0</y>
-             <width>604</width>
-             <height>535</height>
-            </rect>
-           </property>
-           <layout class="QVBoxLayout" name="verticalLayout_3">
+     <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <item>
+       <widget class="QTableView" name="nodeList"/>
+      </item>
+      <item>
+       <widget class="QScrollArea" name="scrollArea">
+        <property name="widgetResizable">
+         <bool>true</bool>
+        </property>
+        <widget class="QWidget" name="scrollAreaWidgetContents">
+         <property name="geometry">
+          <rect>
+           <x>0</x>
+           <y>0</y>
+           <width>477</width>
+           <height>410</height>
+          </rect>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_3">
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_4">
+            <item>
+             <widget class="QLabel" name="md_pic">
+              <property name="maximumSize">
+               <size>
+                <width>200</width>
+                <height>200</height>
+               </size>
+              </property>
+              <property name="text">
+               <string/>
+              </property>
+              <property name="pixmap">
+               <pixmap>../../open-zwave/config/images/zwave.me/zme_raz5.png</pixmap>
+              </property>
+             </widget>
+            </item>
             <item>
              <widget class="QGroupBox" name="groupBox">
               <property name="title">
-               <string>Node Info</string>
+               <string>Device Details</string>
               </property>
-              <layout class="QFormLayout" name="formLayout_2">
-               <item row="0" column="0">
-                <widget class="QLabel" name="label">
-                 <property name="text">
-                  <string>Product</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="1">
-                <widget class="QLineEdit" name="NI_Product">
+              <layout class="QGridLayout" name="gridLayout_3">
+               <item row="1" column="1" colspan="3">
+                <widget class="QLineEdit" name="dd_manufacturer">
                  <property name="readOnly">
                   <bool>true</bool>
                  </property>
                 </widget>
                </item>
+               <item row="2" column="3">
+                <widget class="QLabel" name="dd_prodtype">
+                 <property name="text">
+                  <string/>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="2">
+                <widget class="QLabel" name="dd_prodid">
+                 <property name="text">
+                  <string/>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="1">
+                <widget class="QLabel" name="dd_manid">
+                 <property name="text">
+                  <string/>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="1" colspan="3">
+                <widget class="QLineEdit" name="dd_name">
+                 <property name="readOnly">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="0">
+                <widget class="QLabel" name="label">
+                 <property name="text">
+                  <string>Name:</string>
+                 </property>
+                </widget>
+               </item>
                <item row="1" column="0">
-                <widget class="QLabel" name="label_2">
+                <widget class="QLabel" name="label_3">
                  <property name="text">
                   <string>Manufacturer</string>
                  </property>
                 </widget>
                </item>
-               <item row="1" column="1">
-                <widget class="QLineEdit" name="NI_Manufacturer">
-                 <property name="readOnly">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
                <item row="2" column="0">
-                <widget class="QLabel" name="label_3">
-                 <property name="text">
-                  <string>ZWave ID and Type</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="2" column="1">
-                <widget class="QLineEdit" name="NI_ID">
-                 <property name="readOnly">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-               <item row="3" column="0">
                 <widget class="QLabel" name="label_4">
                  <property name="text">
-                  <string>ZWave Version</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="3" column="1">
-                <widget class="QLineEdit" name="ni_version">
-                 <property name="readOnly">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item>
-             <widget class="QGroupBox" name="groupBox_6">
-              <property name="title">
-               <string>Meta Data</string>
-              </property>
-              <layout class="QFormLayout" name="formLayout_4">
-               <item row="0" column="0">
-                <widget class="QLabel" name="label_23">
-                 <property name="text">
-                  <string>OpenZWave Info Page:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="1">
-                <widget class="QLabel" name="md_ozwinfo">
-                 <property name="text">
-                  <string/>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="0">
-                <widget class="QLabel" name="label_24">
-                 <property name="text">
-                  <string>Z-Wave Product Page:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="1">
-                <widget class="QLabel" name="md_zwprodpage">
-                 <property name="text">
-                  <string/>
-                 </property>
-                </widget>
-               </item>
-               <item row="2" column="0">
-                <widget class="QLabel" name="label_25">
-                 <property name="text">
-                  <string>Pepper1 Database Entry:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="2" column="1">
-                <widget class="QLabel" name="md_pepper1db">
-                 <property name="text">
-                  <string/>
-                 </property>
-                </widget>
-               </item>
-               <item row="3" column="0">
-                <widget class="QLabel" name="label_26">
-                 <property name="text">
-                  <string>Product Manual:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="4" column="0">
-                <widget class="QLabel" name="label_27">
-                 <property name="text">
-                  <string>Product Page:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="5" column="0">
-                <widget class="QLabel" name="label_28">
-                 <property name="text">
-                  <string>Product Picture:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="3" column="1">
-                <widget class="QLabel" name="md_prodmanual">
-                 <property name="text">
-                  <string/>
-                 </property>
-                </widget>
-               </item>
-               <item row="4" column="1">
-                <widget class="QLabel" name="md_prodpage">
-                 <property name="text">
-                  <string/>
-                 </property>
-                </widget>
-               </item>
-               <item row="5" column="1">
-                <widget class="QLabel" name="md_prodimg">
-                 <property name="text">
-                  <string/>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item>
-             <widget class="QGroupBox" name="groupBox_2">
-              <property name="title">
-               <string>Capabilities</string>
-              </property>
-              <layout class="QGridLayout" name="gridLayout">
-               <item row="1" column="0">
-                <widget class="QCheckBox" name="ni_beaming">
-                 <property name="text">
-                  <string>Beaming</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="2">
-                <widget class="QCheckBox" name="ni_security">
-                 <property name="text">
-                  <string>Security</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="1">
-                <widget class="QCheckBox" name="ni_routing">
-                 <property name="text">
-                  <string>Routing</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="1">
-                <widget class="QCheckBox" name="ni_listen">
-                 <property name="text">
-                  <string>Listening</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="2">
-                <widget class="QCheckBox" name="ni_flirs">
-                 <property name="text">
-                  <string>FLiRS</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="0">
-                <widget class="QCheckBox" name="ni_zwplus">
-                 <property name="enabled">
-                  <bool>true</bool>
-                 </property>
-                 <property name="text">
-                  <string>ZWave Plus</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="2" column="0">
-                <widget class="QLabel" name="ni_baud">
-                 <property name="text">
-                  <string>Baud Rate:</string>
+                  <string>ProductCodes</string>
                  </property>
                 </widget>
                </item>
@@ -269,11 +125,140 @@
              </widget>
             </item>
            </layout>
-          </widget>
-         </widget>
-        </item>
-       </layout>
-      </widget>
+          </item>
+          <item>
+           <widget class="QGroupBox" name="groupBox_6">
+            <property name="title">
+             <string>Meta Data</string>
+            </property>
+            <layout class="QFormLayout" name="formLayout_4">
+             <item row="0" column="0">
+              <widget class="QLabel" name="md_ozwinfo">
+               <property name="text">
+                <string/>
+               </property>
+               <property name="openExternalLinks">
+                <bool>true</bool>
+               </property>
+               <property name="textInteractionFlags">
+                <set>Qt::TextBrowserInteraction</set>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QLabel" name="md_zwainfo">
+               <property name="text">
+                <string/>
+               </property>
+               <property name="openExternalLinks">
+                <bool>true</bool>
+               </property>
+               <property name="textInteractionFlags">
+                <set>Qt::TextBrowserInteraction</set>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="0">
+              <widget class="QLabel" name="md_manual">
+               <property name="text">
+                <string/>
+               </property>
+               <property name="openExternalLinks">
+                <bool>true</bool>
+               </property>
+               <property name="textInteractionFlags">
+                <set>Qt::TextBrowserInteraction</set>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="1">
+              <widget class="QLabel" name="md_prodpage">
+               <property name="text">
+                <string/>
+               </property>
+               <property name="openExternalLinks">
+                <bool>true</bool>
+               </property>
+               <property name="textInteractionFlags">
+                <set>Qt::TextBrowserInteraction</set>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item>
+           <widget class="QGroupBox" name="groupBox_2">
+            <property name="title">
+             <string>Capabilities</string>
+            </property>
+            <layout class="QGridLayout" name="gridLayout">
+             <item row="1" column="2">
+              <widget class="QCheckBox" name="ni_security">
+               <property name="text">
+                <string>Security</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="0">
+              <widget class="QCheckBox" name="ni_zwplus">
+               <property name="enabled">
+                <bool>true</bool>
+               </property>
+               <property name="text">
+                <string>ZWave Plus</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="0">
+              <widget class="QLabel" name="ni_baud">
+               <property name="text">
+                <string>Baud Rate:</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="2">
+              <widget class="QCheckBox" name="ni_flirs">
+               <property name="text">
+                <string>FLiRS</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QCheckBox" name="ni_listen">
+               <property name="text">
+                <string>Listening</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QCheckBox" name="ni_beaming">
+               <property name="text">
+                <string>Beaming</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="QCheckBox" name="ni_routing">
+               <property name="text">
+                <string>Routing</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <widget class="QTabWidget" name="NodePane">
+      <property name="currentIndex">
+       <number>0</number>
+      </property>
       <widget class="QWidget" name="n_status">
        <attribute name="title">
         <string>Node Status</string>
@@ -289,8 +274,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>604</width>
-             <height>456</height>
+             <width>937</width>
+             <height>363</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -610,8 +595,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>618</width>
-             <height>291</height>
+             <width>952</width>
+             <height>305</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_12">
@@ -625,8 +610,8 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>600</width>
-                 <height>205</height>
+                 <width>928</width>
+                 <height>213</height>
                 </rect>
                </property>
                <attribute name="label">
@@ -643,8 +628,8 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>88</width>
-                 <height>88</height>
+                 <width>98</width>
+                 <height>95</height>
                 </rect>
                </property>
                <attribute name="label">
@@ -679,8 +664,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>618</width>
-             <height>291</height>
+             <width>952</width>
+             <height>305</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_7">
@@ -717,8 +702,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>618</width>
-             <height>291</height>
+             <width>952</width>
+             <height>305</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -756,8 +741,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>660</width>
-     <height>25</height>
+     <width>1024</width>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -765,7 +750,6 @@
      <string>File</string>
     </property>
     <addaction name="actionOpen_Serial_Port"/>
-    <addaction name="action_Save_Cache"/>
     <addaction name="separator"/>
     <addaction name="actionDevice_Database"/>
     <addaction name="actionEdit_Configuration"/>
@@ -813,14 +797,6 @@
   <action name="actionOpen_Log_Window">
    <property name="text">
     <string>Open Log Window</string>
-   </property>
-  </action>
-  <action name="action_Save_Cache">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="text">
-    <string>&amp;Save Cache</string>
    </property>
   </action>
   <action name="action_Driver_Statistics">
