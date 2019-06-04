@@ -35,9 +35,9 @@
          <property name="geometry">
           <rect>
            <x>0</x>
-           <y>0</y>
+           <y>-147</y>
            <width>477</width>
-           <height>410</height>
+           <height>468</height>
           </rect>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -132,55 +132,82 @@
              <string>Meta Data</string>
             </property>
             <layout class="QFormLayout" name="formLayout_4">
-             <item row="0" column="0">
+             <item row="1" column="0">
               <widget class="QLabel" name="md_ozwinfo">
                <property name="text">
-                <string/>
+                <string>ozw page</string>
                </property>
                <property name="openExternalLinks">
                 <bool>true</bool>
                </property>
                <property name="textInteractionFlags">
                 <set>Qt::TextBrowserInteraction</set>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="QLabel" name="md_zwainfo">
+               <property name="text">
+                <string>zwa page</string>
+               </property>
+               <property name="openExternalLinks">
+                <bool>true</bool>
+               </property>
+               <property name="textInteractionFlags">
+                <set>Qt::TextBrowserInteraction</set>
+               </property>
+              </widget>
+             </item>
+             <item row="4" column="0">
+              <widget class="QLabel" name="md_manual">
+               <property name="text">
+                <string>manual page</string>
+               </property>
+               <property name="openExternalLinks">
+                <bool>true</bool>
+               </property>
+               <property name="textInteractionFlags">
+                <set>Qt::TextBrowserInteraction</set>
+               </property>
+              </widget>
+             </item>
+             <item row="4" column="1">
+              <widget class="QLabel" name="md_prodpage">
+               <property name="text">
+                <string>support url</string>
+               </property>
+               <property name="openExternalLinks">
+                <bool>true</bool>
+               </property>
+               <property name="textInteractionFlags">
+                <set>Qt::TextBrowserInteraction</set>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="0">
+              <widget class="QLabel" name="md_name">
+               <property name="text">
+                <string>name</string>
                </property>
               </widget>
              </item>
              <item row="0" column="1">
-              <widget class="QLabel" name="md_zwainfo">
+              <widget class="QLabel" name="md_producturl">
                <property name="text">
-                <string/>
+                <string>vendor page</string>
                </property>
                <property name="openExternalLinks">
                 <bool>true</bool>
                </property>
                <property name="textInteractionFlags">
-                <set>Qt::TextBrowserInteraction</set>
+                <set>Qt::LinksAccessibleByMouse|Qt::TextEditable|Qt::TextEditorInteraction|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
                </property>
               </widget>
              </item>
-             <item row="3" column="0">
-              <widget class="QLabel" name="md_manual">
+             <item row="5" column="0" colspan="2">
+              <widget class="QPushButton" name="md_helpwindow">
                <property name="text">
-                <string/>
-               </property>
-               <property name="openExternalLinks">
-                <bool>true</bool>
-               </property>
-               <property name="textInteractionFlags">
-                <set>Qt::TextBrowserInteraction</set>
-               </property>
-              </widget>
-             </item>
-             <item row="3" column="1">
-              <widget class="QLabel" name="md_prodpage">
-               <property name="text">
-                <string/>
-               </property>
-               <property name="openExternalLinks">
-                <bool>true</bool>
-               </property>
-               <property name="textInteractionFlags">
-                <set>Qt::TextBrowserInteraction</set>
+                <string>Help</string>
                </property>
               </widget>
              </item>
@@ -208,10 +235,13 @@
                <property name="text">
                 <string>ZWave Plus</string>
                </property>
+               <property name="checkable">
+                <bool>true</bool>
+               </property>
               </widget>
              </item>
              <item row="2" column="0">
-              <widget class="QLabel" name="ni_baud">
+              <widget class="QLabel" name="label_23">
                <property name="text">
                 <string>Baud Rate:</string>
                </property>
@@ -242,6 +272,13 @@
               <widget class="QCheckBox" name="ni_routing">
                <property name="text">
                 <string>Routing</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="1">
+              <widget class="QLabel" name="ni_baud">
+               <property name="text">
+                <string/>
                </property>
               </widget>
              </item>
@@ -628,7 +665,7 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>98</width>
+                 <width>95</width>
                  <height>95</height>
                 </rect>
                </property>

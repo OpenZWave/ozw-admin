@@ -47,6 +47,7 @@ public slots:
     void OpenDeviceDB();
     void QTOZW_Ready();
 
+    void openMetaDataWindow();
 
 private:
     Ui::MainWindow *ui;

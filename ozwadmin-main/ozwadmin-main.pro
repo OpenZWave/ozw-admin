@@ -14,14 +14,17 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
+    metadatawindow.cpp \
     util.cpp \
     logwindow.cpp
 
 HEADERS  += mainwindow.h \
+    metadatawindow.h \
     util.h \
     logwindow.h \
 
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui \
+    metadatawindow.ui
 
 LIBS += ../devicedb-lib/libdevicedb-lib.a ../ozwadmin-widgets/libozwadmin-widgets.a -L../../qt-openzwave/qt-openzwave/ -lqt-openzwave
 INCLUDEPATH += ../devicedb-lib ../ozwadmin-widgets ../../qt-openzwave/qt-openzwave/include/

@@ -24,12 +24,19 @@
 #include <QDataWidgetMapper>
 
 #include <qt-openzwave/qtozwproxymodels.h>
+#include <qt-openzwave/qtozw_pods.h>
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "metadatawindow.h"
 #include "logwindow.h"
 #include "devicedb.hpp"
 
+void SetReadOnly(QCheckBox* checkBox, bool readOnly)
+{
+   checkBox->setAttribute(Qt::WA_TransparentForMouseEvents, readOnly);
+   checkBox->setFocusPolicy(readOnly ? Qt::NoFocus : Qt::StrongFocus);
+}
 
 
 
@@ -46,7 +53,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(ui->actionOpen_Serial_Port, SIGNAL(triggered()), this, SLOT(OpenSerialPort()));
     connect(ui->actionDevice_Database, SIGNAL(triggered()), this, SLOT(OpenDeviceDB()));
-
+    connect(ui->md_helpwindow, &QPushButton::clicked, this, &MainWindow::openMetaDataWindow);
     this->ui->nodeList->setSelectionBehavior(QAbstractItemView::SelectRows);
     this->ui->nodeList->resizeColumnsToContents();
     this->ui->nodeList->horizontalHeader()->setStretchLastSection(true);
@@ -73,6 +80,15 @@ MainWindow::MainWindow(QWidget *parent) :
     this->ui->val_system_tbl->setSelectionMode(QAbstractItemView::SingleSelection);
 
     this->m_serialport = settings.value("SerialPort", "/dev/ttyUSB0").toString();
+
+
+    SetReadOnly(this->ui->ni_flirs, true);
+    SetReadOnly(this->ui->ni_listen, true);
+    SetReadOnly(this->ui->ni_zwplus, true);
+    SetReadOnly(this->ui->ni_beaming, true);
+    SetReadOnly(this->ui->ni_routing, true);
+    SetReadOnly(this->ui->ni_security, true);
+
 
 //    printf("Starting OZWAdmin with OpenZWave Version %s\n", OpenZWave::Manager::getVersionAsString().c_str());
 
@@ -197,35 +213,56 @@ void MainWindow::NodeSelected(QModelIndex current,QModelIndex previous) {
     this->ui->dd_prodid->setText(model->data(model->index(current.row(), QTOZW_Nodes::NodeColumns::NodeProductID)).toString());
     this->ui->dd_prodtype->setText(model->data(model->index(current.row(), QTOZW_Nodes::NodeColumns::NodeProductType)).toString());
 
-    QUrl url = this->m_qtozwmanager->GetMetaData(model->data(model->index(current.row(), QTOZW_Nodes::NodeColumns::NodeID)).value<quint8>(), QTOZWManagerSimpleSource::QTOZWMetaDataField::OZWInfoURL);
+    quint8 node = model->data(model->index(current.row(), QTOZW_Nodes::NodeColumns::NodeID)).value<quint8>();
+
+    QUrl url = this->m_qtozwmanager->GetMetaData(node, QTOZWManagerSource::QTOZWMetaDataField::OZWInfoURL);
     if (url.isValid())
         this->ui->md_ozwinfo->setText("<a href='"+url.toEncoded()+"'>"+tr("OpenZWave Database")+"</a>");
     else
         this->ui->md_ozwinfo->setText("");
 
-    url = this->m_qtozwmanager->GetMetaData(model->data(model->index(current.row(), QTOZW_Nodes::NodeColumns::NodeID)).value<quint8>(), QTOZWManagerSimpleSource::QTOZWMetaDataField::ZWAProductURL);
+    url = this->m_qtozwmanager->GetMetaData(node, QTOZWManagerSource::QTOZWMetaDataField::ZWAProductURL);
     if (url.isValid())
         this->ui->md_zwainfo->setText("<a href='"+url.toEncoded()+"'>"+tr("ZWave Alliance Database")+"</a>");
     else
         this->ui->md_zwainfo->setText("");
 
-    url = this->m_qtozwmanager->GetMetaData(model->data(model->index(current.row(), QTOZW_Nodes::NodeColumns::NodeID)).value<quint8>(), QTOZWManagerSimpleSource::QTOZWMetaDataField::ProductManualURL);
+    url = this->m_qtozwmanager->GetMetaData(node, QTOZWManagerSource::QTOZWMetaDataField::ProductManualURL);
     if (url.isValid())
         this->ui->md_manual->setText("<a href='"+url.toEncoded()+"'>"+tr("Product Manual")+"</a>");
     else
         this->ui->md_manual->setText("");
 
-    url = this->m_qtozwmanager->GetMetaData(model->data(model->index(current.row(), QTOZW_Nodes::NodeColumns::NodeID)).value<quint8>(), QTOZWManagerSimpleSource::QTOZWMetaDataField::ProductSupportURL);
+    url = this->m_qtozwmanager->GetMetaData(node, QTOZWManagerSource::QTOZWMetaDataField::ProductSupportURL);
     if (url.isValid())
         this->ui->md_prodpage->setText("<a href='"+url.toEncoded()+"'>"+tr("Product Support")+"</a>");
     else
         this->ui->md_prodpage->setText("");
 
+    QString value = this->m_qtozwmanager->GetMetaData(node, QTOZWManagerSource::QTOZWMetaDataField::Name);
+    this->ui->md_name->setText(value);
+
+    value = this->m_qtozwmanager->GetMetaData(node, QTOZWManagerSource::QTOZWMetaDataField::ProductPageURL);
+    this->ui->md_producturl->setText(value);
+
     QPixmap pix;
     pix.loadFromData(this->m_qtozwmanager->GetMetaDataProductPic(model->data(model->index(current.row(), QTOZW_Nodes::NodeColumns::NodeID)).value<quint8>()));
     this->ui->md_pic->setPixmap(pix);
 
+    /* Now Do the Device Flags */
+    QBitArray flags = model->data(model->index(current.row(), QTOZW_Nodes::NodeColumns::NodeFlags)).value<QBitArray>();
+    this->ui->ni_flirs->setChecked(flags.at(QTOZW_Nodes::nodeFlags::isFlirs));
+    this->ui->ni_listen->setChecked(flags.at(QTOZW_Nodes::nodeFlags::isListening));
+    this->ui->ni_zwplus->setChecked(flags.at(QTOZW_Nodes::nodeFlags::isZWavePlus));
+    this->ui->ni_beaming->setChecked(flags.at(QTOZW_Nodes::nodeFlags::isBeaming));
+    this->ui->ni_routing->setChecked(flags.at(QTOZW_Nodes::nodeFlags::isRouting));
+    this->ui->ni_security->setChecked(flags.at(QTOZW_Nodes::nodeFlags::isSecurityv1));
+    this->ui->ni_baud->setText(model->data(model->index(current.row(), QTOZW_Nodes::NodeColumns::NodeBaudRate)).toString());
 
+    /* now do the Node Status Page */
+    this->ui->ns_status->setText(this->m_qtozwmanager->GetNodeQueryStage(node));
+    NodeStatistics ns = this->m_qtozwmanager->GetNodeStatistics(node);
+    this->ui->ns_lastseen->setText(ns.lastReceivedTimeStamp);
 }
 
 
@@ -234,6 +271,16 @@ void MainWindow::openLogWindow() {
 //    this->logBrowser->show();
 }
 
+void MainWindow::openMetaDataWindow() {
+    qDebug() << "Opening Window";
+    QModelIndex index = this->ui->nodeList->currentIndex();
+    const QAbstractItemModel *model = index.model();
+    quint8 node = model->data(model->index(index.row(), QTOZW_Nodes::NodeColumns::NodeID)).value<quint8>();
+    MetaDataWindow *mdwin = new MetaDataWindow(this);
+    mdwin->populate(this->m_qtozwmanager, node);
+    mdwin->setModal(true);
+    mdwin->exec();
+}
 
 void MainWindow::OpenDeviceDB() {
     DeviceDB *ddb = new DeviceDB();
