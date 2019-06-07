@@ -14,22 +14,24 @@ CONFIG += staticlib
 
 
 SOURCES += widgets.cpp \
-    bitsetwidget.cpp
+    bitsetwidget.cpp \
+    value_delegate.cpp
 
 HEADERS  += widgets.h \
-    bitsetwidget.h
+    bitsetwidget.h \
+    value_delegate.h
 
 FORMS    += HelpEditorDlg.ui \
-	ListDialog.ui
+	ListDialog.ui \
+	bitsetwidget.ui
 
-INCLUDEPATH += ../devicedb-lib ../ozwadmin-main ../open-zwave/cpp/src/
+INCLUDEPATH += ../devicedb-lib ../ozwadmin-main ../../qt-openzwave/qt-openzwave/include/
 
-unix {
-     INCLUDEPATH += $$top_srcdir/open-zwave/cpp/src/
-}
 
 macx: {
     CONFIG += c++11
     LIBS += -framework IOKit -framework CoreFoundation
     #QMAKE_MAC_SDK = macosx10.11
+#    QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.11
+
 }

@@ -24,7 +24,11 @@
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout_2">
       <item>
-       <widget class="QTableView" name="nodeList"/>
+       <widget class="QTableView" name="nodeList">
+        <attribute name="horizontalHeaderStretchLastSection">
+         <bool>true</bool>
+        </attribute>
+       </widget>
       </item>
       <item>
        <widget class="QScrollArea" name="scrollArea">
@@ -35,7 +39,7 @@
          <property name="geometry">
           <rect>
            <x>0</x>
-           <y>-147</y>
+           <y>0</y>
            <width>477</width>
            <height>468</height>
           </rect>
@@ -294,7 +298,7 @@
     <item>
      <widget class="QTabWidget" name="NodePane">
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="n_status">
        <attribute name="title">
@@ -312,7 +316,7 @@
              <x>0</x>
              <y>0</y>
              <width>937</width>
-             <height>363</height>
+             <height>557</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -387,50 +391,24 @@
                <string>Statistics</string>
               </property>
               <layout class="QGridLayout" name="gridLayout_2">
-               <item row="3" column="0">
-                <widget class="QLabel" name="label_18">
-                 <property name="text">
-                  <string>Average Request RTT</string>
-                 </property>
-                 <property name="wordWrap">
+               <item row="2" column="1">
+                <widget class="QLineEdit" name="ns_lastsend">
+                 <property name="readOnly">
                   <bool>true</bool>
                  </property>
                 </widget>
                </item>
-               <item row="2" column="2">
-                <widget class="QLabel" name="label_16">
-                 <property name="text">
-                  <string>Last Recieved</string>
-                 </property>
-                 <property name="wordWrap">
+               <item row="3" column="3">
+                <widget class="QLineEdit" name="ns_lastresprtt">
+                 <property name="readOnly">
                   <bool>true</bool>
                  </property>
                 </widget>
                </item>
-               <item row="1" column="4">
-                <widget class="QLabel" name="label_14">
+               <item row="0" column="2">
+                <widget class="QLabel" name="label_10">
                  <property name="text">
-                  <string>Unsolicited</string>
-                 </property>
-                 <property name="wordWrap">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-               <item row="3" column="4">
-                <widget class="QLabel" name="label_20">
-                 <property name="text">
-                  <string>Average Response RTT</string>
-                 </property>
-                 <property name="wordWrap">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-               <item row="2" column="0">
-                <widget class="QLabel" name="label_15">
-                 <property name="text">
-                  <string>Last Send</string>
+                  <string>Send Failed</string>
                  </property>
                  <property name="wordWrap">
                   <bool>true</bool>
@@ -447,22 +425,49 @@
                  </property>
                 </widget>
                </item>
-               <item row="0" column="3">
-                <widget class="QLineEdit" name="ns_sentfailed">
+               <item row="2" column="0">
+                <widget class="QLabel" name="label_15">
+                 <property name="text">
+                  <string>Last Send</string>
+                 </property>
+                 <property name="wordWrap">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="4">
+                <widget class="QLabel" name="label_14">
+                 <property name="text">
+                  <string>Unsolicited</string>
+                 </property>
+                 <property name="wordWrap">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="5">
+                <widget class="QLineEdit" name="ns_lreqrtt">
                  <property name="readOnly">
                   <bool>true</bool>
                  </property>
                 </widget>
                </item>
-               <item row="0" column="5">
-                <widget class="QLineEdit" name="ns_retries">
+               <item row="1" column="1">
+                <widget class="QLineEdit" name="ns_recievedcnt">
                  <property name="readOnly">
                   <bool>true</bool>
                  </property>
                 </widget>
                </item>
-               <item row="0" column="1">
-                <widget class="QLineEdit" name="ns_sentcnt">
+               <item row="2" column="3">
+                <widget class="QLineEdit" name="ns_lastrecieved">
+                 <property name="readOnly">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="5">
+                <widget class="QLineEdit" name="ns_avgresprtt">
                  <property name="readOnly">
                   <bool>true</bool>
                  </property>
@@ -472,6 +477,23 @@
                 <widget class="QLabel" name="label_9">
                  <property name="text">
                   <string>Packets Sent</string>
+                 </property>
+                 <property name="wordWrap">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="1">
+                <widget class="QLineEdit" name="ns_avgreqrtt">
+                 <property name="readOnly">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="2">
+                <widget class="QLabel" name="label_16">
+                 <property name="text">
+                  <string>Last Recieved</string>
                  </property>
                  <property name="wordWrap">
                   <bool>true</bool>
@@ -488,32 +510,19 @@
                  </property>
                 </widget>
                </item>
-               <item row="0" column="4">
-                <widget class="QLabel" name="label_11">
+               <item row="3" column="0">
+                <widget class="QLabel" name="label_18">
                  <property name="text">
-                  <string>Retries</string>
+                  <string>Average Request RTT</string>
                  </property>
                  <property name="wordWrap">
                   <bool>true</bool>
                  </property>
                 </widget>
                </item>
-               <item row="0" column="2">
-                <widget class="QLabel" name="label_10">
-                 <property name="text">
-                  <string>Send Failed</string>
-                 </property>
-                 <property name="wordWrap">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="0">
-                <widget class="QLabel" name="label_12">
-                 <property name="text">
-                  <string>Packets Recieved</string>
-                 </property>
-                 <property name="wordWrap">
+               <item row="1" column="5">
+                <widget class="QLineEdit" name="ns_unsolicited">
+                 <property name="readOnly">
                   <bool>true</bool>
                  </property>
                 </widget>
@@ -538,22 +547,59 @@
                  </property>
                 </widget>
                </item>
-               <item row="1" column="1">
-                <widget class="QLineEdit" name="ns_recievedcnt">
+               <item row="0" column="3">
+                <widget class="QLineEdit" name="ns_sentfailed">
                  <property name="readOnly">
                   <bool>true</bool>
                  </property>
                 </widget>
                </item>
-               <item row="2" column="1">
-                <widget class="QLineEdit" name="ns_lastsend">
+               <item row="0" column="5">
+                <widget class="QLineEdit" name="ns_retries">
                  <property name="readOnly">
                   <bool>true</bool>
                  </property>
                 </widget>
                </item>
-               <item row="3" column="1">
-                <widget class="QLineEdit" name="ns_avgreqrtt">
+               <item row="1" column="0">
+                <widget class="QLabel" name="label_12">
+                 <property name="text">
+                  <string>Packets Recieved</string>
+                 </property>
+                 <property name="wordWrap">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="4">
+                <widget class="QLabel" name="label_11">
+                 <property name="text">
+                  <string>Retries</string>
+                 </property>
+                 <property name="wordWrap">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="1">
+                <widget class="QLineEdit" name="ns_sentcnt">
+                 <property name="readOnly">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="4">
+                <widget class="QLabel" name="label_20">
+                 <property name="text">
+                  <string>Average Response RTT</string>
+                 </property>
+                 <property name="wordWrap">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="4" column="1">
+                <widget class="QLineEdit" name="ns_quality">
                  <property name="readOnly">
                   <bool>true</bool>
                  </property>
@@ -566,43 +612,220 @@
                  </property>
                 </widget>
                </item>
-               <item row="2" column="3">
-                <widget class="QLineEdit" name="ns_lastrecieved">
+              </layout>
+             </widget>
+            </item>
+            <item>
+             <widget class="QGroupBox" name="etxstatus_frame">
+              <property name="title">
+               <string>Extended Transmission Statistics</string>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_4">
+               <item row="0" column="2">
+                <widget class="QLabel" name="label_24">
+                 <property name="text">
+                  <string>Hops</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="2">
+                <widget class="QLabel" name="label_27">
+                 <property name="text">
+                  <string>Last ACK Channel</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="4">
+                <widget class="QLabel" name="label_25">
+                 <property name="text">
+                  <string>Route Attempts</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="5">
+                <widget class="QLineEdit" name="ens_routeSpeed">
+                 <property name="readOnly">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="4" column="4">
+                <widget class="QLineEdit" name="ens_rssi_4">
                  <property name="readOnly">
                   <bool>true</bool>
                  </property>
                 </widget>
                </item>
                <item row="3" column="3">
-                <widget class="QLineEdit" name="ns_lastresprtt">
+                <widget class="QLineEdit" name="ens_route_3">
                  <property name="readOnly">
                   <bool>true</bool>
                  </property>
                 </widget>
                </item>
-               <item row="1" column="5">
-                <widget class="QLineEdit" name="ns_unsolicited">
+               <item row="0" column="3">
+                <widget class="QLineEdit" name="ens_hops">
                  <property name="readOnly">
                   <bool>true</bool>
                  </property>
                 </widget>
                </item>
-               <item row="2" column="5">
-                <widget class="QLineEdit" name="ns_lreqrtt">
+               <item row="3" column="4">
+                <widget class="QLineEdit" name="ens_route_4">
                  <property name="readOnly">
                   <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="4" column="5">
+                <widget class="QLineEdit" name="ens_rssi_5">
+                 <property name="readOnly">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="1">
+                <widget class="QLineEdit" name="ens_txtime">
+                 <property name="readOnly">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="3">
+                <widget class="QLineEdit" name="ens_ackchannel">
+                 <property name="readOnly">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="0">
+                <widget class="QLabel" name="label_30">
+                 <property name="text">
+                  <string>Last Route</string>
                  </property>
                 </widget>
                </item>
                <item row="3" column="5">
-                <widget class="QLineEdit" name="ns_avgresprtt">
+                <widget class="QLineEdit" name="ens_route_5">
                  <property name="readOnly">
                   <bool>true</bool>
                  </property>
                 </widget>
                </item>
                <item row="4" column="1">
-                <widget class="QLineEdit" name="ns_quality">
+                <widget class="QLineEdit" name="ens_rssi_1">
+                 <property name="readOnly">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="0">
+                <widget class="QLabel" name="label_2">
+                 <property name="text">
+                  <string>Transmit Time</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="1">
+                <widget class="QLineEdit" name="ens_txchannel">
+                 <property name="readOnly">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="0">
+                <widget class="QLabel" name="label_26">
+                 <property name="text">
+                  <string>Last TX Channel</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="4" column="2">
+                <widget class="QLineEdit" name="ens_rssi_2">
+                 <property name="readOnly">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="4" column="0">
+                <widget class="QLabel" name="label_29">
+                 <property name="text">
+                  <string>RSSI</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="5">
+                <widget class="QLineEdit" name="ens_attempts">
+                 <property name="readOnly">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="4" column="3">
+                <widget class="QLineEdit" name="ens_rssi_3">
+                 <property name="readOnly">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="1">
+                <widget class="QLineEdit" name="ens_route_1">
+                 <property name="readOnly">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="4">
+                <widget class="QLabel" name="label_28">
+                 <property name="text">
+                  <string>Route Speed</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="2">
+                <widget class="QLineEdit" name="ens_route_2">
+                 <property name="readOnly">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="0">
+                <widget class="QLabel" name="label_31">
+                 <property name="text">
+                  <string>Last Route Scheme</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="1">
+                <widget class="QLineEdit" name="ens_routeScheme">
+                 <property name="readOnly">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="2">
+                <widget class="QLabel" name="label_32">
+                 <property name="text">
+                  <string>Last Failed Link From</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="3">
+                <widget class="QLineEdit" name="ens_lastfailedlinkfrom">
+                 <property name="readOnly">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="4">
+                <widget class="QLabel" name="label_33">
+                 <property name="text">
+                  <string>Last Failed Link To</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="5">
+                <widget class="QLineEdit" name="ens_lastfailedlinkto">
                  <property name="readOnly">
                   <bool>true</bool>
                  </property>
@@ -633,7 +856,7 @@
              <x>0</x>
              <y>0</y>
              <width>952</width>
-             <height>305</height>
+             <height>314</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_12">
@@ -648,15 +871,34 @@
                  <x>0</x>
                  <y>0</y>
                  <width>928</width>
-                 <height>213</height>
+                 <height>222</height>
                 </rect>
                </property>
                <attribute name="label">
                 <string>User</string>
                </attribute>
                <layout class="QHBoxLayout" name="horizontalLayout_3">
+                <property name="leftMargin">
+                 <number>0</number>
+                </property>
+                <property name="topMargin">
+                 <number>0</number>
+                </property>
+                <property name="rightMargin">
+                 <number>0</number>
+                </property>
+                <property name="bottomMargin">
+                 <number>0</number>
+                </property>
                 <item>
-                 <widget class="QTableView" name="val_user_tbl"/>
+                 <widget class="QTableView" name="val_user_tbl">
+                  <property name="gridStyle">
+                   <enum>Qt::NoPen</enum>
+                  </property>
+                  <attribute name="horizontalHeaderStretchLastSection">
+                   <bool>true</bool>
+                  </attribute>
+                 </widget>
                 </item>
                </layout>
               </widget>
@@ -665,16 +907,32 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>95</width>
-                 <height>95</height>
+                 <width>928</width>
+                 <height>222</height>
                 </rect>
                </property>
                <attribute name="label">
                 <string>System</string>
                </attribute>
                <layout class="QVBoxLayout" name="verticalLayout_11">
+                <property name="leftMargin">
+                 <number>0</number>
+                </property>
+                <property name="topMargin">
+                 <number>0</number>
+                </property>
+                <property name="rightMargin">
+                 <number>0</number>
+                </property>
+                <property name="bottomMargin">
+                 <number>0</number>
+                </property>
                 <item>
-                 <widget class="QTableView" name="val_system_tbl"/>
+                 <widget class="QTableView" name="val_system_tbl">
+                  <attribute name="horizontalHeaderStretchLastSection">
+                   <bool>true</bool>
+                  </attribute>
+                 </widget>
                 </item>
                </layout>
               </widget>
@@ -702,7 +960,7 @@
              <x>0</x>
              <y>0</y>
              <width>952</width>
-             <height>305</height>
+             <height>314</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_7">
@@ -712,8 +970,24 @@
                <string>Configuration Values</string>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_13">
+               <property name="leftMargin">
+                <number>0</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="rightMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
                <item>
-                <widget class="QTableView" name="val_config_tbl"/>
+                <widget class="QTableView" name="val_config_tbl">
+                 <attribute name="verticalHeaderStretchLastSection">
+                  <bool>true</bool>
+                 </attribute>
+                </widget>
                </item>
               </layout>
              </widget>
@@ -740,7 +1014,7 @@
              <x>0</x>
              <y>0</y>
              <width>952</width>
-             <height>305</height>
+             <height>314</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_9">

@@ -26,12 +26,23 @@ HEADERS  += mainwindow.h \
 FORMS    += mainwindow.ui \
     metadatawindow.ui
 
-LIBS += ../devicedb-lib/libdevicedb-lib.a ../ozwadmin-widgets/libozwadmin-widgets.a -L../../qt-openzwave/qt-openzwave/ -lqt-openzwave
-INCLUDEPATH += ../devicedb-lib ../ozwadmin-widgets ../../qt-openzwave/qt-openzwave/include/
+LIBS += ../devicedb-lib/libdevicedb-lib.a ../ozwadmin-widgets/libozwadmin-widgets.a
+INCLUDEPATH += ../devicedb-lib ../ozwadmin-widgets
 
 macx: {
-    CONFIG += c++11
+    QMAKE_CXXFLAGS += -F../../qt-openzwave/qt-openzwave/
     LIBS += -framework IOKit -framework CoreFoundation
-    #QMAKE_MAC_SDK = macosx10.11
-    QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.14
+    LIBS += -F../../qt-openzwave/qt-openzwave/ -framework qt-openzwave
+    BUNDLE.files = ../../qt-openzwave/qt-openzwave/qt-openzwave.framework/
+    BUNDLE.path = Contents/Frameworks/qt-openzwave.framework/
+    LIBOZW.files = ../../open-zwave/libopenzwave-1.6.dylib
+    LIBOZW.path = Contents/Frameworks/
+    QMAKE_BUNDLE_DATA += BUNDLE LIBOZW
+    ICON = res/ozw_logo.icns
+} else {
+    LIBS += -L../../qt-openzwave/qt-openzwave/ -lqt-openzwave
+    INCLUDEPATH += ../../qt-openzwave/qt-openzwave/include/
 }
+
+RESOURCES += \
+    ozwadmin-main.qrc

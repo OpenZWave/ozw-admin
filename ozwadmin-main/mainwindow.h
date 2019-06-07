@@ -22,6 +22,7 @@
 #include <QSettings>
 #include <QModelIndex>
 #include <QDir>
+#include <QTimer>
 
 #include <qt-openzwave/qtopenzwave.h>
 #include <qt-openzwave/qtozwmanager.h>
@@ -48,6 +49,8 @@ public slots:
     void QTOZW_Ready();
 
     void openMetaDataWindow();
+    void updateNodeStats();
+
 
 private:
     Ui::MainWindow *ui;
@@ -58,6 +61,7 @@ private:
     QTOZWManager *m_qtozwmanager;
     QDir m_configpath;
     QDir m_userpath;
+    QTimer m_statTimer;
 };
 
 #endif // MAINWINDOW_H
