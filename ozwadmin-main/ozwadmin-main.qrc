@@ -3,5 +3,14 @@
         <file>res/ozw_logo.icns</file>
         <file>res/ozw_logo.ico</file>
         <file>res/ozw_SF2_notext.png</file>
+        <file>res/nodeflags/Awake.svg</file>
+        <file>res/nodeflags/Beaming.svg</file>
+        <file>res/nodeflags/Dead.svg</file>
+        <file>res/nodeflags/Flirs.svg</file>
+        <file>res/nodeflags/Listening.svg</file>
+        <file>res/nodeflags/Routing.svg</file>
+        <file>res/nodeflags/Sleeping.svg</file>
+        <file>res/nodeflags/zwaveplus.png</file>
+        <file>res/start.svg</file>
     </qresource>
 </RCC>

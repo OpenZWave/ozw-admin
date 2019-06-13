@@ -32,6 +32,7 @@
 #include "logwindow.h"
 #include "devicedb.hpp"
 #include "value_delegate.h"
+#include "node_delegate.h"
 
 
 void SetReadOnly(QCheckBox* checkBox, bool readOnly)
@@ -56,6 +57,10 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionOpen_Serial_Port, SIGNAL(triggered()), this, SLOT(OpenSerialPort()));
     connect(ui->actionDevice_Database, SIGNAL(triggered()), this, SLOT(OpenDeviceDB()));
     connect(ui->md_helpwindow, &QPushButton::clicked, this, &MainWindow::openMetaDataWindow);
+
+    Node_Delegate *nodeflagdelegate = new Node_Delegate(this);
+
+    this->ui->nodeList->setItemDelegateForColumn(QTOZW_Nodes::NodeColumns::NodeFlags, nodeflagdelegate);
     this->ui->nodeList->setSelectionBehavior(QAbstractItemView::SelectRows);
     this->ui->nodeList->resizeColumnsToContents();
     this->ui->nodeList->verticalHeader()->hide();
@@ -265,13 +270,15 @@ void MainWindow::resizeColumns() {
     this->ui->nodeList->resizeColumnsToContents();
 }
 
+
+#include "nodeflagswidget.h"
+
 void MainWindow::NodeSelected(QModelIndex current,QModelIndex previous) {
     Q_UNUSED(previous);
     if (!current.isValid()) {
         return;
     }
     const QAbstractItemModel * model = current.model();
-
 
     /* I tried to use the QDataWidgetMapper but failed... */
     this->ui->dd_name->setText(model->data(model->index(current.row(), QTOZW_Nodes::NodeColumns::NodeProductName)).toString());

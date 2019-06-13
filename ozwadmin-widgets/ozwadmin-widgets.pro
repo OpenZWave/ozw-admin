@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui xml
+QT       += core gui xml svg
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -15,15 +15,20 @@ CONFIG += staticlib
 
 SOURCES += widgets.cpp \
     bitsetwidget.cpp \
+    node_delegate.cpp \
+    nodeflagswidget.cpp \
     value_delegate.cpp
 
 HEADERS  += widgets.h \
     bitsetwidget.h \
+    node_delegate.h \
+    nodeflagswidget.h \
     value_delegate.h
 
 FORMS    += HelpEditorDlg.ui \
 	ListDialog.ui \
-	bitsetwidget.ui
+	bitsetwidget.ui \
+	nodeflagswidget.ui
 
 INCLUDEPATH += ../devicedb-lib ../ozwadmin-main ../../qt-openzwave/qt-openzwave/include/
 
@@ -35,3 +40,5 @@ macx: {
 #    QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.11
 
 }
+
+RESOURCES +=
