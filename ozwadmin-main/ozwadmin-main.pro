@@ -28,6 +28,13 @@ FORMS    += mainwindow.ui \
 LIBS += ../devicedb-lib/libdevicedb-lib.a ../ozwadmin-widgets/libozwadmin-widgets.a
 INCLUDEPATH += ../devicedb-lib ../ozwadmin-widgets
 
+ozwconfig.target=config/qrc_ozwconfig.cpp
+ozwconfig.commands=cp -R ../../open-zwave/config config/ && cd config && $$[QT_INSTALL_BINS]/rcc -project -o ozwconfig.qrc && $$[QT_INSTALL_BINS]/rcc --name="ozwconfig" --root="/config/" ozwconfig.qrc -o qrc_ozwconfig.cpp
+
+QMAKE_EXTRA_TARGETS += ozwconfig
+PRE_TARGETDEPS += config/qrc_ozwconfig.cpp
+SOURCES += config/qrc_ozwconfig.cpp
+
 macx: {
     QMAKE_CXXFLAGS += -F../../qt-openzwave/qt-openzwave/
     LIBS += -framework IOKit -framework CoreFoundation
@@ -44,4 +51,4 @@ macx: {
 }
 
 RESOURCES += \
-    ozwadmin-main.qrc
+    ozwadmin-main.qrc \
