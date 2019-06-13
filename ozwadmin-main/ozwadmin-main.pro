@@ -11,7 +11,6 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = ../ozwadmin
 TEMPLATE = app
 
-
 SOURCES += main.cpp\
         mainwindow.cpp \
     metadatawindow.cpp \
@@ -40,7 +39,7 @@ macx: {
     QMAKE_BUNDLE_DATA += BUNDLE LIBOZW
     ICON = res/ozw_logo.icns
 } else {
-    LIBS += -L../../qt-openzwave/qt-openzwave/ -lqt-openzwave
+    LIBS += -L../../qt-openzwave/qt-openzwave/ -lqt-openzwave -L../../open-zwave/ -lopenzwave -lresolv
     INCLUDEPATH += ../../qt-openzwave/qt-openzwave/include/
 }
 
