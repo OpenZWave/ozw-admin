@@ -33,6 +33,7 @@
 #include "devicedb.hpp"
 #include "value_delegate.h"
 #include "node_delegate.h"
+#include "configuration.h"
 
 
 void SetReadOnly(QCheckBox* checkBox, bool readOnly)
@@ -57,6 +58,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionOpen_Serial_Port, SIGNAL(triggered()), this, SLOT(OpenSerialPort()));
     connect(ui->actionDevice_Database, SIGNAL(triggered()), this, SLOT(OpenDeviceDB()));
     connect(ui->md_helpwindow, &QPushButton::clicked, this, &MainWindow::openMetaDataWindow);
+    connect(ui->action_Configuration, SIGNAL(triggered()), this, SLOT(openConfigWindow()));
 
     Node_Delegate *nodeflagdelegate = new Node_Delegate(this);
 
@@ -412,4 +414,9 @@ void MainWindow::openMetaDataWindow() {
 void MainWindow::OpenDeviceDB() {
     DeviceDB *ddb = new DeviceDB();
     ddb->show();
+}
+
+void MainWindow::openConfigWindow() {
+    Configuration *cfg = new Configuration(this->m_qtozwmanager->getOptions(), this);
+    cfg->show();
 }

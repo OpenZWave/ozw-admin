@@ -12,17 +12,20 @@ TARGET = ../ozwadmin
 TEMPLATE = app
 
 SOURCES += main.cpp\
+    configuration.cpp \
         mainwindow.cpp \
     metadatawindow.cpp \
     util.cpp \
     logwindow.cpp
 
 HEADERS  += mainwindow.h \
+    configuration.h \
     metadatawindow.h \
     util.h \
     logwindow.h \
 
 FORMS    += mainwindow.ui \
+    configuration.ui \
     metadatawindow.ui
 
 LIBS += ../devicedb-lib/libdevicedb-lib.a ../ozwadmin-widgets/libozwadmin-widgets.a

@@ -49,6 +49,7 @@ public slots:
     void QTOZW_Ready();
 
     void openMetaDataWindow();
+    void openConfigWindow();
     void updateNodeStats();
 
 

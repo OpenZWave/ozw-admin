@@ -17,17 +17,17 @@
 
 #include <unistd.h>
 
-#include "mainwindow.h"
 #include <QApplication>
-#include <QMessageBox>
 #include <QDir>
 #include <QDebug>
 #include <QLoggingCategory>
-#include <QTreeView>
 #include <QDirIterator>
 #include <QDir>
 #include <QFile>
 #include <QFileInfo>
+
+#include "mainwindow.h"
+
 
 int main(int argc, char *argv[])
 {
