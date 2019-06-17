@@ -10,7 +10,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = devicedb-lib
 TEMPLATE = lib
-CONFIG += staticlib
+CONFIG += staticlib silent
 
 
 

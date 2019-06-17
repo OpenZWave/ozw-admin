@@ -5,7 +5,7 @@
 #include "ui_configuration.h"
 
 #include "propertybrowser/qtvariantproperty.h"
-#include "propertybrowser/QtTreePropertyBrowser"
+#include "propertybrowser/qttreepropertybrowser.h"
 
 
 Configuration::Configuration(QTOZWOptions *options, QWidget *parent) :

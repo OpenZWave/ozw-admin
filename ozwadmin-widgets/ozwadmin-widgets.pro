@@ -10,7 +10,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = ozwadmin-widgets
 TEMPLATE = lib
-CONFIG += staticlib
+CONFIG += staticlib silent
 
 
 SOURCES += widgets.cpp \
@@ -31,55 +31,6 @@ HEADERS  += widgets.h \
     bitsetwidget.h \
     node_delegate.h \
     nodeflagswidget.h \
-    propertybrowser/QtAbstractEditorFactoryBase \
-    propertybrowser/QtAbstractPropertyBrowser \
-    propertybrowser/QtAbstractPropertyManager \
-    propertybrowser/QtBoolPropertyManager \
-    propertybrowser/QtBrowserItem \
-    propertybrowser/QtButtonPropertyBrowser \
-    propertybrowser/QtCharEditorFactory \
-    propertybrowser/QtCharPropertyManager \
-    propertybrowser/QtCheckBoxFactory \
-    propertybrowser/QtColorEditorFactory \
-    propertybrowser/QtColorPropertyManager \
-    propertybrowser/QtCursorEditorFactory \
-    propertybrowser/QtCursorPropertyManager \
-    propertybrowser/QtDateEditFactory \
-    propertybrowser/QtDatePropertyManager \
-    propertybrowser/QtDateTimeEditFactory \
-    propertybrowser/QtDateTimePropertyManager \
-    propertybrowser/QtDoublePropertyManager \
-    propertybrowser/QtDoubleSpinBoxFactory \
-    propertybrowser/QtEnumEditorFactory \
-    propertybrowser/QtEnumPropertyManager \
-    propertybrowser/QtFlagPropertyManager \
-    propertybrowser/QtFontEditorFactory \
-    propertybrowser/QtFontPropertyManager \
-    propertybrowser/QtGroupBoxPropertyBrowser \
-    propertybrowser/QtGroupPropertyManager \
-    propertybrowser/QtIntPropertyManager \
-    propertybrowser/QtKeySequenceEditorFactory \
-    propertybrowser/QtKeySequencePropertyManager \
-    propertybrowser/QtLineEditFactory \
-    propertybrowser/QtLocalePropertyManager \
-    propertybrowser/QtPointFPropertyManager \
-    propertybrowser/QtPointPropertyManager \
-    propertybrowser/QtProperty \
-    propertybrowser/QtRectFPropertyManager \
-    propertybrowser/QtRectPropertyManager \
-    propertybrowser/QtScrollBarFactory \
-    propertybrowser/QtSizeFPropertyManager \
-    propertybrowser/QtSizePolicyPropertyManager \
-    propertybrowser/QtSizePropertyManager \
-    propertybrowser/QtSliderFactory \
-    propertybrowser/QtSpinBoxFactory \
-    propertybrowser/QtStringPropertyManager \
-    propertybrowser/QtTimeEditFactory \
-    propertybrowser/QtTimePropertyManager \
-    propertybrowser/QtTreePropertyBrowser \
-    propertybrowser/QtVariantEditorFactory \
-    propertybrowser/QtVariantProperty \
-    propertybrowser/QtVariantPropertyManager \
     propertybrowser/qtbuttonpropertybrowser.h \
     propertybrowser/qteditorfactory.h \
     propertybrowser/qtgroupboxpropertybrowser.h \
