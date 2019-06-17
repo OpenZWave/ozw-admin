@@ -24,6 +24,7 @@
 #include <QDataWidgetMapper>
 
 #include <qt-openzwave/qtozwproxymodels.h>
+#include <qt-openzwave/qtozwoptions.h>
 #include <qt-openzwave/qtozw_pods.h>
 
 #include "mainwindow.h"
@@ -127,8 +128,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
 //    printf("Starting OZWAdmin with OpenZWave Version %s\n", OpenZWave::Manager::getVersionAsString().c_str());
 
-    m_configpath = settings.value("ConfigPath", "../../../config/").toString();
-    m_userpath = settings.value("UserPath", "").toString();
+    m_configpath = settings.value("openzwave/ConfigPath", "../../../config/").toString();
+    m_userpath = settings.value("openzwave/UserPath", "").toString();
     while (!m_configpath.exists()) {
         int ret = QMessageBox::critical(nullptr, "Select Device Database Path",
                                         QString("Please Select a Path to the Device Database"),
@@ -142,7 +143,8 @@ MainWindow::MainWindow(QWidget *parent) :
             QDir directory(dir);
             if (directory.exists("manufacturer_specific.xml")) {
                 m_configpath.setPath(dir);
-                settings.setValue("ConfigPath", dir);
+                settings.setValue("openzwave/ConfigPath", dir);
+                settings.setValue("openzwave/UserPath", dir);
             } else {
                 if (QMessageBox::critical(nullptr, "Invalid Directory",
                                       QString("The Directory ").append(dir).append(" a Valid Device Database"),
@@ -167,6 +169,24 @@ MainWindow::~MainWindow()
 
 void MainWindow::QTOZW_Ready() {
     qDebug() << "QTOZW Ready";
+
+    /* apply our Local Configuration Options to the OZW Options Class */
+    settings.beginGroup("openzwave");
+    QStringList optionlist = settings.allKeys();
+    for (int i = 0; i < optionlist.size(); i++) {
+        qDebug() << "Updating Option " << optionlist.at(i) << " to " << settings.value(optionlist.at(i));
+        QTOZWOptions *ozwoptions = this->m_qtozwmanager->getOptions();
+        ozwoptions->setProperty(optionlist.at(i).toLocal8Bit(), settings.value(optionlist.at(i)));
+    }
+    settings.endGroup();
+
+
+
+
+
+
+
+
     QTOZW_proxyNodeModel *nodeList = new QTOZW_proxyNodeModel(this);
     nodeList->setSourceModel(this->m_qtozwmanager->getNodeModel());
     this->ui->nodeList->setModel(nodeList);
