@@ -387,28 +387,28 @@ void Configuration::saveConfiguration() {
     property = dynamic_cast<QtVariantProperty *>(this->m_variantToProperty["Logging"]);
     if (property->value().toBool() != m_options->Logging()) {
         m_options->setLogging(property->value().toBool());
-        settings.setValue("openzwave/Logging", m_options->Logging());
+        settings.setValue("openzwave/Logging", property->value().toBool());
         qDebug() << "Saved Logging Param with " << property->value();
     }
 
     property = dynamic_cast<QtVariantProperty *>(this->m_variantToProperty["LogFileName"]);
     if (property->value()  != m_options->LogFileName()) {
         m_options->setLogFileName(property->value().toString());
-        settings.setValue("openzwave/LogFileName", m_options->LogFileName());
+        settings.setValue("openzwave/LogFileName", property->value().toString());
         qDebug() << "Saved LogFileName Param with " << property->value();
     }
 
     property = dynamic_cast<QtVariantProperty *>(this->m_variantToProperty["AppendLogFile"]);
     if (property->value() != m_options->AppendLogFile()) {
         m_options->setAppendLogFile(property->value().toBool());
-        settings.setValue("openzwave/AppendLogFile", m_options->AppendLogFile());
+        settings.setValue("openzwave/AppendLogFile", property->value().toString());
         qDebug() << "Saved AppendLogFile Param with " << property->value();
     }
 
     property = dynamic_cast<QtVariantProperty *>(this->m_variantToProperty["ConsoleOutput"]);
     if (property->value() != m_options->ConsoleOutput()) {
         m_options->setConsoleOutput(property->value().toBool());
-        settings.setValue("openzwave/ConsoleOutput", m_options->ConsoleOutput());
+        settings.setValue("openzwave/ConsoleOutput", property->value().toBool());
         qDebug() << "Saved ConsoleOutput Param with " << property->value();
     }
 
@@ -434,77 +434,77 @@ void Configuration::saveConfiguration() {
     property = dynamic_cast<QtVariantProperty *>(this->m_variantToProperty["Associate"]);
     if (property->value() != m_options->Associate()) {
         m_options->setAssociate(property->value().toBool());
-        settings.setValue("openzwave/Associate", m_options->Associate());
+        settings.setValue("openzwave/Associate", property->value().toBool());
         qDebug() << "Saved Associate Param with " << property->value();
     }
 
     property = dynamic_cast<QtVariantProperty *>(this->m_variantToProperty["Exclude"]);
     if (property->value() != m_options->Exclude()) {
         m_options->setExclude(property->value().toString());
-        settings.setValue("openzwave/Exclude", m_options->Exclude());
+        settings.setValue("openzwave/Exclude", property->value().toString());
         qDebug() << "Saved Exclude Param with " << property->value();
     }
 
     property = dynamic_cast<QtVariantProperty *>(this->m_variantToProperty["Include"]);
     if (property->value() != m_options->Include()) {
         m_options->setInclude(property->value().toString());
-        settings.setValue("openzwave/Include", m_options->Include());
+        settings.setValue("openzwave/Include", property->value().toString());
         qDebug() << "Saved Include Param with " << property->value();
     }
 
     property = dynamic_cast<QtVariantProperty *>(this->m_variantToProperty["NotifyTransactions"]);
     if (property->value() != m_options->NotifyTransactions()) {
         m_options->setNotifyTransactions(property->value().toBool());
-        settings.setValue("openzwave/NotifyTransactions", m_options->NotifyTransactions());
+        settings.setValue("openzwave/NotifyTransactions", property->value().toBool());
         qDebug() << "Saved NotifyTransactions Param with " << property->value();
     }
 
     property = dynamic_cast<QtVariantProperty *>(this->m_variantToProperty["SaveConfiguration"]);
     if (property->value() != m_options->SaveConfiguration()) {
         m_options->setSaveConfiguration(property->value().toBool());
-        settings.setValue("openzwave/SaveConfiguration", m_options->SaveConfiguration());
+        settings.setValue("openzwave/SaveConfiguration", property->value().toBool());
         qDebug() << "Saved SaveConfiguration Param with " << property->value();
     }
 
     property = dynamic_cast<QtVariantProperty *>(this->m_variantToProperty["DriverMaxAttempts"]);
     if (property->value() != m_options->DriverMaxAttempts()) {
         m_options->setDriverMaxAttempts(property->value().toInt());
-        settings.setValue("openzwave/DriverMaxAttempts", m_options->DriverMaxAttempts());
+        settings.setValue("openzwave/DriverMaxAttempts", property->value().toInt());
         qDebug() << "Saved DriverMaxAttempts Param with " << property->value();
     }
 
     property = dynamic_cast<QtVariantProperty *>(this->m_variantToProperty["PollInterval"]);
     if (property->value()  != m_options->PollInterval()) {
         m_options->setPollInterval(property->value().toInt());
-        settings.setValue("openzwave/PollInterval", m_options->PollInterval());
+        settings.setValue("openzwave/PollInterval", property->value().toInt());
         qDebug() << "Saved PollInterval Param with " << property->value();
     }
 
     property = dynamic_cast<QtVariantProperty *>(this->m_variantToProperty["IntervalBetweenPolls"]);
     if (property->value()  != m_options->IntervalBetweenPolls()) {
         m_options->setIntervalBetweenPolls(property->value().toBool());
-        settings.setValue("openzwave/IntervalBetweenPolls", m_options->IntervalBetweenPolls());
+        settings.setValue("openzwave/IntervalBetweenPolls", property->value().toBool());
         qDebug() << "Saved IntervalBetweenPolls Param with " << property->value();
     }
 
     property = dynamic_cast<QtVariantProperty *>(this->m_variantToProperty["SuppressValueRefresh"]);
     if (property->value()  != m_options->SuppressValueRefresh()) {
         m_options->setSuppressValueRefresh(property->value().toBool());
-        settings.setValue("openzwave/SuppressValueRefresh", m_options->SuppressValueRefresh());
+        settings.setValue("openzwave/SuppressValueRefresh", property->value().toBool());
         qDebug() << "Saved SuppressValueRefresh Param with " << property->value();
     }
 
     property = dynamic_cast<QtVariantProperty *>(this->m_variantToProperty["PerformReturnRoutes"]);
     if (property->value() != m_options->PerformReturnRoutes()) {
         m_options->setPerformReturnRoutes(property->value().toBool());
-        settings.setValue("openzwave/PerformReturnRoutes", m_options->PerformReturnRoutes());
+        settings.setValue("openzwave/PerformReturnRoutes", property->value().toBool());
         qDebug() << "Saved PerformReturnRoutes Param with " << property->value();
     }
 
     property = dynamic_cast<QtVariantProperty *>(this->m_variantToProperty["IntervalBetweenPolls"]);
     if (property->value() != m_options->IntervalBetweenPolls()) {
         m_options->setIntervalBetweenPolls(property->value().toBool());
-        settings.setValue("openzwave/IntervalBetweenPolls", m_options->IntervalBetweenPolls());
+        settings.setValue("openzwave/IntervalBetweenPolls", property->value().toBool());
         qDebug() << "Saved IntervalBetweenPolls Param with " << property->value();
     }
 
@@ -518,35 +518,35 @@ void Configuration::saveConfiguration() {
     property = dynamic_cast<QtVariantProperty *>(this->m_variantToProperty["RefreshAllUserCodes"]);
     if (property->value() != m_options->RefreshAllUserCodes()) {
         m_options->setRefreshAllUserCodes(property->value().toBool());
-        settings.setValue("openzwave/RefreshAllUserCodes", m_options->RefreshAllUserCodes());
+        settings.setValue("openzwave/RefreshAllUserCodes", property->value().toBool());
         qDebug() << "Saved RefreshAllUserCodes Param with " << property->value();
     }
 
     property = dynamic_cast<QtVariantProperty *>(this->m_variantToProperty["RetryTimeout"]);
     if (property->value() != m_options->RetryTimeout()) {
         m_options->setRetryTimeout(property->value().toInt());
-        settings.setValue("openzwave/RetryTimeout", m_options->RetryTimeout());
+        settings.setValue("openzwave/RetryTimeout", property->value().toInt());
         qDebug() << "Saved RetryTimeout Param with " << property->value();
     }
 
     property = dynamic_cast<QtVariantProperty *>(this->m_variantToProperty["EnableSIS"]);
     if (property->value()  != m_options->EnableSIS()) {
         m_options->setEnableSIS(property->value().toBool());
-        settings.setValue("openzwave/EnableSIS", m_options->EnableSIS());
+        settings.setValue("openzwave/EnableSIS", property->value().toBool());
         qDebug() << "Saved EnableSIS Param with " << property->value();
     }
 
     property = dynamic_cast<QtVariantProperty *>(this->m_variantToProperty["AssumeAwake"]);
     if (property->value() != m_options->AssumeAwake()) {
         m_options->setAssumeAwake(property->value().toBool());
-        settings.setValue("openzwave/AssumeAwake", m_options->AssumeAwake());
+        settings.setValue("openzwave/AssumeAwake", property->value().toBool());
         qDebug() << "Saved AssumeAwake Param with " << property->value();
     }
 
     property = dynamic_cast<QtVariantProperty *>(this->m_variantToProperty["NotifyOnDriverUnload"]);
     if (property->value() != m_options->NotifyOnDriverUnload()) {
         m_options->setNotifyOnDriverUnload(property->value().toBool());
-        settings.setValue("openzwave/NotifyOnDriverUnload", m_options->NotifyOnDriverUnload());
+        settings.setValue("openzwave/NotifyOnDriverUnload", property->value().toBool());
         qDebug() << "Saved NotifyOnDriverUnload Param with " << property->value();
     }
 
@@ -562,25 +562,24 @@ void Configuration::saveConfiguration() {
     property = dynamic_cast<QtVariantProperty *>(this->m_variantToProperty["CustomSecuredCC"]);
     if (property->value() != m_options->CustomSecuredCC()) {
         m_options->setCustomSecuredCC(property->value().toString());
-        settings.setValue("openzwave/CustomSecuredCC", m_options->CustomSecuredCC());
+        settings.setValue("openzwave/CustomSecuredCC", property->value().toString());
         qDebug() << "Saved CustomSecuredCC Param with " << property->value();
     }
 
     property = dynamic_cast<QtVariantProperty *>(this->m_variantToProperty["EnforceSecureReception"]);
     if (property->value() != m_options->EnforceSecureReception()) {
         m_options->setEnforceSecureReception(property->value().toBool());
-        settings.setValue("openzwave/EnforceSecureReception", m_options->EnforceSecureReception());
+        settings.setValue("openzwave/EnforceSecureReception", property->value().toBool());
         qDebug() << "Saved EnforceSecureReception Param with " << property->value();
     }
 
     property = dynamic_cast<QtVariantProperty *>(this->m_variantToProperty["AutoUpdateConfigFile"]);
     if (property->value() != m_options->AutoUpdateConfigFile()) {
         m_options->setAutoUpdateConfigFile(property->value().toBool());
-        settings.setValue("openzwave/AutoUpdateConfigFile", m_options->AutoUpdateConfigFile());
+        settings.setValue("openzwave/AutoUpdateConfigFile", property->value().toBool());
         qDebug() << "Saved AutoUpdateConfigFile Param with " << property->value();
     }
 #if 0
-
     property = dynamic_cast<QtVariantProperty *>(this->m_variantToProperty["ReloadAfterUpdate"]);
     if (property->value() != m_options->ReloadAfterUpdate()) {
         m_options->setReloadAfterUpdate(property->value().toString());
@@ -590,14 +589,14 @@ void Configuration::saveConfiguration() {
     property = dynamic_cast<QtVariantProperty *>(this->m_variantToProperty["Language"]);
     if (property->value() != m_options->Language()) {
         m_options->setLanguage(property->value().toString());
-        settings.setValue("openzwave/Language", m_options->Language());
+        settings.setValue("openzwave/Language", property->value().toString());
         qDebug() << "Saved Language Param with " << property->value();
     }
 
     property = dynamic_cast<QtVariantProperty *>(this->m_variantToProperty["IncludeInstanceLabels"]);
     if (property->value() != m_options->IncludeInstanceLabels()) {
         m_options->setIncludeInstanceLabels(property->value().toBool());
-        settings.setValue("openzwave/IncludeInstanceLabels", m_options->IncludeInstanceLabels());
+        settings.setValue("openzwave/IncludeInstanceLabels", property->value().toBool());
         qDebug() << "Saved IncludeInstanceLabels Param with " << property->value();
     }
 }
