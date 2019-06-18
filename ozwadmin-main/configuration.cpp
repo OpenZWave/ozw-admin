@@ -91,10 +91,8 @@ Configuration::Configuration(QTOZWOptions *options, QWidget *parent) :
 
     {
         enumitem = enumManager->addProperty("SaveLogLevel");
-        QStringList enumNames;
-        enumNames << "Invalid" << "None" << "Always" << "Fatal" << "Error" << "Warning" << "Alert" << "Info" << "Detail" << "Debug" << "StreamDetail";
-        enumManager->setEnumNames(enumitem, enumNames);
-        enumManager->setValue(enumitem, options->SaveLogLevel());
+        enumManager->setEnumNames(enumitem, options->SaveLogLevel().getEnums());
+        enumManager->setValue(enumitem, options->SaveLogLevel().getSelected());
         enumitem->setBold(settings.contains("openzwave/SaveLogLevel"));
         topItem->addSubProperty(enumitem);
         this->m_variantToProperty.insert("SaveLogLevel", enumitem);
@@ -102,10 +100,8 @@ Configuration::Configuration(QTOZWOptions *options, QWidget *parent) :
 
     {
         enumitem = enumManager->addProperty("QueueLogLevel");
-        QStringList enumNames;
-        enumNames << "Invalid" << "None" << "Always" << "Fatal" << "Error" << "Warning" << "Alert" << "Info" << "Detail" << "Debug" << "StreamDetail";
-        enumManager->setEnumNames(enumitem, enumNames);
-        enumManager->setValue(enumitem, options->QueueLogLevel());
+        enumManager->setEnumNames(enumitem, options->QueueLogLevel().getEnums());
+        enumManager->setValue(enumitem, options->QueueLogLevel().getSelected());
         enumitem->setBold(settings.contains("openzwave/QueueLogLevel"));
         topItem->addSubProperty(enumitem);
         this->m_variantToProperty.insert("QueueLogLevel", enumitem);
@@ -113,10 +109,8 @@ Configuration::Configuration(QTOZWOptions *options, QWidget *parent) :
 
     {
         enumitem = enumManager->addProperty("DumpTriggerLevel");
-        QStringList enumNames;
-        enumNames << "Invalid" << "None" << "Always" << "Fatal" << "Error" << "Warning" << "Alert" << "Info" << "Detail" << "Debug" << "StreamDetail";
-        enumManager->setEnumNames(enumitem, enumNames);
-        enumManager->setValue(enumitem, options->DumpTriggerLevel());
+        enumManager->setEnumNames(enumitem, options->DumpTriggerLevel().getEnums());
+        enumManager->setValue(enumitem, options->DumpTriggerLevel().getSelected());
         enumitem->setBold(settings.contains("openzwave/DumpTriggerLevel"));
         topItem->addSubProperty(enumitem);
         this->m_variantToProperty.insert("DumpTriggerLevel", enumitem);
@@ -412,24 +406,31 @@ void Configuration::saveConfiguration() {
         qDebug() << "Saved ConsoleOutput Param with " << property->value();
     }
 
-#if 0
     /* enums - Come back to this */
-    property = dynamic_cast<QtVariantProperty *>(this->m_variantToProperty["SaveLogLevel"]);
-    if (property->value() != m_options->SaveLogLevel()) {
-        m_options->setSaveLogLevel(property->value().toString());
-        settings.setValue("openzwave/SaveLogLevel", m_options->SaveLogLevel());
+    QtProperty *property1 = dynamic_cast<QtProperty *>(this->m_variantToProperty["SaveLogLevel"]);
+    OptionList SaveLogLevel = m_options->SaveLogLevel();
+    if (property1->valueText() != SaveLogLevel.getSelectedName()) {
+        SaveLogLevel.setSelected(property1->valueText());
+        m_options->setSaveLogLevel(SaveLogLevel);
+        settings.setValue("openzwave/SaveLogLevel", SaveLogLevel.getSelectedName());
     }
-    property = dynamic_cast<QtVariantProperty *>(this->m_variantToProperty["SaveLogLevel"]);
-    if (property->value() != m_options->QueueLogLevel()) {
-        m_options->setQueueLogLevel(property->value().toString());
-        settings.setValue("openzwave/QueueLogLevel", m_options->QueueLogLevel());
+
+    property1 = dynamic_cast<QtProperty *>(this->m_variantToProperty["QueueLogLevel"]);
+    OptionList QueueLogLevel = m_options->SaveLogLevel();
+    if (property1->valueText() != QueueLogLevel.getSelectedName()) {
+        QueueLogLevel.setSelected(property1->valueText());
+        m_options->setQueueLogLevel(QueueLogLevel);
+        settings.setValue("openzwave/QueueLogLevel", QueueLogLevel.getSelectedName());
     }
-    property = dynamic_cast<QtVariantProperty *>(this->m_variantToProperty["DumpTriggerLevel"]);
-    if (property->value()  != m_options->DumpTriggerLevel()) {
-        m_options->setDumpTriggerLevel(property->value().toString());
-        settings.setValue("openzwave/DumpTriggerLevel", m_options->DumpTriggerLevel());
+
+    property1 = dynamic_cast<QtProperty *>(this->m_variantToProperty["DumpTriggerLevel"]);
+    OptionList DumpTriggerLevel = m_options->DumpTriggerLevel();
+    if (property1->valueText() != DumpTriggerLevel.getSelectedName()) {
+        DumpTriggerLevel.setSelected(property1->valueText());
+        m_options->setQueueLogLevel(DumpTriggerLevel);
+        settings.setValue("openzwave/DumpTriggerLevel", DumpTriggerLevel.getSelectedName());
     }
-#endif
+
 
     property = dynamic_cast<QtVariantProperty *>(this->m_variantToProperty["Associate"]);
     if (property->value() != m_options->Associate()) {

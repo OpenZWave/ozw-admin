@@ -128,8 +128,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
 //    printf("Starting OZWAdmin with OpenZWave Version %s\n", OpenZWave::Manager::getVersionAsString().c_str());
 
-    m_configpath = settings.value("openzwave/ConfigPath", "../../../config/").toString();
-    m_userpath = settings.value("openzwave/UserPath", "").toString();
+    m_configpath = settings.value("openzwave/ConfigPath", "../../../config/").toString().append("/");
+    m_userpath = settings.value("openzwave/UserPath", "").toString().append("/");
     while (!m_configpath.exists()) {
         int ret = QMessageBox::critical(nullptr, "Select Device Database Path",
                                         QString("Please Select a Path to the Device Database"),
@@ -143,8 +143,8 @@ MainWindow::MainWindow(QWidget *parent) :
             QDir directory(dir);
             if (directory.exists("manufacturer_specific.xml")) {
                 m_configpath.setPath(dir);
-                settings.setValue("openzwave/ConfigPath", dir);
-                settings.setValue("openzwave/UserPath", dir);
+                settings.setValue("openzwave/ConfigPath", dir.append("/"));
+                settings.setValue("openzwave/UserPath", dir.append("/"));
             } else {
                 if (QMessageBox::critical(nullptr, "Invalid Directory",
                                       QString("The Directory ").append(dir).append(" a Valid Device Database"),
@@ -156,7 +156,7 @@ MainWindow::MainWindow(QWidget *parent) :
             exit(-1);
         }
     }
-    this->m_openzwave = new QTOpenZwave(this);
+    this->m_openzwave = new QTOpenZwave(this, m_configpath, m_userpath);
     this->m_qtozwmanager = this->m_openzwave->GetManager();
     QObject::connect(this->m_qtozwmanager, &QTOZWManager::ready, this, &MainWindow::QTOZW_Ready);
     this->m_qtozwmanager->initilizeSource(this->settings.value("StartServer").toBool());
@@ -176,16 +176,19 @@ void MainWindow::QTOZW_Ready() {
     for (int i = 0; i < optionlist.size(); i++) {
         qDebug() << "Updating Option " << optionlist.at(i) << " to " << settings.value(optionlist.at(i));
         QTOZWOptions *ozwoptions = this->m_qtozwmanager->getOptions();
-        ozwoptions->setProperty(optionlist.at(i).toLocal8Bit(), settings.value(optionlist.at(i)));
+        QStringList listtypes;
+        listtypes << "SaveLogLevel" << "QueueLogLevel" << "DumpLogLevel";
+        if (listtypes.contains(optionlist.at(i))) {
+            OptionList list = ozwoptions->property(optionlist.at(i).toLocal8Bit()).value<OptionList>();
+            if (list.getEnums().size() > 0)
+                list.setSelected(settings.value(optionlist.at(i)).toString());
+        }
+        else
+        {
+            ozwoptions->setProperty(optionlist.at(i).toLocal8Bit(), settings.value(optionlist.at(i)));
+        }
     }
     settings.endGroup();
-
-
-
-
-
-
-
 
     QTOZW_proxyNodeModel *nodeList = new QTOZW_proxyNodeModel(this);
     nodeList->setSourceModel(this->m_qtozwmanager->getNodeModel());
