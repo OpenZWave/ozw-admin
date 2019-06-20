@@ -249,11 +249,8 @@ Configuration::Configuration(QTOZWOptions *options, QWidget *parent) :
 
     {
         enumitem = enumManager->addProperty("SecurityStrategy");
-        QStringList enumNames;
-        enumNames << "Essential" << "Supported" << "Custom";
-        enumManager->setEnumNames(enumitem, enumNames);
-        int index = enumNames.indexOf(options->SecurityStrategy());
-        enumManager->setValue(enumitem, index);
+        enumManager->setEnumNames(enumitem, options->SecurityStrategy().getEnums());
+        enumManager->setValue(enumitem, options->SecurityStrategy().getSelected());
         enumitem->setBold(settings.contains("openzwave/SecurityStrategy"));
         topItem->addSubProperty(enumitem);
         this->m_variantToProperty.insert("SecurityStrategy", enumitem);
@@ -327,15 +324,13 @@ Configuration::Configuration(QTOZWOptions *options, QWidget *parent) :
 
     {
         enumitem = enumManager->addProperty("ReloadAfterUpdate");
-        QStringList enumNames;
-        enumNames << "Never" << "Immediate" << "Awake";
-        enumManager->setEnumNames(enumitem, enumNames);
-        int index = enumNames.indexOf(options->ReloadAfterUpdate());
-        enumManager->setValue(enumitem, index);
+        enumManager->setEnumNames(enumitem, options->ReloadAfterUpdate().getEnums());
+        enumManager->setValue(enumitem, options->ReloadAfterUpdate().getSelected());
         enumitem->setBold(settings.contains("openzwave/ReloadAfterUpdate"));
         topItem->addSubProperty(enumitem);
         this->m_variantToProperty.insert("ReloadAfterUpdate", enumitem);
     }
+
 
     m_variantEditor->addProperty(topItem);
 
@@ -413,6 +408,7 @@ void Configuration::saveConfiguration() {
         SaveLogLevel.setSelected(property1->valueText());
         m_options->setSaveLogLevel(SaveLogLevel);
         settings.setValue("openzwave/SaveLogLevel", SaveLogLevel.getSelectedName());
+        qDebug() << "Saved SaveLogLevel Param with " << SaveLogLevel.getSelectedName();
     }
 
     property1 = dynamic_cast<QtProperty *>(this->m_variantToProperty["QueueLogLevel"]);
@@ -421,6 +417,7 @@ void Configuration::saveConfiguration() {
         QueueLogLevel.setSelected(property1->valueText());
         m_options->setQueueLogLevel(QueueLogLevel);
         settings.setValue("openzwave/QueueLogLevel", QueueLogLevel.getSelectedName());
+        qDebug() << "Saved QueueLogLevel Param with " << QueueLogLevel.getSelectedName();
     }
 
     property1 = dynamic_cast<QtProperty *>(this->m_variantToProperty["DumpTriggerLevel"]);
@@ -429,6 +426,7 @@ void Configuration::saveConfiguration() {
         DumpTriggerLevel.setSelected(property1->valueText());
         m_options->setQueueLogLevel(DumpTriggerLevel);
         settings.setValue("openzwave/DumpTriggerLevel", DumpTriggerLevel.getSelectedName());
+        qDebug() << "Saved DumpTriggerLevel Param with " << DumpTriggerLevel.getSelectedName();
     }
 
 
@@ -551,14 +549,14 @@ void Configuration::saveConfiguration() {
         qDebug() << "Saved NotifyOnDriverUnload Param with " << property->value();
     }
 
-#if 0
-    /* another enum */
-    property = dynamic_cast<QtVariantProperty *>(this->m_variantToProperty["SecurityStrategy"]);
-    if (property->value() != m_options->SecurityStrategy()) {
-        m_options->setSecurityStrategy(property->value().toString());
-        settings.setValue("openzwave/SecurityStrategy", m_options->SecurityStrategy());
+    property1 = dynamic_cast<QtProperty *>(this->m_variantToProperty["SecurityStrategy"]);
+    OptionList SecurityStrategy = m_options->SecurityStrategy();
+    if (property1->valueText() != SecurityStrategy.getSelectedName()) {
+        SecurityStrategy.setSelected(property1->valueText());
+        m_options->setSecurityStrategy(SecurityStrategy);
+        settings.setValue("openzwave/SecurityStrategy", SecurityStrategy.getSelectedName());
+        qDebug() << "Saved SecurityStrategy Param with " << SecurityStrategy.getSelectedName();
     }
-#endif
 
     property = dynamic_cast<QtVariantProperty *>(this->m_variantToProperty["CustomSecuredCC"]);
     if (property->value() != m_options->CustomSecuredCC()) {
@@ -580,13 +578,16 @@ void Configuration::saveConfiguration() {
         settings.setValue("openzwave/AutoUpdateConfigFile", property->value().toBool());
         qDebug() << "Saved AutoUpdateConfigFile Param with " << property->value();
     }
-#if 0
-    property = dynamic_cast<QtVariantProperty *>(this->m_variantToProperty["ReloadAfterUpdate"]);
-    if (property->value() != m_options->ReloadAfterUpdate()) {
-        m_options->setReloadAfterUpdate(property->value().toString());
-        settings.setValue("openzwave/ReloadAfterUpdate", m_options->ReloadAfterUpdate());
+
+    property1 = dynamic_cast<QtProperty *>(this->m_variantToProperty["ReloadAfterUpdate"]);
+    OptionList ReloadAfterUpdate = m_options->ReloadAfterUpdate();
+    if (property1->valueText() != ReloadAfterUpdate.getSelectedName()) {
+        ReloadAfterUpdate.setSelected(property1->valueText());
+        m_options->setReloadAfterUpdate(ReloadAfterUpdate);
+        settings.setValue("openzwave/SecurityStrategy", ReloadAfterUpdate.getSelectedName());
+        qDebug() << "Saved ReloadAfterUpdate Param with " << ReloadAfterUpdate.getSelectedName();
     }
-#endif
+
     property = dynamic_cast<QtVariantProperty *>(this->m_variantToProperty["Language"]);
     if (property->value() != m_options->Language()) {
         m_options->setLanguage(property->value().toString());
