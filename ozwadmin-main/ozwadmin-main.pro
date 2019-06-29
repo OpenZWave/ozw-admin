@@ -12,19 +12,20 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
     configuration.cpp \
+    logwindow.cpp \
     mainwindow.cpp \
     metadatawindow.cpp \
-    util.cpp \
-    logwindow.cpp
+    util.cpp
 
 HEADERS  += mainwindow.h \
     configuration.h \
+    logwindow.h \
     metadatawindow.h \
     util.h \
-    logwindow.h \
 
 FORMS    += mainwindow.ui \
     configuration.ui \
+    logwindow.ui \
     metadatawindow.ui
 
 RESOURCES += \

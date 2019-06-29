@@ -60,6 +60,7 @@ private:
 
     QTOpenZwave *m_openzwave;
     QTOZWManager *m_qtozwmanager;
+    LogWindow m_logWindow;
     QDir m_configpath;
     QDir m_userpath;
     QTimer m_statTimer;

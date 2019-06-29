@@ -51,10 +51,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     this->ui->setupUi(this);
 
-#if 0
-    this->logBrowser = new LogBrowser;
     connect(ui->actionOpen_Log_Window, SIGNAL(triggered()), this, SLOT(openLogWindow()));
-#endif
 
     connect(ui->actionOpen_Serial_Port, SIGNAL(triggered()), this, SLOT(OpenSerialPort()));
     connect(ui->actionDevice_Database, SIGNAL(triggered()), this, SLOT(OpenDeviceDB()));
@@ -160,6 +157,7 @@ MainWindow::MainWindow(QWidget *parent) :
     this->m_qtozwmanager = this->m_openzwave->GetManager();
     QObject::connect(this->m_qtozwmanager, &QTOZWManager::ready, this, &MainWindow::QTOZW_Ready);
     this->m_qtozwmanager->initilizeSource(this->settings.value("StartServer").toBool());
+    this->m_logWindow.setModel(this->m_qtozwmanager->getLogModel());
 }
 
 MainWindow::~MainWindow()
@@ -393,10 +391,10 @@ void MainWindow::updateNodeStats() {
     this->ui->ns_avgresprtt->setText(QVariant::fromValue<quint32>(ns.averageResponseRTT).toString());
     this->ui->ns_sentfailed->setText(QVariant::fromValue<quint32>(ns.sentFailed).toString());
     this->ui->ns_lastresprtt->setText(QVariant::fromValue<quint32>(ns.lastResponseRTT).toString());
-    this->ui->ns_recievedcnt->setText(QVariant::fromValue<quint32>(ns.recievedPackets).toString());
-    this->ui->ns_unsolicited->setText(QVariant::fromValue<quint32>(ns.recievedUnsolicited).toString());
+    this->ui->ns_recievedcnt->setText(QVariant::fromValue<quint32>(ns.receivedPackets).toString());
+    this->ui->ns_unsolicited->setText(QVariant::fromValue<quint32>(ns.receivedUnsolicited).toString());
     this->ui->ns_lastrecieved->setText(ns.lastReceivedTimeStamp);
-    this->ui->ns_rcvdduplicates->setText(QVariant::fromValue<quint32>(ns.recievedDupPackets).toString());
+    this->ui->ns_rcvdduplicates->setText(QVariant::fromValue<quint32>(ns.receivedDupPackets).toString());
 
     this->ui->etxstatus_frame->setVisible(ns.extendedTXSupported);
 
@@ -419,8 +417,7 @@ void MainWindow::updateNodeStats() {
 }
 
 void MainWindow::openLogWindow() {
-
-//    this->logBrowser->show();
+    this->m_logWindow.show();
 }
 
 void MainWindow::openMetaDataWindow() {
