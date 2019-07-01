@@ -36,19 +36,12 @@ RESOURCES += \
 LIBS += ../devicedb-lib/libdevicedb-lib.a ../ozwadmin-widgets/libozwadmin-widgets.a
 INCLUDEPATH += ../devicedb-lib ../ozwadmin-widgets
 
-ozwconfig.target=config/qrc_ozwconfig.cpp
-ozwconfig.commands=cp -R ../../open-zwave/config config/ && cd config && $$[QT_INSTALL_BINS]/rcc -project -o ozwconfig.qrc && $$[QT_INSTALL_BINS]/rcc --name="ozwconfig" --root="/config/" ozwconfig.qrc -o qrc_ozwconfig.cpp
-
-QMAKE_EXTRA_TARGETS += ozwconfig
-PRE_TARGETDEPS += config/qrc_ozwconfig.cpp
-SOURCES += config/qrc_ozwconfig.cpp
-
-INCLUDEPATH += ../../qt-openzwave/qt-openzwave/include/
-LIBS += -L../../qt-openzwave/qt-openzwave/ -lqt-openzwave
+INCLUDEPATH += ../../qt-openzwave/qt-openzwave/include/ ../../qt-openzwave/qt-openzwavedatabase/include/
+LIBS += -L../../qt-openzwave/qt-openzwave/ -lqt-openzwave -L../../qt-openzwave/qt-openzwavedatabase -lqt-openzwavedatabase
 
 macx: {
     LIBS += -framework IOKit -framework CoreFoundation
-    BUNDLE.files = ../../qt-openzwave/qt-openzwave/libqt-openzwave.1.dylib ../../open-zwave/libopenzwave-1.6.dylib
+    BUNDLE.files = ../../qt-openzwave/qt-openzwave/libqt-openzwave.1.dylib ../../open-zwave/libopenzwave-1.6.dylib ../../qt-openzwave/qt-openzwavedatabase/libqt-openzwavedatabase.1.dylib
     BUNDLE.path = Contents/Frameworks/
     QMAKE_BUNDLE_DATA += BUNDLE
     ICON = res/ozw_logo.icns

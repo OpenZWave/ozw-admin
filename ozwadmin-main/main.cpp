@@ -21,10 +21,6 @@
 #include <QDir>
 #include <QDebug>
 #include <QLoggingCategory>
-#include <QDirIterator>
-#include <QDir>
-#include <QFile>
-#include <QFileInfo>
 
 #include "mainwindow.h"
 
@@ -47,19 +43,6 @@ int main(int argc, char *argv[])
     QCoreApplication::setApplicationName("ozw-admin");
     QApplication a(argc, argv);
 
-    QDir configpath(".");
-    QDirIterator it(":/config/", QStringList() << "*.xml" << "*.png" << "*.xsd", QDir::NoFilter, QDirIterator::Subdirectories);
-    while (it.hasNext()) {
-        QFileInfo fi(it.next());
-        QString dirname = fi.dir().path().remove(0, 2);
-        configpath.mkpath(dirname);
-        if (!QFileInfo::exists(configpath.path()+fi.filePath().remove(0,1))) {
-            qDebug() << "Copying " << fi.filePath() << " to " << configpath.filePath(fi.filePath().remove(0, 2));
-            QFile::copy(fi.filePath(), configpath.filePath(fi.filePath().remove(0, 2)));
-        } else {
-            qDebug() << "Skipping " << fi.filePath() << " as it exists";
-        }
-    }
 
     MainWindow w;
     w.show();

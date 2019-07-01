@@ -21,8 +21,9 @@
 #include <QFileInfo>
 #include <QMessageBox>
 #include <QFileDialog>
-#include <QDataWidgetMapper>
+#include <QStandardPaths>
 
+#include <qt-openzwave/qt-openzwavedatabase.h>
 #include <qt-openzwave/qtozwproxymodels.h>
 #include <qt-openzwave/qtozwoptions.h>
 #include <qt-openzwave/qtozw_pods.h>
@@ -122,15 +123,54 @@ MainWindow::MainWindow(QWidget *parent) :
     SetReadOnly(this->ui->ni_routing, true);
     SetReadOnly(this->ui->ni_security, true);
 
+    //    printf("Starting OZWAdmin with OpenZWave Version %s\n", OpenZWave::Manager::getVersionAsString().c_str());
 
-//    printf("Starting OZWAdmin with OpenZWave Version %s\n", OpenZWave::Manager::getVersionAsString().c_str());
+
+
+    QStringList PossibleDBPaths;
+    PossibleDBPaths << settings.value("openzwave/ConfigPath", QDir::toNativeSeparators("../../../config/")).toString().append("/");
+    PossibleDBPaths << QStandardPaths::standardLocations(QStandardPaths::AppDataLocation);
+
+    QString path, dbPath, userPath;
+    foreach(path, PossibleDBPaths) {
+        qDebug() << "Checking " << QFileInfo(QDir::toNativeSeparators(path+"/config/manufacturer_specific.xml")).absoluteFilePath() << " for manufacturer_specific.xml";
+        if (QFileInfo(QDir::toNativeSeparators(path+"/config/manufacturer_specific.xml")).exists()) {
+            dbPath = QFileInfo(QDir::toNativeSeparators(path+"/config/manufacturer_specific.xml")).absoluteFilePath();
+            break;
+        }
+        qDebug() << "Checking " << QFileInfo(QDir::toNativeSeparators(path+"../config/manufacturer_specific.xml")).absoluteFilePath() << " for manufacturer_specific.xml";
+        if (QFile(QDir::toNativeSeparators(path+"/../config/manufacturer_specific.xml")).exists()) {
+            dbPath = QFileInfo(QDir::toNativeSeparators(path+"/../config/manufacturer_specific.xml")).absoluteFilePath();
+            break;
+        }
+    }
+    PossibleDBPaths.clear();
+    PossibleDBPaths << settings.value("openzwave/UserPath", QDir::toNativeSeparators("../../../config/")).toString().append("/");
+    PossibleDBPaths << QStandardPaths::standardLocations(QStandardPaths::AppDataLocation);
+
+    foreach(path, PossibleDBPaths) {
+        qDebug() << "Checking " << QFileInfo(QDir::toNativeSeparators(path+"/config/Options.xml")).absoluteFilePath() << " for Options.xml";
+        if (QFileInfo(QDir::toNativeSeparators(path+"/config/Options.xml")).exists()) {
+            userPath = QFileInfo(QDir::toNativeSeparators(path+"/config/Options.xml")).absoluteFilePath();
+            break;
+        }
+        qDebug() << "Checking " << QFileInfo(QDir::toNativeSeparators(path+"/../config/Options.xml")).absoluteFilePath() << " for Options.xml";
+        if (QFile(QDir::toNativeSeparators(path+"/../config/Options.xml")).exists()) {
+            userPath = QFileInfo(QDir::toNativeSeparators(path+"/../config/Options.xml")).absoluteFilePath();
+            break;
+        }
+    }
+
+    qDebug() << "DBPath: " << dbPath;
+    qDebug() << "userPath: " << userPath;
 
     m_configpath = settings.value("openzwave/ConfigPath", "../../../config/").toString().append("/");
     m_userpath = settings.value("openzwave/UserPath", "").toString().append("/");
     while (!m_configpath.exists()) {
-        int ret = QMessageBox::critical(nullptr, "Select Device Database Path",
-                                        QString("Please Select a Path to the Device Database"),
-                                        QMessageBox::Open | QMessageBox::Abort);
+        int ret = QMessageBox::critical(nullptr, tr("OpenZWave Database Path"),
+                                        tr("The OpenZWave Database was not Found\n") +
+                                        tr("Would you like to install a new copy, or use a existing database?"),
+                                        QMessageBox::Open | QMessageBox::Save |     QMessageBox::Abort);
         if (ret == QMessageBox::Open) {
             QString dir;
             dir = QFileDialog::getExistingDirectory(this, tr("Open Directory"),
@@ -148,6 +188,22 @@ MainWindow::MainWindow(QWidget *parent) :
                                           QMessageBox::Ok | QMessageBox::Abort) == QMessageBox::Abort) {
                     exit(-1);
                 }
+            }
+        } else if (ret == QMessageBox::Save) {
+            QString dir;
+            dir = QFileDialog::getExistingDirectory(this, tr("Open Directory"),
+                                                    QDir::currentPath(),
+                                                    QFileDialog::ShowDirsOnly
+                                                    );
+            QFileInfo directory(dir);
+            qDebug() << directory.absoluteFilePath();
+            if (directory.exists()) {
+                copyConfigDatabase(directory.absoluteFilePath().append("/"));
+                m_configpath.setPath(directory.absoluteFilePath().append("/config/"));
+                m_userpath.setPath(directory.absoluteFilePath().append("/config/"));
+                settings.setValue("openzwave/ConfigPath", m_configpath.absolutePath());
+                settings.setValue("openzwave/UserPath", m_userpath.absolutePath());
+
             }
         } else if (ret == QMessageBox::Abort) {
             exit(-1);
