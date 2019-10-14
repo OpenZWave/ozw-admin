@@ -15,7 +15,9 @@
  *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifndef _WIN32
 #include <unistd.h>
+#endif
 
 #include <QApplication>
 #include <QDir>

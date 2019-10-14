@@ -198,7 +198,9 @@ MainWindow::MainWindow(QWidget *parent) :
             QFileInfo directory(dir);
             qDebug() << directory.absoluteFilePath();
             if (directory.exists()) {
+#ifndef _WIN32
                 copyConfigDatabase(directory.absoluteFilePath().append("/"));
+#endif
                 m_configpath.setPath(directory.absoluteFilePath().append("/config/"));
                 m_userpath.setPath(directory.absoluteFilePath().append("/config/"));
                 settings.setValue("openzwave/ConfigPath", m_configpath.absolutePath());

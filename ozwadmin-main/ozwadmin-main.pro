@@ -33,11 +33,26 @@ RESOURCES += \
 
 
 
-LIBS += ../devicedb-lib/libdevicedb-lib.a ../ozwadmin-widgets/libozwadmin-widgets.a
+#LIBS += ../devicedb-lib/libdevicedb-lib.a ../ozwadmin-widgets/libozwadmin-widgets.a
+unix {
+    LIBS += -L../devicedb-lib/ -ldevicedb-lib -L../ozwadmin-widgets/ -lozwadmin-widgets
+    LIBS += -L../../qt-openzwave/qt-openzwave/ -lqt-openzwave -L../../qt-openzwave/qt-openzwavedatabase -lqt-openzwavedatabase
+}
+windows {
+    CONFIG(debug, debug|release) {
+        LIBS += -L..\devicedb-lib\debug\ -L..\ozwadmin-widgets\debug\ -L..\..\qt-openzwave\qt-openzwave\debug\
+    } else {
+        LIBS += -L..\devicedb-lib\release\ -L..\ozwadmin-widgets\release\ -L..\..\qt-openzwave\qt-openzwave\release\
+    }
+    LIBS += -ldevicedb-lib -lozwadmin-widgets -lqt-openzwave1
+    message($$LIBS)
+    message($$PWD)
+}
+
 INCLUDEPATH += ../devicedb-lib ../ozwadmin-widgets
 
 INCLUDEPATH += ../../qt-openzwave/qt-openzwave/include/ ../../qt-openzwave/qt-openzwavedatabase/include/
-LIBS += -L../../qt-openzwave/qt-openzwave/ -lqt-openzwave -L../../qt-openzwave/qt-openzwavedatabase -lqt-openzwavedatabase
+
 
 macx: {
     LIBS += -framework IOKit -framework CoreFoundation
