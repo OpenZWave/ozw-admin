@@ -439,19 +439,19 @@ void MainWindow::updateNodeStats() {
     }
 
     NodeStatistics ns = this->m_qtozwmanager->GetNodeStatistics(node);
-    this->ui->ns_lastseen->setText(ns.lastReceivedTimeStamp);
+    this->ui->ns_lastseen->setText(ns.lastReceivedTimeStamp.toString());
     this->ui->ns_lreqrtt->setText(QVariant::fromValue<quint32>(ns.lastRequestRTT).toString());
     this->ui->ns_quality->setText(QVariant::fromValue<quint32>(ns.quality).toString());
     this->ui->ns_retries->setText(QVariant::fromValue<quint32>(ns.retries).toString());
     this->ui->ns_sentcnt->setText(QVariant::fromValue<quint32>(ns.sentCount).toString());
-    this->ui->ns_lastsend->setText(ns.lastSentTimeStamp);
+    this->ui->ns_lastsend->setText(ns.lastSentTimeStamp.toString());
     this->ui->ns_avgreqrtt->setText(QVariant::fromValue<quint32>(ns.averageRequestRTT).toString());
     this->ui->ns_avgresprtt->setText(QVariant::fromValue<quint32>(ns.averageResponseRTT).toString());
     this->ui->ns_sentfailed->setText(QVariant::fromValue<quint32>(ns.sentFailed).toString());
     this->ui->ns_lastresprtt->setText(QVariant::fromValue<quint32>(ns.lastResponseRTT).toString());
     this->ui->ns_recievedcnt->setText(QVariant::fromValue<quint32>(ns.receivedPackets).toString());
     this->ui->ns_unsolicited->setText(QVariant::fromValue<quint32>(ns.receivedUnsolicited).toString());
-    this->ui->ns_lastrecieved->setText(ns.lastReceivedTimeStamp);
+    this->ui->ns_lastrecieved->setText(ns.lastReceivedTimeStamp.toString());
     this->ui->ns_rcvdduplicates->setText(QVariant::fromValue<quint32>(ns.receivedDupPackets).toString());
 
     this->ui->etxstatus_frame->setVisible(ns.extendedTXSupported);
