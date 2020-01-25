@@ -82,7 +82,7 @@ unix {
 	QTOZW_INCLUDE_PATH+=$$absolute_path($$QTOZW_INCLUDE_PATH/../../qt-openzwavedatabase/include/)
 	QTOZW_LIBS="-L$$absolute_path($$QTOZW_LIB_PATH/qt-openzwave/)"
 	QTOZW_LIBS+="-lqt-openzwave"
-	QTOZW_LIBS+="-L$$absolute_path($QTOZW_LIB_PATH/../qt-openzwavedatabase)"
+	QTOZW_LIBS+="-L$$absolute_path($QTOZW_LIB_PATH/qt-openzwavedatabase/)"
 	QTOZW_LIBS+="-lqt-openzwavedatabase"
 	message(" ")
     	message("QT-OpenZWave Summary:")
