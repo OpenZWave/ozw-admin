@@ -198,8 +198,10 @@ MainWindow::MainWindow(QWidget *parent) :
             QFileInfo directory(dir);
             qDebug() << directory.absoluteFilePath();
             if (directory.exists()) {
+#if 0
 #ifndef _WIN32
                 copyConfigDatabase(directory.absoluteFilePath().append("/"));
+#endif
 #endif
                 m_configpath.setPath(directory.absoluteFilePath().append("/config/"));
                 m_userpath.setPath(directory.absoluteFilePath().append("/config/"));

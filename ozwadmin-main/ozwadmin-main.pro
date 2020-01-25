@@ -5,7 +5,7 @@
 #-------------------------------------------------
 
 QT       += core gui widgets xml remoteobjects websockets svg
-CONFIG  += silent
+#CONFIG  += silent
 
 TARGET = ../ozwadmin
 TEMPLATE = app
@@ -31,12 +31,10 @@ FORMS    += mainwindow.ui \
 RESOURCES += \
     ozwadmin-main.qrc \
 
+include(../ozw-admin.pri)
 
-
-#LIBS += ../devicedb-lib/libdevicedb-lib.a ../ozwadmin-widgets/libozwadmin-widgets.a
 unix {
     LIBS += -L../devicedb-lib/ -ldevicedb-lib -L../ozwadmin-widgets/ -lozwadmin-widgets
-    LIBS += -L../../qt-openzwave/qt-openzwave/ -lqt-openzwave -L../../qt-openzwave/qt-openzwavedatabase -lqt-openzwavedatabase
 }
 windows {
     CONFIG(debug, debug|release) {
@@ -50,8 +48,6 @@ windows {
 }
 
 INCLUDEPATH += ../devicedb-lib ../ozwadmin-widgets
-
-INCLUDEPATH += ../../qt-openzwave/qt-openzwave/include/ ../../qt-openzwave/qt-openzwavedatabase/include/
 
 
 macx: {
