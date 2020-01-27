@@ -54,9 +54,12 @@ INCLUDEPATH += ../devicedb-lib ../ozwadmin-widgets
 
 macx: {
     LIBS += -framework IOKit -framework CoreFoundation
-    BUNDLE.files = ../../qt-openzwave/qt-openzwave/libqt-openzwave.1.dylib ../../open-zwave/libopenzwave-1.6.dylib ../../qt-openzwave/qt-openzwavedatabase/libqt-openzwavedatabase.1.dylib
+    BUNDLE.files = $$OZW_LIB_PATH/libopenzwave-1.6.dylib $$QTOZW_LIB_PATH/libqt-openzwave.1.dylib $$QTOZW_LIB_PATH/../qt-openzwavedatabase/libqt-openzwavedatabase.1.dylib 
     BUNDLE.path = Contents/Frameworks/
     QMAKE_BUNDLE_DATA += BUNDLE
+    MakeBundle.commands = $$[QT_HOST_BINS]/macdeployqt ../ozwadmin.app && $$top_srcdir/scripts/macdeployqtfix.py ../ozwadmin.app/Contents/MacOS/ozwadmin $$[QT_INSTALL_PREFIX]
+    QMAKE_EXTRA_TARGETS += MakeBundle
+    QMAKE_POST_LINK += $$MakeBundle.commands
     ICON = res/ozw_logo.icns
 }
 
