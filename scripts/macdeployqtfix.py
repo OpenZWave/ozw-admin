@@ -21,7 +21,7 @@ QTPLUGIN_NAME_REGEX = r'^(?:@executable_path)?/.*/[pP]lug[iI]ns/(.*)/(.*).dylib$
 QTPLUGIN_NORMALIZED = r'$prefix/PlugIns/$plugintype/$pluginname.dylib'
 
 #BREWLIB_REGEX = r'^//usr/local/.*//(.*)'
-BREWLIB_REGEX =r'(libqt-.*)'
+BREWLIB_REGEX =r'.*(.*openzwave.*dylib)'
 BREWLIB_NORMALIZED = r'$prefix/Frameworks/$brewlib'
 
 
@@ -254,7 +254,7 @@ def fix_dependency(binary, dep):
                 dep_ok = False
 
     # now ensure that 'dep' exists at the specified path, relative to bundle
-    if dep_ok and not os.path.exists(dep_abspath):
+    if False and dep_ok and not os.path.exists(dep_abspath):
 
         # ensure destination directory exists
         GlobalConfig.logger.info('ensuring directory \'{0}\' exists: {0}'.
