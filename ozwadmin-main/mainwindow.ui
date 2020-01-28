@@ -907,7 +907,7 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>98</width>
+                 <width>85</width>
                  <height>71</height>
                 </rect>
                </property>
@@ -1086,6 +1086,8 @@
     <bool>false</bool>
    </attribute>
    <addaction name="actionOpen_Serial_Port"/>
+   <addaction name="actionOpen_Remote"/>
+   <addaction name="action_Close"/>
    <addaction name="actionOpen_Log_Window"/>
    <addaction name="actionDevice_Database"/>
   </widget>
@@ -1118,6 +1120,22 @@
   <action name="actionDevice_Database">
    <property name="text">
     <string>&amp;Device Database</string>
+   </property>
+  </action>
+  <action name="actionOpen_Remote">
+   <property name="text">
+    <string>Open &amp;Remote</string>
+   </property>
+   <property name="toolTip">
+    <string>Open Remote</string>
+   </property>
+  </action>
+  <action name="action_Close">
+   <property name="text">
+    <string>&amp;Close</string>
+   </property>
+   <property name="toolTip">
+    <string>Close Local or Remote Connection</string>
    </property>
   </action>
  </widget>

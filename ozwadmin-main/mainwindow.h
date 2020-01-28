@@ -42,6 +42,8 @@ public:
     Q_PROPERTY(QString SerialPort MEMBER m_serialport)
 public slots:
     void OpenSerialPort();
+    void OpenRemote();
+    void CloseConnection();
     void resizeColumns();
     void NodeSelected(QModelIndex,QModelIndex);
     void openLogWindow();

@@ -55,6 +55,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionOpen_Log_Window, SIGNAL(triggered()), this, SLOT(openLogWindow()));
 
     connect(ui->actionOpen_Serial_Port, SIGNAL(triggered()), this, SLOT(OpenSerialPort()));
+    connect(ui->actionOpen_Remote, SIGNAL(triggered()), this, SLOT(OpenRemote()));
+    connect(ui->action_Close, SIGNAL(triggered()), this, SLOT(CloseConnection()));
     connect(ui->actionDevice_Database, SIGNAL(triggered()), this, SLOT(OpenDeviceDB()));
     connect(ui->md_helpwindow, &QPushButton::clicked, this, &MainWindow::openMetaDataWindow);
     connect(ui->action_Configuration, SIGNAL(triggered()), this, SLOT(openConfigWindow()));
@@ -325,10 +327,36 @@ void MainWindow::QTOZW_Ready() {
     this->m_statTimer.start(1000);
 }
 
+void MainWindow::OpenRemote() {
+    bool ok;
+
+    QString text = QInputDialog::getText(this, tr("Enter Remote Host"),
+                                         tr("Hostname/IP Address:"), QLineEdit::Normal,
+                                         "localhost", &ok);
+    if (!ok)
+        return;
+
+    QUrl server;
+    server.setHost(text);
+    server.setPort(1983);
+    server.setScheme("tcp");
+    qDebug() << "Connecting to " << server;
+    this->m_qtozwmanager->initilizeReplica(server);
+
+}
+void MainWindow::CloseConnection() {
+
+}
+
 
 void MainWindow::OpenSerialPort() {
 
     bool ok;
+
+    QMessageBox::warning(this, tr("OZW-Admin"),
+                         tr("This is Work In Progress!"),
+                         QMessageBox::Ok);
+
     QString text = QInputDialog::getText(this, tr("Select Serial Port"),
                                          tr("Serial Port:"), QLineEdit::Normal,
                                          this->m_serialport, &ok);
