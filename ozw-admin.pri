@@ -107,7 +107,7 @@ unix {
 		QTOZW_LIBS="-L$$QTOZW_LIB_PATH"
 		QTOZW_LIBS+="-lqt-openzwave"
 		QTOZW_LIBS+="-L$$absolute_path($$QTOZW_LIB_PATH/../qt-openzwavedatabase/)"
-		QTZOW_LIBS+="-lqt-openzwavedatabase"
+		QTOZW_LIBS+="-lqt-openzwavedatabase"
 		message(" ")
     		message("QT-OpenZWave Summary:")
     		message("    QT-OpenZWave Library Path: $$QTOZW_LIB_PATH")

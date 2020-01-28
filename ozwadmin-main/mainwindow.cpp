@@ -198,6 +198,9 @@ MainWindow::MainWindow(QWidget *parent) :
             QFileInfo directory(dir);
             qDebug() << directory.absoluteFilePath();
             if (directory.exists()) {
+                QStringList dirs;
+                dirs << directory.absoluteFilePath().append("/");
+                initConfigDatabase(dirs);
 #if 0
 #ifndef _WIN32
                 copyConfigDatabase(directory.absoluteFilePath().append("/"));
