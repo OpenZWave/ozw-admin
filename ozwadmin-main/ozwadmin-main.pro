@@ -40,11 +40,11 @@ unix {
 }
 windows {
     CONFIG(debug, debug|release) {
-        LIBS += -L..\devicedb-lib\debug\ -L..\ozwadmin-widgets\debug\ -L..\..\qt-openzwave\qt-openzwave\debug\
+        LIBS += -L..\devicedb-lib\debug\ -L..\ozwadmin-widgets\debug\ -L..\..\qt-openzwave\qt-openzwave\debug\ -L..\..\qt-openzwave\qt-openzwavedatabase\debug\
     } else {
-        LIBS += -L..\devicedb-lib\release\ -L..\ozwadmin-widgets\release\ -L..\..\qt-openzwave\qt-openzwave\release\
+        LIBS += -L..\devicedb-lib\release\ -L..\ozwadmin-widgets\release\ -L..\..\qt-openzwave\qt-openzwave\release\ -L..\..\qt-openzwave\qt-openzwavedatabase\release\
     }
-    LIBS += -ldevicedb-lib -lozwadmin-widgets -lqt-openzwave1
+    LIBS += -ldevicedb-lib -lozwadmin-widgets -lqt-openzwave1 -lqt-openzwavedatabase1
     message($$LIBS)
     message($$PWD)
 }
