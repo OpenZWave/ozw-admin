@@ -200,6 +200,6 @@ list_column_sort_directions = {
 license = {
      'default-language': 'en_US',
      'licenses': {
-         'en_US': '../LICENSE'
+         'en_US': './LICENSE'
      },
  }
