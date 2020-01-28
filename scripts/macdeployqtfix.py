@@ -21,7 +21,7 @@ QTPLUGIN_NAME_REGEX = r'^(?:@executable_path)?/.*/[pP]lug[iI]ns/(.*)/(.*).dylib$
 QTPLUGIN_NORMALIZED = r'$prefix/PlugIns/$plugintype/$pluginname.dylib'
 
 #BREWLIB_REGEX = r'^//usr/local/.*//(.*)'
-BREWLIB_REGEX =r'.*(.*openzwave.*dylib)'
+BREWLIB_REGEX =r'.*(lib.*openzwave.*dylib)'
 BREWLIB_NORMALIZED = r'$prefix/Frameworks/$brewlib'
 
 
