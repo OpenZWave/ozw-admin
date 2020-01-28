@@ -1,5 +1,11 @@
 top_srcdir=$$PWD
 top_builddir=$$shadowed($$PWD)
+unix { 
+    macx {
+        QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.14
+    }
+    !macx: QMAKE_CXXFLAGS += -Wno-deprecated-copy
+}
 
 unix {
     CONFIG-= no-pkg-config
@@ -100,7 +106,7 @@ unix {
                	QTOZW_INCLUDE_PATH += $$absolute_path($$top_srcdir/../qt-openzwave/qt-openzwavedatabase/include/)
 		QTOZW_LIBS="-L$$QTOZW_LIB_PATH"
 		QTOZW_LIBS+="-lqt-openzwave"
-		QTOZW_LIBS+="-L$$absolute_path($$OTOZW_LIB_PATH/../qt-openzwavedatabase/)"
+		QTOZW_LIBS+="-L$$absolute_path($$QTOZW_LIB_PATH/../qt-openzwavedatabase/)"
 		QTZOW_LIBS+="-lqt-openzwavedatabase"
 		message(" ")
     		message("QT-OpenZWave Summary:")
@@ -138,6 +144,8 @@ win32 {
     exists( $$top_srcdir/../open-zwave/cpp/src/) {
         message("Found OZW in $$absolute_path($$top_srcdir/../open-zwave/cpp/src)")
         INCLUDEPATH += $$absolute_path($$top_srcdir/../open-zwave/cpp/src/)/
+		INCLUDEPATH += $$absolute_path($$top_srcdir/../qt-openzwave/qt-openzwave/include/)
+		INCLUDEPATH += $$absolute_path($$top_srcdir/../qt-openzwave/qt-openzwavedatabase/include/)
         equals(BUILDTYPE, "release") {
             exists( $$absolute_path($$top_srcdir/../open-zwave/cpp/build/windows/vs2010/ReleaseDLL/OpenZWave.dll ) ) {
                 LIBS += -L$$absolute_path($$top_srcdir/../open-zwave/cpp/build/windows/vs2010/ReleaseDLL) -lopenzwave
