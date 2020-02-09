@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=OZWAdmin
+Comment=OpenZWave Administration Gui
+Exec=ozwadmin
+Type=Application
+Icon=ozwadmin
+Categories=System;
+MimeType=application/x-iso9660-appimage;

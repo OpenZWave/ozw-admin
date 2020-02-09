@@ -5,7 +5,7 @@
 #-------------------------------------------------
 
 QT       += core gui widgets xml remoteobjects websockets svg
-CONFIG  += silent
+#CONFIG  += silent
 
 TARGET = ../ozwadmin
 TEMPLATE = app
@@ -31,18 +31,18 @@ FORMS    += mainwindow.ui \
 RESOURCES += \
     ozwadmin-main.qrc \
 
+include(../ozw-admin.pri)
 
-
-#LIBS += ../devicedb-lib/libdevicedb-lib.a ../ozwadmin-widgets/libozwadmin-widgets.a
 unix {
+    target.path = /usr/local/bin
+    INSTALLS += target
     LIBS += -L../devicedb-lib/ -ldevicedb-lib -L../ozwadmin-widgets/ -lozwadmin-widgets
-    LIBS += -L../../qt-openzwave/qt-openzwave/ -lqt-openzwave -L../../qt-openzwave/qt-openzwavedatabase -lqt-openzwavedatabase
 }
 windows {
     CONFIG(debug, debug|release) {
         LIBS += -L..\devicedb-lib\debug\ -L..\ozwadmin-widgets\debug\ -L..\..\qt-openzwave\qt-openzwave\debug\
     } else {
-        LIBS += -L..\devicedb-lib\release\ -L..\ozwadmin-widgets\release\ -L..\..\qt-openzwave\qt-openzwave\release\
+        LIBS += -L..\devicedb-lib\release\ -L..\ozwadmin-widgets\release\ -L..\..\qt-openzwave\qt-openzwave\release\ 
     }
     LIBS += -ldevicedb-lib -lozwadmin-widgets -lqt-openzwave1
     message($$LIBS)
@@ -51,14 +51,15 @@ windows {
 
 INCLUDEPATH += ../devicedb-lib ../ozwadmin-widgets
 
-INCLUDEPATH += ../../qt-openzwave/qt-openzwave/include/ ../../qt-openzwave/qt-openzwavedatabase/include/
-
 
 macx: {
     LIBS += -framework IOKit -framework CoreFoundation
-    BUNDLE.files = ../../qt-openzwave/qt-openzwave/libqt-openzwave.1.dylib ../../open-zwave/libopenzwave-1.6.dylib ../../qt-openzwave/qt-openzwavedatabase/libqt-openzwavedatabase.1.dylib
+    BUNDLE.files = $$OZW_LIB_PATH/libopenzwave-1.6.dylib $$QTOZW_LIB_PATH/libqt-openzwave.1.dylib $$QTOZW_LIB_PATH/../qt-openzwavedatabase/libqt-openzwavedatabase.1.dylib 
     BUNDLE.path = Contents/Frameworks/
     QMAKE_BUNDLE_DATA += BUNDLE
+    MakeBundle.commands = $$[QT_HOST_BINS]/macdeployqt ../ozwadmin.app && $$top_srcdir/scripts/macdeployqtfix.py ../ozwadmin.app/Contents/MacOS/ozwadmin $$[QT_INSTALL_PREFIX]
+    QMAKE_EXTRA_TARGETS += MakeBundle
+    QMAKE_POST_LINK += $$MakeBundle.commands
     ICON = res/ozw_logo.icns
 }
 

@@ -44,7 +44,9 @@ FORMS    += HelpEditorDlg.ui \
 	bitsetwidget.ui \
 	nodeflagswidget.ui
 
-INCLUDEPATH += ../devicedb-lib ../ozwadmin-main ../../qt-openzwave/qt-openzwave/include/
+include(../ozw-admin.pri)
+
+INCLUDEPATH += ../devicedb-lib ../ozwadmin-main
 
 
 macx: {

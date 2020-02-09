@@ -1,6 +1,7 @@
 @echo off
 cd ..\open-zwave
 msbuild /p:Configuration=ReleaseDLL /p:Platform=Win32 cpp\build\windows\vs2010\OpenZWave.sln
+msbuild /p:Configuration=DebugDLL /p:Platform=Win32 cpp\build\windows\vs2010\OpenZWave.sln
 cd ..\qt-openzwave
 qmake -r -tp vc
 msbuild /p:Configuration=Release /p:Platform=Win32 qt-openzwave.sln
