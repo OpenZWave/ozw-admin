@@ -6,7 +6,7 @@ git clone https://github.com/OpenZWave/open-zwave.git && cd open-zwave && make -
 cd /opt
 git clone https://github.com/OpenZWave/qt-openzwave.git && cd qt-openzwave && /opt/qt512/bin/qmake -r && make -j4 && make install
 cd /opt
-git clone https://github.com/OpenZWave/ozw-admin.git && cd ozw-admin && git checkout buildfixes && /opt/qt512/bin/qmake -r && make -j4 && make install
+git clone https://github.com/OpenZWave/ozw-admin.git && cd ozw-admin && /opt/qt512/bin/qmake -r && make -j4 && make install
 cd /opt
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib64
 export QMAKE=/opt/qt512/bin/qmake
