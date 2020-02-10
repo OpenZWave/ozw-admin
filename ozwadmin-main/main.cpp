@@ -29,13 +29,15 @@
 
 int main(int argc, char *argv[])
 {
-#if 0
-    QLoggingCategory::setFilterRules("qt.remoteobjects.debug=true\n"
+#if 1
+    QLoggingCategory::setFilterRules("*.debug=false\n"
+                                     "qt.remoteobjects.debug=true\n"
                                      "qt.remoteobjects.warning=true\n"
                                      "qt.remoteobjects.models.debug=true\n"
                                      "qt.remoteobjects.models.debug=true\n"
                                      "qt.remoteobjects.io.debug=true\n"
-                                     "default.debug=true");
+                                     "ozw.*.debug=true\n"
+                                     "ozw.library.debug=false");
 #else
     QLoggingCategory::setFilterRules("default.debug=true");
 #endif
