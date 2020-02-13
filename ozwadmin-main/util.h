@@ -19,6 +19,10 @@
 #define UTIL_H
 #include <QApplication>
 #include <QCheckBox>
+#include <QLoggingCategory>
 
 const char *nodeBasicStr (qint8 basic);
+
+Q_DECLARE_LOGGING_CATEGORY(ozwadmin);
+
 #endif // UTIL_H

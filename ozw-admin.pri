@@ -137,7 +137,8 @@ unix {
 win32 {
     CONFIG(debug, debug|release) {
         BUILDTYPE = debug
-    } else {
+    }
+    CONFIG(release, debug|release) {
         BUILDTYPE = release
     }
     message(Checking for $$BUILDTYPE build of OZW)

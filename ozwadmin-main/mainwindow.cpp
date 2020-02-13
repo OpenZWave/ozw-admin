@@ -36,6 +36,9 @@
 #include "value_delegate.h"
 #include "node_delegate.h"
 #include "configuration.h"
+#include "startup.h"
+#include "startupprogress.h"
+#include "util.h"
 
 
 void SetReadOnly(QCheckBox* checkBox, bool readOnly)
@@ -125,9 +128,6 @@ MainWindow::MainWindow(QWidget *parent) :
     SetReadOnly(this->ui->ni_routing, true);
     SetReadOnly(this->ui->ni_security, true);
 
-    //    printf("Starting OZWAdmin with OpenZWave Version %s\n", OpenZWave::Manager::getVersionAsString().c_str());
-
-
 
     QStringList PossibleDBPaths;
     PossibleDBPaths << settings.value("openzwave/ConfigPath", QDir::toNativeSeparators("../../../config/")).toString().append("/");
@@ -135,12 +135,12 @@ MainWindow::MainWindow(QWidget *parent) :
 
     QString path, dbPath, userPath;
     foreach(path, PossibleDBPaths) {
-        qDebug() << "Checking " << QFileInfo(QDir::toNativeSeparators(path+"/config/manufacturer_specific.xml")).absoluteFilePath() << " for manufacturer_specific.xml";
+        qCDebug(ozwadmin) << "Checking " << QFileInfo(QDir::toNativeSeparators(path+"/config/manufacturer_specific.xml")).absoluteFilePath() << " for manufacturer_specific.xml";
         if (QFileInfo(QDir::toNativeSeparators(path+"/config/manufacturer_specific.xml")).exists()) {
             dbPath = QFileInfo(QDir::toNativeSeparators(path+"/config/manufacturer_specific.xml")).absoluteFilePath();
             break;
         }
-        qDebug() << "Checking " << QFileInfo(QDir::toNativeSeparators(path+"../config/manufacturer_specific.xml")).absoluteFilePath() << " for manufacturer_specific.xml";
+        qCDebug(ozwadmin) << "Checking " << QFileInfo(QDir::toNativeSeparators(path+"../config/manufacturer_specific.xml")).absoluteFilePath() << " for manufacturer_specific.xml";
         if (QFile(QDir::toNativeSeparators(path+"/../config/manufacturer_specific.xml")).exists()) {
             dbPath = QFileInfo(QDir::toNativeSeparators(path+"/../config/manufacturer_specific.xml")).absoluteFilePath();
             break;
@@ -151,20 +151,20 @@ MainWindow::MainWindow(QWidget *parent) :
     PossibleDBPaths << QStandardPaths::standardLocations(QStandardPaths::AppDataLocation);
 
     foreach(path, PossibleDBPaths) {
-        qDebug() << "Checking " << QFileInfo(QDir::toNativeSeparators(path+"/config/Options.xml")).absoluteFilePath() << " for Options.xml";
+        qCDebug(ozwadmin) << "Checking " << QFileInfo(QDir::toNativeSeparators(path+"/config/Options.xml")).absoluteFilePath() << " for Options.xml";
         if (QFileInfo(QDir::toNativeSeparators(path+"/config/Options.xml")).exists()) {
             userPath = QFileInfo(QDir::toNativeSeparators(path+"/config/Options.xml")).absoluteFilePath();
             break;
         }
-        qDebug() << "Checking " << QFileInfo(QDir::toNativeSeparators(path+"/../config/Options.xml")).absoluteFilePath() << " for Options.xml";
+        qCDebug(ozwadmin) << "Checking " << QFileInfo(QDir::toNativeSeparators(path+"/../config/Options.xml")).absoluteFilePath() << " for Options.xml";
         if (QFile(QDir::toNativeSeparators(path+"/../config/Options.xml")).exists()) {
             userPath = QFileInfo(QDir::toNativeSeparators(path+"/../config/Options.xml")).absoluteFilePath();
             break;
         }
     }
 
-    qDebug() << "DBPath: " << dbPath;
-    qDebug() << "userPath: " << userPath;
+    qCDebug(ozwadmin) << "DBPath: " << dbPath;
+    qCDebug(ozwadmin) << "userPath: " << userPath;
 
     m_configpath = settings.value("openzwave/ConfigPath", "../../../config/").toString().append("/");
     m_userpath = settings.value("openzwave/UserPath", "").toString().append("/");
@@ -198,7 +198,7 @@ MainWindow::MainWindow(QWidget *parent) :
                                                     QFileDialog::ShowDirsOnly
                                                     );
             QFileInfo directory(dir);
-            qDebug() << directory.absoluteFilePath();
+            qCDebug(ozwadmin) << directory.absoluteFilePath();
             if (directory.exists()) {
 #ifndef _WIN32
                 QStringList dirs;
@@ -221,6 +221,7 @@ MainWindow::MainWindow(QWidget *parent) :
     this->m_openzwave = new QTOpenZwave(this, m_configpath, m_userpath);
     this->m_qtozwmanager = this->m_openzwave->GetManager();
     QObject::connect(this->m_qtozwmanager, &QTOZWManager::ready, this, &MainWindow::QTOZW_Ready);
+
     this->m_qtozwmanager->initilizeSource(this->settings.value("StartServer").toBool());
     this->m_logWindow.setModel(this->m_qtozwmanager->getLogModel());
 }
@@ -231,13 +232,13 @@ MainWindow::~MainWindow()
 }
 
 void MainWindow::QTOZW_Ready() {
-    qDebug() << "QTOZW Ready";
+    qCDebug(ozwadmin) << "QTOZW Ready";
 
     /* apply our Local Configuration Options to the OZW Options Class */
     settings.beginGroup("openzwave");
     QStringList optionlist = settings.allKeys();
     for (int i = 0; i < optionlist.size(); i++) {
-        qDebug() << "Updating Option " << optionlist.at(i) << " to " << settings.value(optionlist.at(i));
+        qCDebug(ozwadmin) << "Updating Option " << optionlist.at(i) << " to " << settings.value(optionlist.at(i));
         QTOZWOptions *ozwoptions = this->m_qtozwmanager->getOptions();
         QStringList listtypes;
         listtypes << "SaveLogLevel" << "QueueLogLevel" << "DumpLogLevel";
@@ -328,20 +329,38 @@ void MainWindow::QTOZW_Ready() {
 }
 
 void MainWindow::OpenRemote() {
-    bool ok;
 
-    QString text = QInputDialog::getText(this, tr("Enter Remote Host"),
-                                         tr("Hostname/IP Address:"), QLineEdit::Normal,
-                                         "localhost", &ok);
-    if (!ok)
-        return;
+	Startup su(this);
+	su.setModal(true);
+	int ret = su.exec();
+	if (ret == QDialog::Accepted) {
 
-    QUrl server;
-    server.setHost(text);
-    server.setPort(1983);
-    server.setScheme("tcp");
-    qDebug() << "Connecting to " << server;
-    this->m_qtozwmanager->initilizeReplica(server);
+		if (su.getremote() == true) {
+			qCDebug(ozwadmin) << "Doing Remote Connection:" << su.getremoteHost() << su.getremotePort();
+			QUrl server;
+			server.setHost(su.getremoteHost());
+			server.setPort(su.getremotePort());
+			server.setScheme("tcp");
+			qCDebug(ozwadmin) << "Connecting to " << server;
+			startupprogress *sup = new startupprogress(true, this);
+			sup->setQTOZWManager(this->m_qtozwmanager);
+			sup->show();
+			this->m_qtozwmanager->initilizeReplica(server);
+			return;
+		}
+		else 
+		{
+			qCDebug(ozwadmin) << "Doing Local Connection: " << su.getserialPort() << su.getstartServer();
+			this->m_serialport = su.getserialPort();
+			this->settings.setValue("SerialPort", this->m_serialport);
+			startupprogress *sup = new startupprogress(false, this);
+			sup->setQTOZWManager(this->m_qtozwmanager);
+			sup->show();
+			this->m_qtozwmanager->open(this->m_serialport);
+			return;
+		}
+	}
+	qCDebug(ozwadmin) << "Open Dialog was Canceled" << ret;
 
 }
 void MainWindow::CloseConnection() {
@@ -372,9 +391,6 @@ void MainWindow::OpenSerialPort() {
         return;
     }
 
-    this->m_serialport = text.trimmed();
-    this->settings.setValue("SerialPort", this->m_serialport);
-    this->m_qtozwmanager->open(this->m_serialport);
 
 }
 
@@ -512,7 +528,7 @@ void MainWindow::openLogWindow() {
 }
 
 void MainWindow::openMetaDataWindow() {
-    qDebug() << "Opening Window";
+    qCDebug(ozwadmin) << "Opening Window";
     QModelIndex index = this->ui->nodeList->currentIndex();
     const QAbstractItemModel *model = index.model();
     quint8 node = model->data(model->index(index.row(), QTOZW_Nodes::NodeColumns::NodeID)).value<quint8>();

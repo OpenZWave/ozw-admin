@@ -8,7 +8,7 @@ QT       += core gui xml svg remoteobjects widgets
 
 TARGET = ozwadmin-widgets
 TEMPLATE = lib
-CONFIG += staticlib silent
+CONFIG += staticlib
 
 
 SOURCES += widgets.cpp \
@@ -60,23 +60,23 @@ macx: {
 RESOURCES += \
     propertybrowser/qtpropertybrowser.qrc
 
-DISTFILES += \
-    propertybrowser/images/cursor-arrow.png \
-    propertybrowser/images/cursor-busy.png \
-    propertybrowser/images/cursor-closedhand.png \
-    propertybrowser/images/cursor-cross.png \
-    propertybrowser/images/cursor-forbidden.png \
-    propertybrowser/images/cursor-hand.png \
-    propertybrowser/images/cursor-hsplit.png \
-    propertybrowser/images/cursor-ibeam.png \
-    propertybrowser/images/cursor-openhand.png \
-    propertybrowser/images/cursor-sizeall.png \
-    propertybrowser/images/cursor-sizeb.png \
-    propertybrowser/images/cursor-sizef.png \
-    propertybrowser/images/cursor-sizeh.png \
-    propertybrowser/images/cursor-sizev.png \
-    propertybrowser/images/cursor-uparrow.png \
-    propertybrowser/images/cursor-vsplit.png \
-    propertybrowser/images/cursor-wait.png \
-    propertybrowser/images/cursor-whatsthis.png \
-    propertybrowser/qtpropertybrowser.pri
+#DISTFILES += \
+#    propertybrowser/images/cursor-arrow.png \
+#    propertybrowser/images/cursor-busy.png \
+#    propertybrowser/images/cursor-closedhand.png \
+#    propertybrowser/images/cursor-cross.png \
+#    propertybrowser/images/cursor-forbidden.png \
+#    propertybrowser/images/cursor-hand.png \
+#    propertybrowser/images/cursor-hsplit.png \
+#    propertybrowser/images/cursor-ibeam.png \
+#    propertybrowser/images/cursor-openhand.png \
+#    propertybrowser/images/cursor-sizeall.png \
+#    propertybrowser/images/cursor-sizeb.png \
+#    propertybrowser/images/cursor-sizef.png \
+#    propertybrowser/images/cursor-sizeh.png \
+#    propertybrowser/images/cursor-sizev.png \
+#    propertybrowser/images/cursor-uparrow.png \
+#    propertybrowser/images/cursor-vsplit.png \
+#    propertybrowser/images/cursor-wait.png \
+#    propertybrowser/images/cursor-whatsthis.png \
+#    propertybrowser/qtpropertybrowser.pri

@@ -15,18 +15,24 @@ SOURCES += main.cpp\
     logwindow.cpp \
     mainwindow.cpp \
     metadatawindow.cpp \
+    startup.cpp \
+    startupprogress.cpp \
     util.cpp
 
 HEADERS  += mainwindow.h \
     configuration.h \
     logwindow.h \
     metadatawindow.h \
+    startup.h \
+    startupprogress.h \
     util.h \
 
 FORMS    += mainwindow.ui \
     configuration.ui \
     logwindow.ui \
-    metadatawindow.ui
+    metadatawindow.ui \
+    startup.ui \
+    startupprogress.ui
 
 RESOURCES += \
     ozwadmin-main.qrc \
@@ -40,13 +46,13 @@ unix {
 }
 windows {
     CONFIG(debug, debug|release) {
-        LIBS += -L..\devicedb-lib\debug\ -L..\ozwadmin-widgets\debug\ -L..\..\qt-openzwave\qt-openzwave\debug\
-    } else {
-        LIBS += -L..\devicedb-lib\release\ -L..\ozwadmin-widgets\release\ -L..\..\qt-openzwave\qt-openzwave\release\ 
+        debug: LIBS += -L..\devicedb-lib\debug\ -L..\ozwadmin-widgets\debug\ -L..\..\qt-openzwave\qt-openzwave\debug\
+    }
+    CONFIG(release, debug|release) {
+        release: LIBS += -L..\devicedb-lib\release\ -L..\ozwadmin-widgets\release\ -L..\..\qt-openzwave\qt-openzwave\release\
     }
     LIBS += -ldevicedb-lib -lozwadmin-widgets -lqt-openzwave1
     message($$LIBS)
-    message($$PWD)
 }
 
 INCLUDEPATH += ../devicedb-lib ../ozwadmin-widgets

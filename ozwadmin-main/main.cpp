@@ -24,11 +24,16 @@
 #include <QDebug>
 #include <QLoggingCategory>
 
+#include "util.h"
 #include "mainwindow.h"
+
+Q_LOGGING_CATEGORY(ozwadmin, "ozwadmin");
 
 
 int main(int argc, char *argv[])
 {
+
+
 #if 1
     QLoggingCategory::setFilterRules("*.debug=false\n"
                                      "qt.remoteobjects.debug=true\n"
@@ -37,7 +42,8 @@ int main(int argc, char *argv[])
                                      "qt.remoteobjects.models.debug=true\n"
                                      "qt.remoteobjects.io.debug=true\n"
                                      "ozw.*.debug=true\n"
-                                     "ozw.library.debug=false");
+                                     "ozw.library.debug=false\n"
+									 "ozwadmin.debug=true\n");
 #else
     QLoggingCategory::setFilterRules("default.debug=true");
 #endif
