@@ -340,7 +340,7 @@ void MainWindow::OpenRemote() {
 			QUrl server;
 			server.setHost(su.getremoteHost());
 			server.setPort(su.getremotePort());
-			server.setScheme("tcp");
+			server.setScheme("ws");
 			qCDebug(ozwadmin) << "Connecting to " << server;
 			startupprogress *sup = new startupprogress(true, this);
 			sup->setQTOZWManager(this->m_qtozwmanager);
