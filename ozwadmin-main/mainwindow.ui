@@ -907,7 +907,7 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>85</width>
+                 <width>98</width>
                  <height>71</height>
                 </rect>
                </property>
@@ -1060,7 +1060,6 @@
     <property name="title">
      <string>File</string>
     </property>
-    <addaction name="actionOpen_Serial_Port"/>
     <addaction name="separator"/>
     <addaction name="actionDevice_Database"/>
     <addaction name="action_Configuration"/>
@@ -1085,18 +1084,12 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-   <addaction name="actionOpen_Serial_Port"/>
-   <addaction name="actionOpen_Remote"/>
+   <addaction name="actionOpen"/>
    <addaction name="action_Close"/>
    <addaction name="actionOpen_Log_Window"/>
    <addaction name="actionDevice_Database"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
-  <action name="actionOpen_Serial_Port">
-   <property name="text">
-    <string>&amp;Open Serial Port</string>
-   </property>
-  </action>
   <action name="action_Configuration">
    <property name="text">
     <string>&amp;Configuration</string>
@@ -1122,12 +1115,12 @@
     <string>&amp;Device Database</string>
    </property>
   </action>
-  <action name="actionOpen_Remote">
+  <action name="actionOpen">
    <property name="text">
-    <string>Open &amp;Remote</string>
+    <string>&amp;Open</string>
    </property>
    <property name="toolTip">
-    <string>Open Remote</string>
+    <string>Open</string>
    </property>
   </action>
   <action name="action_Close">

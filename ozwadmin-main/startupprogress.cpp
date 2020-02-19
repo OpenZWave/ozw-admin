@@ -33,7 +33,7 @@ void startupprogress::setQTOZWManager(QTOZWManager *qtozw)
 	QObject::connect(this->m_qtozwmanager, &QTOZWManager::driverAllNodesQueried, this, &startupprogress::driverAllNodesQueried);
 	QObject::connect(this->m_qtozwmanager, &QTOZWManager::driverAwakeNodesQueried, this, &startupprogress::driverAwakeNodesQueried);
 	QObject::connect(this->m_qtozwmanager, &QTOZWManager::ozwNotification, this, &startupprogress::ozwNotification);
-
+    QObject::connect(this->m_qtozwmanager, &QTOZWManager::remoteConnectionStatus, this, &startupprogress::remoteConnectionStatus);
 }
 
 void startupprogress::manufacturerSpecificDBReady() {
@@ -91,4 +91,19 @@ void startupprogress::driverAwakeNodesQueried() {
 }
 void startupprogress::ozwNotification(quint8 node, NotificationTypes::QTOZW_Notification_Code event) {
 	qCDebug(ozwadmin) << event;
+}
+
+void startupprogress::remoteConnectionStatus(QTOZWManager::connectionStatus status, QAbstractSocket::SocketError error) {
+    qCDebug(ozwadmin) << status << error;
+    if (status != QTOZWManager::connectionStatus::ConnectionErrorState) {
+        QMetaEnum metaEnum = QMetaEnum::fromType<QTOZWManager::connectionStatus>();
+        ui->label->setText(metaEnum.valueToKey(status));
+        if ((status >= QTOZWManager::connectionStatus::GotManagerData) && (status <= QTOZWManager::connectionStatus::GotLogData)) {
+            ui->progressBar->setValue(ui->progressBar->value()+5);
+        }
+    } else {
+        QMetaEnum metaEnum = QMetaEnum::fromType<QAbstractSocket::SocketError>();
+        ui->label->setText(QString("Error: ").append(metaEnum.valueToKey(error)));
+
+    }
 }

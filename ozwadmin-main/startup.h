@@ -18,6 +18,7 @@ class Startup : public QDialog
 	Q_PROPERTY(quint32 reportPort MEMBER m_remotePort READ getremotePort);
 	Q_PROPERTY(bool remote MEMBER m_remote READ getremote);
 	Q_PROPERTY(bool startServer MEMBER m_startServer READ getstartServer);
+    Q_PROPERTY(QString authKey MEMBER m_authKey READ getauthKey);
 
 public:
     explicit Startup(QWidget *parent = nullptr);
@@ -27,7 +28,7 @@ public:
 	quint32 getremotePort() { return m_remotePort; };
 	bool getremote() { return m_remote; };
 	bool getstartServer() { return m_startServer; };
-
+    QString getauthKey() { return m_authKey; };
 
 private Q_SLOTS:
 	void localPressed();
@@ -40,6 +41,7 @@ private:
 	quint32 m_remotePort;
 	bool m_remote;
 	bool m_startServer;
+    QString m_authKey;
 
 	Ui::Startup *ui;
 };

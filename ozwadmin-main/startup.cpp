@@ -41,6 +41,7 @@ void Startup::remotePressed() {
     }
 	this->m_remoteHost = ui->remotehost->text();
 	this->m_remotePort = ui->remoteport->text().toUInt();
+    this->m_authKey = ui->authKey->text();
 	this->m_remote = true;
 	this->setResult(DialogCode::Accepted);
 	this->accept();

@@ -54,11 +54,10 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     this->ui->setupUi(this);
-
+    this->ui->action_Close->setEnabled(false);
     connect(ui->actionOpen_Log_Window, SIGNAL(triggered()), this, SLOT(openLogWindow()));
 
-    connect(ui->actionOpen_Serial_Port, SIGNAL(triggered()), this, SLOT(OpenSerialPort()));
-    connect(ui->actionOpen_Remote, SIGNAL(triggered()), this, SLOT(OpenRemote()));
+    connect(ui->actionOpen, SIGNAL(triggered()), this, SLOT(OpenConnection()));
     connect(ui->action_Close, SIGNAL(triggered()), this, SLOT(CloseConnection()));
     connect(ui->actionDevice_Database, SIGNAL(triggered()), this, SLOT(OpenDeviceDB()));
     connect(ui->md_helpwindow, &QPushButton::clicked, this, &MainWindow::openMetaDataWindow);
@@ -328,7 +327,10 @@ void MainWindow::QTOZW_Ready() {
     this->m_statTimer.start(1000);
 }
 
-void MainWindow::OpenRemote() {
+void MainWindow::OpenConnection() {
+
+    this->ui->actionOpen->setEnabled(false);
+    this->ui->action_Close->setEnabled(true);
 
 	Startup su(this);
 	su.setModal(true);
@@ -345,6 +347,7 @@ void MainWindow::OpenRemote() {
 			startupprogress *sup = new startupprogress(true, this);
 			sup->setQTOZWManager(this->m_qtozwmanager);
 			sup->show();
+            this->m_qtozwmanager->setClientAuth(su.getauthKey());
 			this->m_qtozwmanager->initilizeReplica(server);
 			return;
 		}
@@ -364,33 +367,6 @@ void MainWindow::OpenRemote() {
 
 }
 void MainWindow::CloseConnection() {
-
-}
-
-
-void MainWindow::OpenSerialPort() {
-
-    bool ok;
-
-    QMessageBox::warning(this, tr("OZW-Admin"),
-                         tr("This is Work In Progress!"),
-                         QMessageBox::Ok);
-
-    QString text = QInputDialog::getText(this, tr("Select Serial Port"),
-                                         tr("Serial Port:"), QLineEdit::Normal,
-                                         this->m_serialport, &ok);
-    if (!ok)
-        return;
-
-    /* check the port exists */
-    QFileInfo check_port(text.trimmed());
-    if (!check_port.exists() && !check_port.isWritable()) {
-        QMessageBox::warning(this, tr("OZW-Admin"),
-                             tr("The Serial Port does not exist or is not accessable"),
-                             QMessageBox::Ok);
-        return;
-    }
-
 
 }
 

@@ -32,7 +32,7 @@ public Q_SLOTS:
 	void driverAllNodesQueried();
 	void driverAwakeNodesQueried();
 	void ozwNotification(quint8 node, NotificationTypes::QTOZW_Notification_Code event);
-
+    void remoteConnectionStatus(QTOZWManager::connectionStatus status, QAbstractSocket::SocketError error);
 
 private:
     Ui::startupprogress *ui;
