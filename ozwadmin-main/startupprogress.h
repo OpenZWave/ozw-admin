@@ -19,6 +19,9 @@ public:
     ~startupprogress();
 	void setQTOZWManager(QTOZWManager *);
 
+Q_SIGNALS:
+    void cancel();
+
 public Q_SLOTS:
 	void manufacturerSpecificDBReady();
 	void ready();
@@ -33,6 +36,8 @@ public Q_SLOTS:
 	void driverAwakeNodesQueried();
 	void ozwNotification(quint8 node, NotificationTypes::QTOZW_Notification_Code event);
     void remoteConnectionStatus(QTOZWManager::connectionStatus status, QAbstractSocket::SocketError error);
+private Q_SLOTS:
+    void clicked(bool checked);
 
 private:
     Ui::startupprogress *ui;

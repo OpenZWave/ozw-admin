@@ -5,9 +5,9 @@
 
 
 startupprogress::startupprogress(bool remote, QWidget *parent) :
-	m_remote(remote),
 	QDialog(parent),
-    ui(new Ui::startupprogress)
+    ui(new Ui::startupprogress),
+    m_remote(remote)
 {
     ui->setupUi(this);
 	ui->progressBar->setValue(0);
@@ -34,16 +34,22 @@ void startupprogress::setQTOZWManager(QTOZWManager *qtozw)
 	QObject::connect(this->m_qtozwmanager, &QTOZWManager::driverAwakeNodesQueried, this, &startupprogress::driverAwakeNodesQueried);
 	QObject::connect(this->m_qtozwmanager, &QTOZWManager::ozwNotification, this, &startupprogress::ozwNotification);
     QObject::connect(this->m_qtozwmanager, &QTOZWManager::remoteConnectionStatus, this, &startupprogress::remoteConnectionStatus);
+    QObject::connect(this->ui->cancelbtn, &QPushButton::clicked, this, &startupprogress::clicked);
 }
 
+void startupprogress::clicked(bool checked) {
+    Q_UNUSED(checked);
+    emit this->cancel();
+    this->close();
+}
 void startupprogress::manufacturerSpecificDBReady() {
 	ui->progressBar->setValue(ui->progressBar->value() + 5);
 	ui->label->setText("Manufacturer Specific Database Ready");
 }
 
 void startupprogress::ready() {
-	ui->progressBar->setValue(ui->progressBar->value() + 5);
 	ui->label->setText("OpenZWave Ready");
+    this->close();
 }
 
 void startupprogress::starting() {
@@ -99,11 +105,11 @@ void startupprogress::remoteConnectionStatus(QTOZWManager::connectionStatus stat
         QMetaEnum metaEnum = QMetaEnum::fromType<QTOZWManager::connectionStatus>();
         ui->label->setText(metaEnum.valueToKey(status));
         if ((status >= QTOZWManager::connectionStatus::GotManagerData) && (status <= QTOZWManager::connectionStatus::GotLogData)) {
-            ui->progressBar->setValue(ui->progressBar->value()+5);
+            ui->progressBar->setValue(ui->progressBar->value()+16);
+            qCDebug(ozwadmin) << ui->progressBar->value();
         }
     } else {
         QMetaEnum metaEnum = QMetaEnum::fromType<QAbstractSocket::SocketError>();
         ui->label->setText(QString("Error: ").append(metaEnum.valueToKey(error)));
-
     }
 }

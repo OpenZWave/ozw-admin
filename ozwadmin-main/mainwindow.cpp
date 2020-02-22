@@ -342,6 +342,7 @@ void MainWindow::OpenConnection() {
 			server.setScheme("ws");
 			qCDebug(ozwadmin) << "Connecting to " << server;
 			startupprogress *sup = new startupprogress(true, this);
+            sup->setWindowFlags(Qt::Window | Qt::WindowTitleHint | Qt::CustomizeWindowHint);
 			sup->setQTOZWManager(this->m_qtozwmanager);
 			sup->show();
             this->m_qtozwmanager->setClientAuth(su.getauthKey());
@@ -363,8 +364,12 @@ void MainWindow::OpenConnection() {
             this->settings.setValue("connection/startserver", su.getstartServer());
 			return;
 		}
-	}
-	qCDebug(ozwadmin) << "Open Dialog was Canceled" << ret;
+    } else {
+        qCDebug(ozwadmin) << "Open Dialog was Canceled" << ret;
+        this->ui->actionOpen->setEnabled(true);
+        this->ui->action_Close->setEnabled(false);
+
+    }
 
 }
 void MainWindow::CloseConnection() {
