@@ -17,6 +17,7 @@ SOURCES += main.cpp\
     metadatawindow.cpp \
     startup.cpp \
     startupprogress.cpp \
+    statusbarmessages.cpp \
     util.cpp
 
 HEADERS  += mainwindow.h \
@@ -25,6 +26,7 @@ HEADERS  += mainwindow.h \
     metadatawindow.h \
     startup.h \
     startupprogress.h \
+    statusbarmessages.h \
     util.h \
 
 FORMS    += mainwindow.ui \

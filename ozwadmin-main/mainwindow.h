@@ -28,6 +28,7 @@
 #include <qt-openzwave/qtozwmanager.h>
 
 #include "logwindow.h"
+#include "statusbarmessages.h"
 
 namespace Ui {
 class MainWindow;
@@ -58,6 +59,7 @@ private:
     Ui::MainWindow *ui;
     QString m_serialport;
     QSettings settings;
+    statusBarMessages sbMsg;
 
     QTOpenZwave *m_openzwave;
     QTOZWManager *m_qtozwmanager;

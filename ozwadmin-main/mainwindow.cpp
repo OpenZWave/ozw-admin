@@ -51,9 +51,11 @@ void SetReadOnly(QCheckBox* checkBox, bool readOnly)
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow)
+    ui(new Ui::MainWindow),
+    sbMsg(this)
 {
     this->ui->setupUi(this);
+    statusBar()->showMessage(tr("Starting..."));
     this->ui->action_Close->setEnabled(false);
     connect(ui->actionOpen_Log_Window, SIGNAL(triggered()), this, SLOT(openLogWindow()));
 
@@ -216,6 +218,7 @@ MainWindow::MainWindow(QWidget *parent) :
     }
     this->m_openzwave = new QTOpenZwave(this, m_configpath, m_userpath);
     this->m_qtozwmanager = this->m_openzwave->GetManager();
+    this->sbMsg.setQTOZWManager(this->m_qtozwmanager);
     QObject::connect(this->m_qtozwmanager, &QTOZWManager::ready, this, &MainWindow::QTOZW_Ready);
 
     this->m_qtozwmanager->initilizeSource(this->settings.value("StartServer").toBool());
