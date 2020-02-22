@@ -18,9 +18,9 @@ Startup::Startup(QWidget *parent) :
     QObject::connect(ui->startlocal, &QPushButton::clicked, this, &Startup::localPressed);
     QObject::connect(ui->startremote, &QPushButton::clicked, this, &Startup::remotePressed);
     QSettings settings;
-#ifdef Q_OS_MACOS
+#if defined(Q_OS_MACOS)
     ui->serialport->setText(settings.value("connection/serialport", "/dev/cu.SLAB_USBtoUART").toString());
-#elif Q_OS_WIN
+#elif defined(Q_OS_WIN)
     ui->serialport->setText(settings.value("connection/serialport", "COM1").toString());
 #else
     ui->serialport->setText(settings.value("connection/serialport", "/dev/ttyUSB0").toString());
