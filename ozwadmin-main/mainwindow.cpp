@@ -117,9 +117,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
 
-    this->m_serialport = settings.value("SerialPort", "/dev/ttyUSB0").toString();
-
-
     SetReadOnly(this->ui->ni_flirs, true);
     SetReadOnly(this->ui->ni_listen, true);
     SetReadOnly(this->ui->ni_zwplus, true);
@@ -349,17 +346,21 @@ void MainWindow::OpenConnection() {
 			sup->show();
             this->m_qtozwmanager->setClientAuth(su.getauthKey());
 			this->m_qtozwmanager->initilizeReplica(server);
+            this->settings.setValue("connection/remotehost", su.getremoteHost());
+            this->settings.setValue("connection/remoteport", su.getremotePort());
+            this->settings.setValue("connection/authKey", su.getauthKey());
 			return;
 		}
 		else 
 		{
 			qCDebug(ozwadmin) << "Doing Local Connection: " << su.getserialPort() << su.getstartServer();
 			this->m_serialport = su.getserialPort();
-			this->settings.setValue("SerialPort", this->m_serialport);
 			startupprogress *sup = new startupprogress(false, this);
 			sup->setQTOZWManager(this->m_qtozwmanager);
 			sup->show();
 			this->m_qtozwmanager->open(this->m_serialport);
+            this->settings.setValue("connection/serialport", su.getserialPort());
+            this->settings.setValue("connection/startserver", su.getstartServer());
 			return;
 		}
 	}

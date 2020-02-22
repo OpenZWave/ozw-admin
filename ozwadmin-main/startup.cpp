@@ -1,5 +1,6 @@
 #include <QMessageBox>
 #include <QIntValidator>
+#include <QSettings>
 
 #include "startup.h"
 #include "ui_startup.h"
@@ -16,7 +17,18 @@ Startup::Startup(QWidget *parent) :
     ui->remoteport->setMaximumWidth(w+8);
     QObject::connect(ui->startlocal, &QPushButton::clicked, this, &Startup::localPressed);
     QObject::connect(ui->startremote, &QPushButton::clicked, this, &Startup::remotePressed);
-
+    QSettings settings;
+#ifdef Q_OS_MACOS
+    ui->serialport->setText(settings.value("connection/serialport", "/dev/cu.SLAB_USBtoUART").toString());
+#elif Q_OS_WIN
+    ui->serialport->setText(settings.value("connection/serialport", "COM1").toString());
+#else
+    ui->serialport->setText(settings.value("connection/serialport", "/dev/ttyUSB0").toString());
+#endif
+    ui->enableserver->setChecked(settings.value("connection/startserver", true).toBool());
+    ui->remotehost->setText(settings.value("connection/remotehost", "localhost").toString());
+    ui->remoteport->setText(settings.value("connection/remoteport", "1983").toString());
+    ui->authKey->setText(settings.value("connection/authKey", "").toString());
 }
 
 Startup::~Startup()
@@ -31,7 +43,7 @@ void Startup::localPressed() {
     }
 	this->m_serialPort = ui->serialport->text();
 	this->m_remote = false;
-	this->m_startServer = false;
+    this->m_startServer = ui->enableserver->isChecked();
 	this->setResult(DialogCode::Accepted);
 	this->accept();
 }
