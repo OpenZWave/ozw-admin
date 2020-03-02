@@ -15,6 +15,7 @@ SOURCES += main.cpp\
     logwindow.cpp \
     mainwindow.cpp \
     metadatawindow.cpp \
+    nodetablewidget.cpp \
     startup.cpp \
     startupprogress.cpp \
     statusbarmessages.cpp \
@@ -24,6 +25,7 @@ HEADERS  += mainwindow.h \
     configuration.h \
     logwindow.h \
     metadatawindow.h \
+    nodetablewidget.h \
     startup.h \
     startupprogress.h \
     statusbarmessages.h \
@@ -33,6 +35,7 @@ FORMS    += mainwindow.ui \
     configuration.ui \
     logwindow.ui \
     metadatawindow.ui \
+    nodetablewidget.ui \
     startup.ui \
     startupprogress.ui
 
@@ -48,13 +51,14 @@ unix {
 }
 windows {
     CONFIG(debug, debug|release) {
-        debug: LIBS += -L..\devicedb-lib\debug\ -L..\ozwadmin-widgets\debug\ -L..\..\qt-openzwave\qt-openzwave\debug\
+        debug: LIBS += -L..\devicedb-lib\debug\ -L..\ozwadmin-widgets\debug\ -L..\..\qt-openzwave\qt-openzwave\debug\ -L..\..\qt-openzwave\qt-openzwavedatabase\debug\
     }
     CONFIG(release, debug|release) {
-        release: LIBS += -L..\devicedb-lib\release\ -L..\ozwadmin-widgets\release\ -L..\..\qt-openzwave\qt-openzwave\release\
+        release: LIBS += -L..\devicedb-lib\release\ -L..\ozwadmin-widgets\release\ -L..\..\qt-openzwave\qt-openzwave\release\ -L..\..\qt-openzwave\qt-openzwavedatabase\release\
     }
-    LIBS += -ldevicedb-lib -lozwadmin-widgets -lqt-openzwave1
+    LIBS += -ldevicedb-lib -lozwadmin-widgets -lqt-openzwave1 -lqt-openzwavedatabase1
     message($$LIBS)
+    RC_ICONS=res/ozw_logo.ico
 }
 
 INCLUDEPATH += ../devicedb-lib ../ozwadmin-widgets

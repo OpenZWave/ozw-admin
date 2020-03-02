@@ -29,6 +29,7 @@
 
 #include "logwindow.h"
 #include "statusbarmessages.h"
+#include "nodetablewidget.h"
 
 namespace Ui {
 class MainWindow;
@@ -60,6 +61,7 @@ private:
     QString m_serialport;
     QSettings settings;
     statusBarMessages sbMsg;
+	nodeTableWidget *ntw;
 
     QTOpenZwave *m_openzwave;
     QTOZWManager *m_qtozwmanager;

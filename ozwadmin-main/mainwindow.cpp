@@ -34,7 +34,6 @@
 #include "logwindow.h"
 #include "devicedb.hpp"
 #include "value_delegate.h"
-#include "node_delegate.h"
 #include "configuration.h"
 #include "startup.h"
 #include "startupprogress.h"
@@ -50,172 +49,150 @@ void SetReadOnly(QCheckBox* checkBox, bool readOnly)
 
 
 MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent),
-    ui(new Ui::MainWindow),
-    sbMsg(this)
+	QMainWindow(parent),
+	ui(new Ui::MainWindow),
+	sbMsg(this)
 {
-    this->ui->setupUi(this);
-    statusBar()->showMessage(tr("Starting..."));
-    this->ui->action_Close->setEnabled(false);
-    connect(ui->actionOpen_Log_Window, SIGNAL(triggered()), this, SLOT(openLogWindow()));
+	this->ui->setupUi(this);
+	statusBar()->showMessage(tr("Starting..."));
+	this->ui->action_Close->setEnabled(false);
+	connect(ui->actionOpen_Log_Window, SIGNAL(triggered()), this, SLOT(openLogWindow()));
 
-    connect(ui->actionOpen, SIGNAL(triggered()), this, SLOT(OpenConnection()));
-    connect(ui->action_Close, SIGNAL(triggered()), this, SLOT(CloseConnection()));
-    connect(ui->actionDevice_Database, SIGNAL(triggered()), this, SLOT(OpenDeviceDB()));
-    connect(ui->md_helpwindow, &QPushButton::clicked, this, &MainWindow::openMetaDataWindow);
-    connect(ui->action_Configuration, SIGNAL(triggered()), this, SLOT(openConfigWindow()));
+	connect(ui->actionOpen, SIGNAL(triggered()), this, SLOT(OpenConnection()));
+	connect(ui->action_Close, SIGNAL(triggered()), this, SLOT(CloseConnection()));
+	connect(ui->actionDevice_Database, SIGNAL(triggered()), this, SLOT(OpenDeviceDB()));
+	connect(ui->md_helpwindow, &QPushButton::clicked, this, &MainWindow::openMetaDataWindow);
+	connect(ui->action_Configuration, SIGNAL(triggered()), this, SLOT(openConfigWindow()));
 
-    Node_Delegate *nodeflagdelegate = new Node_Delegate(this);
-
-    this->ui->nodeList->setItemDelegateForColumn(QTOZW_Nodes::NodeColumns::NodeFlags, nodeflagdelegate);
-    this->ui->nodeList->setSelectionBehavior(QAbstractItemView::SelectRows);
-    this->ui->nodeList->resizeColumnsToContents();
-    this->ui->nodeList->verticalHeader()->hide();
-    this->ui->nodeList->setSelectionMode(QAbstractItemView::SingleSelection);
-    this->ui->nodeList->setSortingEnabled(true);
-    this->ui->nodeList->horizontalHeader()->setSectionsMovable(true);
-//    this->ui->nodeList->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
-//    this->ui->nodeList->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
-    this->ui->val_user_tbl->resizeColumnsToContents();
+	this->ntw = new nodeTableWidget(this);
+	connect(this->ntw, &nodeTableWidget::currentRowChanged, this, &MainWindow::NodeSelected);
+	this->ui->horizontalLayout_2->insertWidget(0, this->ntw);
 
 
+	Value_Delegate *delegate = new Value_Delegate(this);
 
-    Value_Delegate *delegate = new Value_Delegate(this);
-
-    this->ui->val_user_tbl->setItemDelegateForColumn(QTOZW_ValueIds::ValueIdColumns::Value, delegate);
-    this->ui->val_user_tbl->setSelectionBehavior(QAbstractItemView::SelectRows);
-    this->ui->val_user_tbl->verticalHeader()->hide();
-    this->ui->val_user_tbl->setSelectionMode(QAbstractItemView::SingleSelection);
-    this->ui->val_user_tbl->setSortingEnabled(true);
-    this->ui->val_user_tbl->horizontalHeader()->setSectionsMovable(true);
-//    this->ui->val_user_tbl->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
-//    this->ui->val_user_tbl->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
-    this->ui->val_user_tbl->resizeColumnsToContents();
+	this->ui->val_user_tbl->setItemDelegateForColumn(QTOZW_ValueIds::ValueIdColumns::Value, delegate);
+	this->ui->val_user_tbl->setSelectionBehavior(QAbstractItemView::SelectRows);
+	this->ui->val_user_tbl->verticalHeader()->hide();
+	this->ui->val_user_tbl->setSelectionMode(QAbstractItemView::SingleSelection);
+	this->ui->val_user_tbl->setSortingEnabled(true);
+	this->ui->val_user_tbl->horizontalHeader()->setSectionsMovable(true);
+	//    this->ui->val_user_tbl->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+	//    this->ui->val_user_tbl->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+	this->ui->val_user_tbl->resizeColumnsToContents();
 
 
 
-    this->ui->val_config_tbl->setItemDelegateForColumn(QTOZW_ValueIds::ValueIdColumns::Value, delegate);
-    this->ui->val_config_tbl->setSelectionBehavior(QAbstractItemView::SelectRows);
-    this->ui->val_config_tbl->horizontalHeader()->setStretchLastSection(true);
-    this->ui->val_config_tbl->verticalHeader()->hide();
-    this->ui->val_config_tbl->setSelectionMode(QAbstractItemView::SingleSelection);
-    this->ui->val_config_tbl->setSortingEnabled(true);
-    this->ui->val_config_tbl->horizontalHeader()->setSectionsMovable(true);
-//    this->ui->val_config_tbl->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
-//    this->ui->val_config_tbl->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
-    this->ui->val_config_tbl->resizeColumnsToContents();
+	this->ui->val_config_tbl->setItemDelegateForColumn(QTOZW_ValueIds::ValueIdColumns::Value, delegate);
+	this->ui->val_config_tbl->setSelectionBehavior(QAbstractItemView::SelectRows);
+	this->ui->val_config_tbl->horizontalHeader()->setStretchLastSection(true);
+	this->ui->val_config_tbl->verticalHeader()->hide();
+	this->ui->val_config_tbl->setSelectionMode(QAbstractItemView::SingleSelection);
+	this->ui->val_config_tbl->setSortingEnabled(true);
+	this->ui->val_config_tbl->horizontalHeader()->setSectionsMovable(true);
+	//    this->ui->val_config_tbl->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+	//    this->ui->val_config_tbl->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+	this->ui->val_config_tbl->resizeColumnsToContents();
 
 
 
-    this->ui->val_system_tbl->setItemDelegateForColumn(QTOZW_ValueIds::ValueIdColumns::Value, delegate);
-    this->ui->val_system_tbl->setSelectionBehavior(QAbstractItemView::SelectRows);
-    this->ui->val_system_tbl->verticalHeader()->hide();
-    this->ui->val_system_tbl->setSelectionMode(QAbstractItemView::SingleSelection);
-    this->ui->val_system_tbl->setSortingEnabled(true);
-    this->ui->val_system_tbl->horizontalHeader()->setSectionsMovable(true);
-//    this->ui->val_system_tbl->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
-//    this->ui->val_system_tbl->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
-    this->ui->val_system_tbl->resizeColumnsToContents();
+	this->ui->val_system_tbl->setItemDelegateForColumn(QTOZW_ValueIds::ValueIdColumns::Value, delegate);
+	this->ui->val_system_tbl->setSelectionBehavior(QAbstractItemView::SelectRows);
+	this->ui->val_system_tbl->verticalHeader()->hide();
+	this->ui->val_system_tbl->setSelectionMode(QAbstractItemView::SingleSelection);
+	this->ui->val_system_tbl->setSortingEnabled(true);
+	this->ui->val_system_tbl->horizontalHeader()->setSectionsMovable(true);
+	//    this->ui->val_system_tbl->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+	//    this->ui->val_system_tbl->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+	this->ui->val_system_tbl->resizeColumnsToContents();
 
 
 
-    SetReadOnly(this->ui->ni_flirs, true);
-    SetReadOnly(this->ui->ni_listen, true);
-    SetReadOnly(this->ui->ni_zwplus, true);
-    SetReadOnly(this->ui->ni_beaming, true);
-    SetReadOnly(this->ui->ni_routing, true);
-    SetReadOnly(this->ui->ni_security, true);
+	SetReadOnly(this->ui->ni_flirs, true);
+	SetReadOnly(this->ui->ni_listen, true);
+	SetReadOnly(this->ui->ni_zwplus, true);
+	SetReadOnly(this->ui->ni_beaming, true);
+	SetReadOnly(this->ui->ni_routing, true);
+	SetReadOnly(this->ui->ni_security, true);
 
 
-    QStringList PossibleDBPaths;
-    PossibleDBPaths << settings.value("openzwave/ConfigPath", QDir::toNativeSeparators("../../../config/")).toString().append("/");
-    PossibleDBPaths << QStandardPaths::standardLocations(QStandardPaths::AppDataLocation);
+	QStringList PossibleDBPaths;
+	PossibleDBPaths << settings.value("openzwave/ConfigPath", QDir::toNativeSeparators("../../../config/")).toString().append("/");
+	PossibleDBPaths << QStandardPaths::standardLocations(QStandardPaths::AppDataLocation);
 
-    QString path, dbPath, userPath;
-    foreach(path, PossibleDBPaths) {
-        qCDebug(ozwadmin) << "Checking " << QFileInfo(QDir::toNativeSeparators(path+"/config/manufacturer_specific.xml")).absoluteFilePath() << " for manufacturer_specific.xml";
-        if (QFileInfo(QDir::toNativeSeparators(path+"/config/manufacturer_specific.xml")).exists()) {
-            dbPath = QFileInfo(QDir::toNativeSeparators(path+"/config/manufacturer_specific.xml")).absoluteFilePath();
-            break;
-        }
-        qCDebug(ozwadmin) << "Checking " << QFileInfo(QDir::toNativeSeparators(path+"../config/manufacturer_specific.xml")).absoluteFilePath() << " for manufacturer_specific.xml";
-        if (QFile(QDir::toNativeSeparators(path+"/../config/manufacturer_specific.xml")).exists()) {
-            dbPath = QFileInfo(QDir::toNativeSeparators(path+"/../config/manufacturer_specific.xml")).absoluteFilePath();
-            break;
-        }
-    }
-    PossibleDBPaths.clear();
-    PossibleDBPaths << settings.value("openzwave/UserPath", QDir::toNativeSeparators("../../../config/")).toString().append("/");
-    PossibleDBPaths << QStandardPaths::standardLocations(QStandardPaths::AppDataLocation);
+	QString path, dbPath, userPath;
+	foreach(path, PossibleDBPaths) {
+		qCDebug(ozwadmin) << "Checking " << QFileInfo(QDir::toNativeSeparators(path + "/config/manufacturer_specific.xml")).absoluteFilePath() << " for manufacturer_specific.xml";
+		if (QFileInfo(QDir::toNativeSeparators(path + "/config/manufacturer_specific.xml")).exists()) {
+			dbPath = QFileInfo(QDir::toNativeSeparators(path + "/config/manufacturer_specific.xml")).absoluteFilePath();
+			break;
+		}
+		qCDebug(ozwadmin) << "Checking " << QFileInfo(QDir::toNativeSeparators(path + "../config/manufacturer_specific.xml")).absoluteFilePath() << " for manufacturer_specific.xml";
+		if (QFile(QDir::toNativeSeparators(path + "/../config/manufacturer_specific.xml")).exists()) {
+			dbPath = QFileInfo(QDir::toNativeSeparators(path + "/../config/manufacturer_specific.xml")).absoluteFilePath();
+			break;
+		}
+	}
+	PossibleDBPaths.clear();
+	PossibleDBPaths << settings.value("openzwave/UserPath", QDir::toNativeSeparators("../../../config/")).toString().append("/");
+	PossibleDBPaths << QStandardPaths::standardLocations(QStandardPaths::AppDataLocation);
 
-    foreach(path, PossibleDBPaths) {
-        qCDebug(ozwadmin) << "Checking " << QFileInfo(QDir::toNativeSeparators(path+"/config/Options.xml")).absoluteFilePath() << " for Options.xml";
-        if (QFileInfo(QDir::toNativeSeparators(path+"/config/Options.xml")).exists()) {
-            userPath = QFileInfo(QDir::toNativeSeparators(path+"/config/Options.xml")).absoluteFilePath();
-            break;
-        }
-        qCDebug(ozwadmin) << "Checking " << QFileInfo(QDir::toNativeSeparators(path+"/../config/Options.xml")).absoluteFilePath() << " for Options.xml";
-        if (QFile(QDir::toNativeSeparators(path+"/../config/Options.xml")).exists()) {
-            userPath = QFileInfo(QDir::toNativeSeparators(path+"/../config/Options.xml")).absoluteFilePath();
-            break;
-        }
-    }
+	foreach(path, PossibleDBPaths) {
+		qCDebug(ozwadmin) << "Checking " << QFileInfo(QDir::toNativeSeparators(path + "/config/Options.xml")).absoluteFilePath() << " for Options.xml";
+		if (QFileInfo(QDir::toNativeSeparators(path + "/config/Options.xml")).exists()) {
+			userPath = QFileInfo(QDir::toNativeSeparators(path + "/config/Options.xml")).absoluteFilePath();
+			break;
+		}
+		qCDebug(ozwadmin) << "Checking " << QFileInfo(QDir::toNativeSeparators(path + "/../config/Options.xml")).absoluteFilePath() << " for Options.xml";
+		if (QFile(QDir::toNativeSeparators(path + "/../config/Options.xml")).exists()) {
+			userPath = QFileInfo(QDir::toNativeSeparators(path + "/../config/Options.xml")).absoluteFilePath();
+			break;
+		}
+	}
 
-    qCDebug(ozwadmin) << "DBPath: " << dbPath;
-    qCDebug(ozwadmin) << "userPath: " << userPath;
+	qCDebug(ozwadmin) << "DBPath: " << dbPath;
+	qCDebug(ozwadmin) << "userPath: " << userPath;
 
-    m_configpath = settings.value("openzwave/ConfigPath", "../../../config/").toString().append("/");
-    m_userpath = settings.value("openzwave/UserPath", "").toString().append("/");
-    while (!m_configpath.exists()) {
-        int ret = QMessageBox::critical(nullptr, tr("OpenZWave Database Path"),
-                                        tr("The OpenZWave Database was not Found\n") +
-                                        tr("Would you like to install a new copy, or use a existing database?"),
-                                        QMessageBox::Open | QMessageBox::Save |     QMessageBox::Abort);
-        if (ret == QMessageBox::Open) {
-            QString dir;
-            dir = QFileDialog::getExistingDirectory(this, tr("Open Directory"),
-                                                    QDir::currentPath(),
-                                                    QFileDialog::ShowDirsOnly
-                                                    );
-            QDir directory(dir);
-            if (directory.exists("manufacturer_specific.xml")) {
-                m_configpath.setPath(dir);
-                settings.setValue("openzwave/ConfigPath", dir.append("/"));
-                settings.setValue("openzwave/UserPath", dir.append("/"));
-            } else {
-                if (QMessageBox::critical(nullptr, "Invalid Directory",
-                                      QString("The Directory ").append(dir).append(" a Valid Device Database"),
-                                          QMessageBox::Ok | QMessageBox::Abort) == QMessageBox::Abort) {
-                    exit(-1);
-                }
-            }
-        } else if (ret == QMessageBox::Save) {
-            QString dir;
-            dir = QFileDialog::getExistingDirectory(this, tr("Open Directory"),
-                                                    QDir::currentPath(),
-                                                    QFileDialog::ShowDirsOnly
-                                                    );
-            QFileInfo directory(dir);
-            qCDebug(ozwadmin) << directory.absoluteFilePath();
-            if (directory.exists()) {
-#ifndef _WIN32
-                QStringList dirs;
-                dirs << directory.absoluteFilePath().append("/");
-                initConfigDatabase(dirs);
-#if 0
-                copyConfigDatabase(directory.absoluteFilePath().append("/"));
-#endif
-#endif
-                m_configpath.setPath(directory.absoluteFilePath().append("/config/"));
-                m_userpath.setPath(directory.absoluteFilePath().append("/config/"));
-                settings.setValue("openzwave/ConfigPath", m_configpath.absolutePath());
-                settings.setValue("openzwave/UserPath", m_userpath.absolutePath());
+	if (dbPath.isEmpty()) {
+		qCInfo(ozwadmin) << "Deploying OZW Database to " << QStandardPaths::standardLocations(QStandardPaths::AppDataLocation).at(0);
+		QStringList paths;
+		paths << "." << "../../qt-openzwave/qt-openzwavedatabase/";
+		if (!initConfigDatabase(paths)) {
+			QMessageBox::critical(this, "Missing qt-openzwavedatabase.rcc Database File", "The qt-openzwavedatabase.rcc file could not be found");
+			exit(-1);
+		}
+		QString dir = QStandardPaths::standardLocations(QStandardPaths::AppDataLocation).at(0);
+		if (copyConfigDatabase(QDir(dir).absolutePath())) {
+			qCInfo(ozwadmin) << "Copied Database to " << dir;
+		}
+		else {
+			QMessageBox::critical(this, "Missing qt-openzwavedatabase.rcc Database File", "The qt-openzwavedatabase.rcc file could not be found");
+			exit(-1);
+		}
+		dbPath = QFileInfo(dir.append("/config/")).absolutePath();
+		m_configpath.setPath(dbPath);
+		settings.setValue("openzwave/ConfigPath", m_configpath.absolutePath());
+		qCInfo(ozwadmin) << "m_configPath set to " << m_configpath.absolutePath();
+	}
+	else
+	{
+		m_configpath.setPath(QFileInfo(dbPath).absolutePath());
+		settings.setValue("openzwave/ConfigPath", m_configpath.absolutePath());
+		qCInfo(ozwadmin) << "Found Existing DB Path" << m_configpath.absolutePath();
+	}
 
-            }
-        } else if (ret == QMessageBox::Abort) {
-            exit(-1);
-        }
-    }
+	if (userPath.isEmpty()) {
+		userPath = dbPath;
+		m_userpath.setPath(QFileInfo(userPath).absolutePath());
+		settings.setValue("openzwave/UserPath", m_userpath.absolutePath());
+		qCInfo(ozwadmin) << "UserPath is Set to DBPath: " << m_userpath.absolutePath();
+	}
+	else {
+		m_userpath.setPath(QFileInfo(userPath).absolutePath());
+		qCInfo(ozwadmin) << "UserPath is Set from Settings" << m_userpath.absolutePath();
+		settings.setValue("openzwave/UserPath", m_userpath.absolutePath());
+	}
+
     this->m_openzwave = new QTOpenZwave(this, m_configpath, m_userpath);
     this->m_qtozwmanager = this->m_openzwave->GetManager();
     this->sbMsg.setQTOZWManager(this->m_qtozwmanager);
@@ -253,26 +230,13 @@ void MainWindow::QTOZW_Ready() {
     }
     settings.endGroup();
 
-    QTOZW_proxyNodeModel *nodeList = new QTOZW_proxyNodeModel(this);
-    nodeList->setSourceModel(this->m_qtozwmanager->getNodeModel());
-    this->ui->nodeList->setModel(nodeList);
-    for (int i = 0; i <= QTOZW_Nodes::NodeColumns::NodeCount; i++) {
-        switch (i) {
-            case QTOZW_Nodes::NodeColumns::NodeID:
-            case QTOZW_Nodes::NodeColumns::NodeName:
-            case QTOZW_Nodes::NodeColumns::NodeProductName:
-            case QTOZW_Nodes::NodeColumns::NodeFlags:
-            break;
-        default:
-            this->ui->nodeList->horizontalHeader()->hideSection(i);
-        }
-    }
-    QObject::connect(ui->nodeList->selectionModel(), &QItemSelectionModel::currentRowChanged, this, &MainWindow::NodeSelected);
+	this->ntw->setModel(this->m_qtozwmanager->getNodeModel());
+
 
     QTOZW_proxyValueModel *userList = new QTOZW_proxyValueModel(this);
     userList->setSourceModel(this->m_qtozwmanager->getValueModel());
     userList->setFilterGenre(QTOZW_ValueIds::ValueIdGenres::User);
-    userList->setSelectionModel(this->ui->nodeList->selectionModel());
+    userList->setSelectionModel(this->ntw->selectionModel());
     this->ui->val_user_tbl->setModel(userList);
 
     for (int i = 0; i <= QTOZW_ValueIds::ValueIdColumns::ValueIdCount; i++) {
@@ -290,7 +254,7 @@ void MainWindow::QTOZW_Ready() {
     QTOZW_proxyValueModel *configList = new QTOZW_proxyValueModel(this);
     configList->setSourceModel(this->m_qtozwmanager->getValueModel());
     configList->setFilterGenre(QTOZW_ValueIds::ValueIdGenres::Config);
-    configList->setSelectionModel(this->ui->nodeList->selectionModel());
+    configList->setSelectionModel(this->ntw->selectionModel());
     this->ui->val_config_tbl->setModel(configList);
 
     for (int i = 0; i <= QTOZW_ValueIds::ValueIdColumns::ValueIdCount; i++) {
@@ -308,7 +272,7 @@ void MainWindow::QTOZW_Ready() {
     QTOZW_proxyValueModel *systemList = new QTOZW_proxyValueModel(this);
     systemList->setSourceModel(this->m_qtozwmanager->getValueModel());
     systemList->setFilterGenre(QTOZW_ValueIds::ValueIdGenres::System);
-    systemList->setSelectionModel(this->ui->nodeList->selectionModel());
+    systemList->setSelectionModel(this->ntw->selectionModel());
     this->ui->val_system_tbl->setModel(systemList);
 
     for (int i = 0; i <= QTOZW_ValueIds::ValueIdColumns::ValueIdCount; i++) {
@@ -382,7 +346,7 @@ void MainWindow::CloseConnection() {
 
 
 void MainWindow::resizeColumns() {
-    this->ui->nodeList->resizeColumnsToContents();
+    //this->ui->nodeList->resizeColumnsToContents();
 }
 
 
@@ -455,7 +419,7 @@ void MainWindow::NodeSelected(QModelIndex current,QModelIndex previous) {
 }
 
 void MainWindow::updateNodeStats() {
-    QModelIndex current = this->ui->nodeList->currentIndex();
+    QModelIndex current = this->ntw->currentIndex();
     if (!current.isValid())
         return;
     const QAbstractItemModel * model = current.model();
@@ -514,7 +478,7 @@ void MainWindow::openLogWindow() {
 
 void MainWindow::openMetaDataWindow() {
     qCDebug(ozwadmin) << "Opening Window";
-    QModelIndex index = this->ui->nodeList->currentIndex();
+    QModelIndex index = this->ntw->currentIndex();
     const QAbstractItemModel *model = index.model();
     quint8 node = model->data(model->index(index.row(), QTOZW_Nodes::NodeColumns::NodeID)).value<quint8>();
     MetaDataWindow *mdwin = new MetaDataWindow(this);

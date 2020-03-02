@@ -46,6 +46,7 @@ Section ""
 	File ${PROJECT_ROOT}\ozwadmin.exe
 
 	FILE ${PROJECT_ROOT}\*.dll
+	FILE ${PROJECT_ROOT}\*.rcc
 
 	SetOutPath $INSTDIR\platforms
 	File ${PROJECT_ROOT}\platforms\*.dll
@@ -97,6 +98,7 @@ Section "Uninstall"
 	Delete $INSTDIR\LICENSE
 	Delete $INSTDIR\*.exe
 	Delete $INSTDIR\*.dll
+	Delete $INSTDIR\*.rcc
 	Delete $INSTDIR\platforms\*.dll
 	Delete $INSTDIR\iconengines\*.dll
 	Delete $INSTDIR\imageformats\*.dll
