@@ -1,6 +1,9 @@
 # ozw-admin
 This is a Gui for OpenZWave, intended to replace the open-zwave-control-panel eventually.
 
+Latest Installer Images/AppImages can be found here:
+http://bamboo.my-ho.st/bamboo/browse/OZW-OZW/latestSuccessful/artifact
+
 Work in Progress. Don't expect much right now :)
 
 If you are using the ozwdaemon docker image, you need to allow remote network access to the Docker Image:
