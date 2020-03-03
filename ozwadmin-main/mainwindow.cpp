@@ -38,13 +38,10 @@
 #include "startup.h"
 #include "startupprogress.h"
 #include "util.h"
+#include "deviceinfo.h"
 
 
-void SetReadOnly(QCheckBox* checkBox, bool readOnly)
-{
-   checkBox->setAttribute(Qt::WA_TransparentForMouseEvents, readOnly);
-   checkBox->setFocusPolicy(readOnly ? Qt::NoFocus : Qt::StrongFocus);
-}
+
 
 
 
@@ -54,6 +51,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	sbMsg(this)
 {
 	this->ui->setupUi(this);
+	DeviceInfo *di = new DeviceInfo(this);
 	statusBar()->showMessage(tr("Starting..."));
 	this->ui->action_Close->setEnabled(false);
 	connect(ui->actionOpen_Log_Window, SIGNAL(triggered()), this, SLOT(openLogWindow()));
@@ -61,13 +59,14 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(ui->actionOpen, SIGNAL(triggered()), this, SLOT(OpenConnection()));
 	connect(ui->action_Close, SIGNAL(triggered()), this, SLOT(CloseConnection()));
 	connect(ui->actionDevice_Database, SIGNAL(triggered()), this, SLOT(OpenDeviceDB()));
-	connect(ui->md_helpwindow, &QPushButton::clicked, this, &MainWindow::openMetaDataWindow);
+	connect(di, &DeviceInfo::openMetaDataWindow, this, &MainWindow::openMetaDataWindow);
 	connect(ui->action_Configuration, SIGNAL(triggered()), this, SLOT(openConfigWindow()));
 
 	this->ntw = new nodeTableWidget(this);
 	connect(this->ntw, &nodeTableWidget::currentRowChanged, this, &MainWindow::NodeSelected);
+	connect(this->ntw, &nodeTableWidget::currentRowChanged, di, &DeviceInfo::NodeSelected);
 	this->ui->horizontalLayout_2->insertWidget(0, this->ntw);
-
+	this->ui->horizontalLayout_2->insertWidget(1, di);
 
 	Value_Delegate *delegate = new Value_Delegate(this);
 
@@ -108,12 +107,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
 
-	SetReadOnly(this->ui->ni_flirs, true);
-	SetReadOnly(this->ui->ni_listen, true);
-	SetReadOnly(this->ui->ni_zwplus, true);
-	SetReadOnly(this->ui->ni_beaming, true);
-	SetReadOnly(this->ui->ni_routing, true);
-	SetReadOnly(this->ui->ni_security, true);
+
 
 
 	QStringList PossibleDBPaths;
@@ -200,6 +194,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     this->m_qtozwmanager->initilizeSource(this->settings.value("StartServer").toBool());
     this->m_logWindow.setModel(this->m_qtozwmanager->getLogModel());
+	di->setQTOZWManager(this->m_qtozwmanager);
 }
 
 MainWindow::~MainWindow()
@@ -354,68 +349,17 @@ void MainWindow::resizeColumns() {
 
 void MainWindow::NodeSelected(QModelIndex current,QModelIndex previous) {
     Q_UNUSED(previous);
-    if (!current.isValid()) {
+#if 0
+	if (!current.isValid()) {
         return;
     }
     const QAbstractItemModel * model = current.model();
 
-    /* I tried to use the QDataWidgetMapper but failed... */
-    this->ui->dd_name->setText(model->data(model->index(current.row(), QTOZW_Nodes::NodeColumns::NodeProductName)).toString());
-    this->ui->dd_manufacturer->setText(model->data(model->index(current.row(), QTOZW_Nodes::NodeColumns::NodeManufacturerName)).toString());
-    this->ui->dd_manid->setText(model->data(model->index(current.row(), QTOZW_Nodes::NodeColumns::NodeManufacturerID)).toString());
-    this->ui->dd_prodid->setText(model->data(model->index(current.row(), QTOZW_Nodes::NodeColumns::NodeProductID)).toString());
-    this->ui->dd_prodtype->setText(model->data(model->index(current.row(), QTOZW_Nodes::NodeColumns::NodeProductType)).toString());
-
     quint8 node = model->data(model->index(current.row(), QTOZW_Nodes::NodeColumns::NodeID)).value<quint8>();
-
-    QUrl url = this->m_qtozwmanager->GetMetaData(node, QTOZWManagerSource::QTOZWMetaDataField::OZWInfoURL);
-    if (url.isValid())
-        this->ui->md_ozwinfo->setText("<a href='"+url.toEncoded()+"'>"+tr("OpenZWave Database")+"</a>");
-    else
-        this->ui->md_ozwinfo->setText("");
-
-    url = this->m_qtozwmanager->GetMetaData(node, QTOZWManagerSource::QTOZWMetaDataField::ZWAProductURL);
-    if (url.isValid())
-        this->ui->md_zwainfo->setText("<a href='"+url.toEncoded()+"'>"+tr("ZWave Alliance Database")+"</a>");
-    else
-        this->ui->md_zwainfo->setText("");
-
-    url = this->m_qtozwmanager->GetMetaData(node, QTOZWManagerSource::QTOZWMetaDataField::ProductManualURL);
-    if (url.isValid())
-        this->ui->md_manual->setText("<a href='"+url.toEncoded()+"'>"+tr("Product Manual")+"</a>");
-    else
-        this->ui->md_manual->setText("");
-
-    url = this->m_qtozwmanager->GetMetaData(node, QTOZWManagerSource::QTOZWMetaDataField::ProductSupportURL);
-    if (url.isValid())
-        this->ui->md_prodpage->setText("<a href='"+url.toEncoded()+"'>"+tr("Product Support")+"</a>");
-    else
-        this->ui->md_prodpage->setText("");
-
-    QString value = this->m_qtozwmanager->GetMetaData(node, QTOZWManagerSource::QTOZWMetaDataField::Name);
-    this->ui->md_name->setText(value);
-
-    value = this->m_qtozwmanager->GetMetaData(node, QTOZWManagerSource::QTOZWMetaDataField::ProductPageURL);
-    this->ui->md_producturl->setText(value);
-
-    QPixmap pix;
-    pix.loadFromData(this->m_qtozwmanager->GetMetaDataProductPic(model->data(model->index(current.row(), QTOZW_Nodes::NodeColumns::NodeID)).value<quint8>()));
-    this->ui->md_pic->setPixmap(pix);
-
-    /* Now Do the Device Flags */
-    QBitArray flags = model->data(model->index(current.row(), QTOZW_Nodes::NodeColumns::NodeFlags)).value<QBitArray>();
-    this->ui->ni_flirs->setChecked(flags.at(QTOZW_Nodes::nodeFlags::isFlirs));
-    this->ui->ni_listen->setChecked(flags.at(QTOZW_Nodes::nodeFlags::isListening));
-    this->ui->ni_zwplus->setChecked(flags.at(QTOZW_Nodes::nodeFlags::isZWavePlus));
-    this->ui->ni_beaming->setChecked(flags.at(QTOZW_Nodes::nodeFlags::isBeaming));
-    this->ui->ni_routing->setChecked(flags.at(QTOZW_Nodes::nodeFlags::isRouting));
-    this->ui->ni_security->setChecked(flags.at(QTOZW_Nodes::nodeFlags::isSecurityv1));
-    this->ui->ni_baud->setText(model->data(model->index(current.row(), QTOZW_Nodes::NodeColumns::NodeBaudRate)).toString());
-
+#endif
     /* now do the Node Status Page */
     updateNodeStats();
 
-    //this->ui->ns_sleeping
 }
 
 void MainWindow::updateNodeStats() {

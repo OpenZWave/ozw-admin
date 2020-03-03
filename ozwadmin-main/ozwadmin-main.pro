@@ -12,6 +12,7 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
     configuration.cpp \
+    deviceinfo.cpp \
     logwindow.cpp \
     mainwindow.cpp \
     metadatawindow.cpp \
@@ -23,6 +24,7 @@ SOURCES += main.cpp\
 
 HEADERS  += mainwindow.h \
     configuration.h \
+    deviceinfo.h \
     logwindow.h \
     metadatawindow.h \
     nodetablewidget.h \
@@ -33,6 +35,7 @@ HEADERS  += mainwindow.h \
 
 FORMS    += mainwindow.ui \
     configuration.ui \
+    deviceinfo.ui \
     logwindow.ui \
     metadatawindow.ui \
     nodetablewidget.ui \
