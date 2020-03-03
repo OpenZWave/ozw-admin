@@ -3,11 +3,13 @@ cd ..\open-zwave
 msbuild /p:Configuration=ReleaseDLL /p:Platform=Win32 cpp\build\windows\vs2010\OpenZWave.sln
 msbuild /p:Configuration=DebugDLL /p:Platform=Win32 cpp\build\windows\vs2010\OpenZWave.sln
 cd ..\qt-openzwave
-qmake -r -tp vc
-msbuild /p:Configuration=Release /p:Platform=Win32 qt-openzwave.sln
+qmake -r
+#msbuild /p:Configuration=Release /p:Platform=Win32 qt-openzwave.sln
+nmake
 cd ..\ozw-admin
-qmake -r -tp vc
-msbuild /p:Configuration=Release /p:Platform=Win32 ozwadmin.sln
+qmake -r 
+#msbuild /p:Configuration=Release /p:Platform=Win32 ozwadmin.sln
+nmake
 rmdir /S /Q package
 mkdir package
 cd package
