@@ -10,6 +10,11 @@
 	</description>
 	<launchable type="desktop-id">ozwadmin.desktop</launchable>
 	<url type="homepage">https://github.com/OpenZWave/ozw-admin</url>
+	<screenshots>
+		<screenshot type="default">
+			<image>https://github.com/OpenZWave/ozw-admin.png</image>
+		</screenshot>
+	</screenshots>
 	<provides>
 		<id>ozwadmin.desktop</id>
 	</provides>
