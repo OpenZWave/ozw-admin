@@ -53,7 +53,6 @@ public slots:
 
     void openMetaDataWindow();
     void openConfigWindow();
-    void updateNodeStats();
 
 
 private:
@@ -68,7 +67,7 @@ private:
     LogWindow m_logWindow;
     QDir m_configpath;
     QDir m_userpath;
-    QTimer m_statTimer;
+
 };
 
 #endif // MAINWINDOW_H

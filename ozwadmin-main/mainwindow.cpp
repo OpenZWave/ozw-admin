@@ -39,6 +39,7 @@
 #include "startupprogress.h"
 #include "util.h"
 #include "deviceinfo.h"
+#include "nodestatus.h"
 
 
 
@@ -52,6 +53,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
 	this->ui->setupUi(this);
 	DeviceInfo *di = new DeviceInfo(this);
+	NodeStatus *ni = new NodeStatus(this);
 	statusBar()->showMessage(tr("Starting..."));
 	this->ui->action_Close->setEnabled(false);
 	connect(ui->actionOpen_Log_Window, SIGNAL(triggered()), this, SLOT(openLogWindow()));
@@ -65,9 +67,11 @@ MainWindow::MainWindow(QWidget *parent) :
 	this->ntw = new nodeTableWidget(this);
 	connect(this->ntw, &nodeTableWidget::currentRowChanged, this, &MainWindow::NodeSelected);
 	connect(this->ntw, &nodeTableWidget::currentRowChanged, di, &DeviceInfo::NodeSelected);
+	connect(this->ntw, &nodeTableWidget::currentRowChanged, ni, &NodeStatus::NodeSelected);
 	this->ui->horizontalLayout_2->insertWidget(0, this->ntw);
 	this->ui->horizontalLayout_2->insertWidget(1, di);
 
+	this->ui->scrollArea_2->setWidget(ni);
 	Value_Delegate *delegate = new Value_Delegate(this);
 
 	this->ui->val_user_tbl->setItemDelegateForColumn(QTOZW_ValueIds::ValueIdColumns::Value, delegate);
@@ -195,6 +199,7 @@ MainWindow::MainWindow(QWidget *parent) :
     this->m_qtozwmanager->initilizeSource(this->settings.value("StartServer").toBool());
     this->m_logWindow.setModel(this->m_qtozwmanager->getLogModel());
 	di->setQTOZWManager(this->m_qtozwmanager);
+	ni->setQTOZWManager(this->m_qtozwmanager);
 }
 
 MainWindow::~MainWindow()
@@ -282,8 +287,6 @@ void MainWindow::QTOZW_Ready() {
         }
     }
 
-    QObject::connect(&this->m_statTimer, &QTimer::timeout, this, &MainWindow::updateNodeStats);
-    this->m_statTimer.start(1000);
 }
 
 void MainWindow::OpenConnection() {
@@ -349,6 +352,7 @@ void MainWindow::resizeColumns() {
 
 void MainWindow::NodeSelected(QModelIndex current,QModelIndex previous) {
     Q_UNUSED(previous);
+	Q_UNUSED(current);
 #if 0
 	if (!current.isValid()) {
         return;
@@ -357,64 +361,8 @@ void MainWindow::NodeSelected(QModelIndex current,QModelIndex previous) {
 
     quint8 node = model->data(model->index(current.row(), QTOZW_Nodes::NodeColumns::NodeID)).value<quint8>();
 #endif
-    /* now do the Node Status Page */
-    updateNodeStats();
-
 }
 
-void MainWindow::updateNodeStats() {
-    QModelIndex current = this->ntw->currentIndex();
-    if (!current.isValid())
-        return;
-    const QAbstractItemModel * model = current.model();
-    quint8 node = model->data(model->index(current.row(), QTOZW_Nodes::NodeColumns::NodeID)).value<quint8>();
-    QBitArray flags = model->data(model->index(current.row(), QTOZW_Nodes::NodeColumns::NodeFlags)).value<QBitArray>();
-    this->ui->ns_querystage->setText(this->m_qtozwmanager->GetNodeQueryStage(node));
-    this->ui->ns_sleeping->setChecked(!flags.at(QTOZW_Nodes::nodeFlags::isAwake));
-
-    if (flags.at(QTOZW_Nodes::nodeFlags::isFailed)) {
-        this->ui->ns_status->setText("Dead");
-    } else if (!flags.at(QTOZW_Nodes::nodeFlags::isAwake)) {
-        this->ui->ns_status->setText("Sleeping");
-    } else {
-        this->ui->ns_status->setText("Awake");
-    }
-
-    NodeStatistics ns = this->m_qtozwmanager->GetNodeStatistics(node);
-    this->ui->ns_lastseen->setText(ns.lastReceivedTimeStamp.toString());
-    this->ui->ns_lreqrtt->setText(QVariant::fromValue<quint32>(ns.lastRequestRTT).toString());
-    this->ui->ns_quality->setText(QVariant::fromValue<quint32>(ns.quality).toString());
-    this->ui->ns_retries->setText(QVariant::fromValue<quint32>(ns.retries).toString());
-    this->ui->ns_sentcnt->setText(QVariant::fromValue<quint32>(ns.sentCount).toString());
-    this->ui->ns_lastsend->setText(ns.lastSentTimeStamp.toString());
-    this->ui->ns_avgreqrtt->setText(QVariant::fromValue<quint32>(ns.averageRequestRTT).toString());
-    this->ui->ns_avgresprtt->setText(QVariant::fromValue<quint32>(ns.averageResponseRTT).toString());
-    this->ui->ns_sentfailed->setText(QVariant::fromValue<quint32>(ns.sentFailed).toString());
-    this->ui->ns_lastresprtt->setText(QVariant::fromValue<quint32>(ns.lastResponseRTT).toString());
-    this->ui->ns_recievedcnt->setText(QVariant::fromValue<quint32>(ns.receivedPackets).toString());
-    this->ui->ns_unsolicited->setText(QVariant::fromValue<quint32>(ns.receivedUnsolicited).toString());
-    this->ui->ns_lastrecieved->setText(ns.lastReceivedTimeStamp.toString());
-    this->ui->ns_rcvdduplicates->setText(QVariant::fromValue<quint32>(ns.receivedDupPackets).toString());
-
-    this->ui->etxstatus_frame->setVisible(ns.extendedTXSupported);
-
-    this->ui->ens_hops->setText(QVariant::fromValue<quint8>(ns.hops).toString());
-    this->ui->ens_rssi_1->setText(ns.rssi_1);
-    this->ui->ens_rssi_2->setText(ns.rssi_2);
-    this->ui->ens_rssi_3->setText(ns.rssi_3);
-    this->ui->ens_rssi_4->setText(ns.rssi_4);
-    this->ui->ens_rssi_5->setText(ns.rssi_5);
-    this->ui->ens_route_1->setText(QVariant::fromValue<quint8>(ns.route_1).toString());
-    this->ui->ens_route_2->setText(QVariant::fromValue<quint8>(ns.route_2).toString());
-    this->ui->ens_route_3->setText(QVariant::fromValue<quint8>(ns.route_3).toString());
-    this->ui->ens_route_4->setText(QVariant::fromValue<quint8>(ns.route_4).toString());
-    this->ui->ens_txtime->setText(QVariant::fromValue<quint16>(ns.txTime).toString());
-    this->ui->ens_attempts->setText(QVariant::fromValue<quint8>(ns.routeTries).toString());
-    this->ui->ens_txchannel->setText(QVariant::fromValue<quint8>(ns.lastTXChannel).toString());
-    this->ui->ens_ackchannel->setText(QVariant::fromValue<quint8>(ns.ackChannel).toString());
-    this->ui->ens_routeSpeed->setText(ns.routeSpeed);
-    this->ui->ens_routeScheme->setText(ns.routeScheme);
-}
 
 void MainWindow::openLogWindow() {
     this->m_logWindow.show();

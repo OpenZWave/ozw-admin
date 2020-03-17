@@ -16,6 +16,7 @@ SOURCES += main.cpp\
     logwindow.cpp \
     mainwindow.cpp \
     metadatawindow.cpp \
+    nodestatus.cpp \
     nodetablewidget.cpp \
     startup.cpp \
     startupprogress.cpp \
@@ -27,6 +28,7 @@ HEADERS  += mainwindow.h \
     deviceinfo.h \
     logwindow.h \
     metadatawindow.h \
+    nodestatus.h \
     nodetablewidget.h \
     startup.h \
     startupprogress.h \
@@ -38,6 +40,7 @@ FORMS    += mainwindow.ui \
     deviceinfo.ui \
     logwindow.ui \
     metadatawindow.ui \
+    nodestatus.ui \
     nodetablewidget.ui \
     startup.ui \
     startupprogress.ui
