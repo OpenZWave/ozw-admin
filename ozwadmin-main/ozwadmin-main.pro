@@ -74,7 +74,10 @@ macx: {
     LIBS += -framework IOKit -framework CoreFoundation
     BUNDLE.files = $$OZW_LIB_PATH/libopenzwave-1.6.dylib $$QTOZW_LIB_PATH/libqt-openzwave.1.dylib $$QTOZW_LIB_PATH/../qt-openzwavedatabase/libqt-openzwavedatabase.1.dylib 
     BUNDLE.path = Contents/Frameworks/
+    OZWDB.files = $$absolute_path($$QTOZW_LIB_PATH/../qt-openzwavedatabase/qt-openzwavedatabase.rcc)
+    OZWDB.path = Contents/Resources/
     QMAKE_BUNDLE_DATA += BUNDLE
+    QMAKE_BUNDLE_DATA += OZWDB
     MakeBundle.commands = $$[QT_HOST_BINS]/macdeployqt ../ozwadmin.app && $$top_srcdir/scripts/macdeployqtfix.py ../ozwadmin.app/Contents/MacOS/ozwadmin $$[QT_INSTALL_PREFIX]
     QMAKE_EXTRA_TARGETS += MakeBundle
     QMAKE_POST_LINK += $$MakeBundle.commands
