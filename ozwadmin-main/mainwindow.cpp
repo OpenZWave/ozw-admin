@@ -24,7 +24,7 @@
 #include <QStandardPaths>
 
 #include <qt-openzwave/qt-openzwavedatabase.h>
-#include <qt-openzwave/qtozwproxymodels.h>
+
 #include <qt-openzwave/qtozwoptions.h>
 #include <qt-openzwave/qtozw_pods.h>
 
@@ -33,13 +33,15 @@
 #include "metadatawindow.h"
 #include "logwindow.h"
 #include "devicedb.hpp"
-#include "value_delegate.h"
 #include "configuration.h"
 #include "startup.h"
 #include "startupprogress.h"
 #include "util.h"
 #include "deviceinfo.h"
 #include "nodestatus.h"
+#include "valuetable.h"
+#include "nodeflagswidget.h"
+
 
 
 
@@ -52,6 +54,9 @@ MainWindow::MainWindow(QWidget *parent) :
 	sbMsg(this)
 {
 	this->ui->setupUi(this);
+	this->m_DockManager = new ads::CDockManager(this);
+
+
 	DeviceInfo *di = new DeviceInfo(this);
 	NodeStatus *ni = new NodeStatus(this);
 	statusBar()->showMessage(tr("Starting..."));
@@ -68,48 +73,18 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(this->ntw, &nodeTableWidget::currentRowChanged, this, &MainWindow::NodeSelected);
 	connect(this->ntw, &nodeTableWidget::currentRowChanged, di, &DeviceInfo::NodeSelected);
 	connect(this->ntw, &nodeTableWidget::currentRowChanged, ni, &NodeStatus::NodeSelected);
-	this->ui->horizontalLayout_2->insertWidget(0, this->ntw);
-	this->ui->horizontalLayout_2->insertWidget(1, di);
+	
+	
+	ads::CDockWidget* NodeListDW = new ads::CDockWidget("Node List");
+	NodeListDW->setWidget(this->ntw);
+	this->m_DockManager->addDockWidget(ads::LeftDockWidgetArea, NodeListDW);
 
-	this->ui->scrollArea_2->setWidget(ni);
-	Value_Delegate *delegate = new Value_Delegate(this);
-
-	this->ui->val_user_tbl->setItemDelegateForColumn(QTOZW_ValueIds::ValueIdColumns::Value, delegate);
-	this->ui->val_user_tbl->setSelectionBehavior(QAbstractItemView::SelectRows);
-	this->ui->val_user_tbl->verticalHeader()->hide();
-	this->ui->val_user_tbl->setSelectionMode(QAbstractItemView::SingleSelection);
-	this->ui->val_user_tbl->setSortingEnabled(true);
-	this->ui->val_user_tbl->horizontalHeader()->setSectionsMovable(true);
-	//    this->ui->val_user_tbl->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
-	//    this->ui->val_user_tbl->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
-	this->ui->val_user_tbl->resizeColumnsToContents();
-
-
-
-	this->ui->val_config_tbl->setItemDelegateForColumn(QTOZW_ValueIds::ValueIdColumns::Value, delegate);
-	this->ui->val_config_tbl->setSelectionBehavior(QAbstractItemView::SelectRows);
-	this->ui->val_config_tbl->horizontalHeader()->setStretchLastSection(true);
-	this->ui->val_config_tbl->verticalHeader()->hide();
-	this->ui->val_config_tbl->setSelectionMode(QAbstractItemView::SingleSelection);
-	this->ui->val_config_tbl->setSortingEnabled(true);
-	this->ui->val_config_tbl->horizontalHeader()->setSectionsMovable(true);
-	//    this->ui->val_config_tbl->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
-	//    this->ui->val_config_tbl->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
-	this->ui->val_config_tbl->resizeColumnsToContents();
-
-
-
-	this->ui->val_system_tbl->setItemDelegateForColumn(QTOZW_ValueIds::ValueIdColumns::Value, delegate);
-	this->ui->val_system_tbl->setSelectionBehavior(QAbstractItemView::SelectRows);
-	this->ui->val_system_tbl->verticalHeader()->hide();
-	this->ui->val_system_tbl->setSelectionMode(QAbstractItemView::SingleSelection);
-	this->ui->val_system_tbl->setSortingEnabled(true);
-	this->ui->val_system_tbl->horizontalHeader()->setSectionsMovable(true);
-	//    this->ui->val_system_tbl->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
-	//    this->ui->val_system_tbl->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
-	this->ui->val_system_tbl->resizeColumnsToContents();
-
-
+	ads::CDockWidget* DeviceInfoDW = new ads::CDockWidget("Node Info");
+	DeviceInfoDW->setWidget(di);
+	auto RightDockWidget = this->m_DockManager->addDockWidget(ads::RightDockWidgetArea, DeviceInfoDW);
+	ads::CDockWidget* DeviceStatusDW = new ads::CDockWidget("Node Status");
+	DeviceStatusDW->setWidget(ni);
+	this->m_DockManager->addDockWidget(ads::CenterDockWidgetArea, DeviceStatusDW, RightDockWidget);
 
 
 
@@ -231,62 +206,6 @@ void MainWindow::QTOZW_Ready() {
     settings.endGroup();
 
 	this->ntw->setModel(this->m_qtozwmanager->getNodeModel());
-
-
-    QTOZW_proxyValueModel *userList = new QTOZW_proxyValueModel(this);
-    userList->setSourceModel(this->m_qtozwmanager->getValueModel());
-    userList->setFilterGenre(QTOZW_ValueIds::ValueIdGenres::User);
-    userList->setSelectionModel(this->ntw->selectionModel());
-    this->ui->val_user_tbl->setModel(userList);
-
-    for (int i = 0; i <= QTOZW_ValueIds::ValueIdColumns::ValueIdCount; i++) {
-        switch (i) {
-            case QTOZW_ValueIds::ValueIdColumns::Label:
-            case QTOZW_ValueIds::ValueIdColumns::Value:
-            case QTOZW_ValueIds::ValueIdColumns::Instance:
-            case QTOZW_ValueIds::ValueIdColumns::Help:
-            break;
-        default:
-            this->ui->val_user_tbl->horizontalHeader()->hideSection(i);
-        }
-    }
-
-    QTOZW_proxyValueModel *configList = new QTOZW_proxyValueModel(this);
-    configList->setSourceModel(this->m_qtozwmanager->getValueModel());
-    configList->setFilterGenre(QTOZW_ValueIds::ValueIdGenres::Config);
-    configList->setSelectionModel(this->ntw->selectionModel());
-    this->ui->val_config_tbl->setModel(configList);
-
-    for (int i = 0; i <= QTOZW_ValueIds::ValueIdColumns::ValueIdCount; i++) {
-        switch (i) {
-            case QTOZW_ValueIds::ValueIdColumns::Label:
-            case QTOZW_ValueIds::ValueIdColumns::Value:
-            case QTOZW_ValueIds::ValueIdColumns::Help:
-            break;
-        default:
-            this->ui->val_config_tbl->horizontalHeader()->hideSection(i);
-        }
-    }
-
-
-    QTOZW_proxyValueModel *systemList = new QTOZW_proxyValueModel(this);
-    systemList->setSourceModel(this->m_qtozwmanager->getValueModel());
-    systemList->setFilterGenre(QTOZW_ValueIds::ValueIdGenres::System);
-    systemList->setSelectionModel(this->ntw->selectionModel());
-    this->ui->val_system_tbl->setModel(systemList);
-
-    for (int i = 0; i <= QTOZW_ValueIds::ValueIdColumns::ValueIdCount; i++) {
-        switch (i) {
-            case QTOZW_ValueIds::ValueIdColumns::Label:
-            case QTOZW_ValueIds::ValueIdColumns::Value:
-            case QTOZW_ValueIds::ValueIdColumns::Instance:
-            case QTOZW_ValueIds::ValueIdColumns::Help:
-            break;
-        default:
-            this->ui->val_system_tbl->horizontalHeader()->hideSection(i);
-        }
-    }
-
 }
 
 void MainWindow::OpenConnection() {
@@ -348,7 +267,6 @@ void MainWindow::resizeColumns() {
 }
 
 
-#include "nodeflagswidget.h"
 
 void MainWindow::NodeSelected(QModelIndex current,QModelIndex previous) {
     Q_UNUSED(previous);

@@ -27,6 +27,7 @@
 #include <qt-openzwave/qtopenzwave.h>
 #include <qt-openzwave/qtozwmanager.h>
 
+#include "qt-ads/DockManager.h"
 #include "logwindow.h"
 #include "statusbarmessages.h"
 #include "nodetablewidget.h"
@@ -67,7 +68,7 @@ private:
     LogWindow m_logWindow;
     QDir m_configpath;
     QDir m_userpath;
-
+    ads::CDockManager* m_DockManager;
 };
 
 #endif // MAINWINDOW_H

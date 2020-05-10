@@ -21,7 +21,8 @@ SOURCES += main.cpp\
     startup.cpp \
     startupprogress.cpp \
     statusbarmessages.cpp \
-    util.cpp
+    util.cpp \
+    valuetable.cpp
 
 HEADERS  += mainwindow.h \
     configuration.h \
@@ -33,7 +34,8 @@ HEADERS  += mainwindow.h \
     startup.h \
     startupprogress.h \
     statusbarmessages.h \
-    util.h \
+    util.h \ \
+    valuetable.h
 
 FORMS    += mainwindow.ui \
     configuration.ui \
