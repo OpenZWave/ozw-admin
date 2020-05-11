@@ -30,6 +30,7 @@
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "splashdialog.h"
 #include "metadatawindow.h"
 #include "logwindow.h"
 #include "devicedb.hpp"
@@ -175,6 +176,14 @@ MainWindow::MainWindow(QWidget *parent) :
     this->m_logWindow.setModel(this->m_qtozwmanager->getLogModel());
 	di->setQTOZWManager(this->m_qtozwmanager);
 	ni->setQTOZWManager(this->m_qtozwmanager);
+
+	SplashDialog *sw = new SplashDialog(this->m_openzwave, this);
+	sw->show();
+	sw->move(this->geometry().center() - sw->rect().center());
+
+	QTimer::singleShot(5000, sw, SLOT(close()));
+
+
 }
 
 MainWindow::~MainWindow()

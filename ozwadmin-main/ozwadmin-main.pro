@@ -10,6 +10,14 @@ QT       += core gui widgets xml remoteobjects websockets svg
 TARGET = ../ozwadmin
 TEMPLATE = app
 
+isEmpty(BUILDNUMBER) {
+	BUILDNUMBER = 0
+}
+VERSION = 0.1.$$BUILDNUMBER
+message("Building Version $$VERSION")
+
+DEFINES +=APP_VERSION=$$VERSION
+
 SOURCES += main.cpp\
     configuration.cpp \
     deviceinfo.cpp \
@@ -18,6 +26,7 @@ SOURCES += main.cpp\
     metadatawindow.cpp \
     nodestatus.cpp \
     nodetablewidget.cpp \
+    splashdialog.cpp \
     startup.cpp \
     startupprogress.cpp \
     statusbarmessages.cpp \
@@ -31,6 +40,7 @@ HEADERS  += mainwindow.h \
     metadatawindow.h \
     nodestatus.h \
     nodetablewidget.h \
+    splashdialog.h \
     startup.h \
     startupprogress.h \
     statusbarmessages.h \
@@ -44,6 +54,7 @@ FORMS    += mainwindow.ui \
     metadatawindow.ui \
     nodestatus.ui \
     nodetablewidget.ui \
+    splashdialog.ui \
     startup.ui \
     startupprogress.ui
 

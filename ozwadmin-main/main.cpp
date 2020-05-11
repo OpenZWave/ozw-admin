@@ -30,6 +30,10 @@
 Q_LOGGING_CATEGORY(ozwadmin, "ozwadmin");
 
 
+#define DEF2STR2(x) #x
+#define DEF2STR(x) DEF2STR2(x)
+
+
 int main(int argc, char *argv[])
 {
 
@@ -48,6 +52,7 @@ int main(int argc, char *argv[])
     QCoreApplication::setOrganizationName("OpenZWave");
     QCoreApplication::setOrganizationDomain("openzwave.net");
     QCoreApplication::setApplicationName("ozw-admin");
+    QCoreApplication::setApplicationVersion(DEF2STR(APP_VERSION));
     QApplication a(argc, argv);
 
 
