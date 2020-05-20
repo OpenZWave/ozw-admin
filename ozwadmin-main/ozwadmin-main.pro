@@ -66,7 +66,7 @@ include(../ozw-admin.pri)
 unix {
     target.path = /usr/local/bin
     INSTALLS += target
-    LIBS += -L../devicedb-lib/ -ldevicedb-lib -L../ozwadmin-widgets/ -lozwadmin-widgets
+    LIBS += -L../devicedb-lib/ -ldevicedb-lib -L../ozwadmin-widgets/ -lozwadmin-widgets -lqt-openzwavedatabase
 }
 windows {
     CONFIG(debug, debug|release) {
