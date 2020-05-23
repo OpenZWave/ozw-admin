@@ -117,13 +117,13 @@ unix {
     		INCLUDEPATH+=$$QTOZW_INCLUDE_PATH
     		LIBS+=$$QTOZW_LIBS
 	} else {
-		packagesExist("libqt-openzwave") {
-			PKGCONFIG += libqt-openzwave
+		packagesExist("qt-openzwave") {
+			PKGCONFIG += qt-openzwave
 	    		message(" ")
     			message("QT-OpenZWave Summary:")
 			message("	Using QT-OpenZWave from pkg-config:")
-			message("	CXXFLAGS: $$system($$PKG_CONFIG --cflags libqt-openzwave)")
-			message("	LDFLAGS: $$system($$PKG_CONFIG --libs libqt-openzwave)")
+			message("	CXXFLAGS: $$system($$PKG_CONFIG --cflags qt-openzwave)")
+			message("	LDFLAGS: $$system($$PKG_CONFIG --libs qt-openzwave)")
 			message(" ")
 		} else {
 			error("Can't find QT-OpenZWave Library and Headers");
