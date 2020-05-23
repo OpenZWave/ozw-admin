@@ -42,6 +42,7 @@
 #include "nodestatus.h"
 #include "valuetable.h"
 #include "nodeflagswidget.h"
+#include "qt-ads/DockAreaWidget.h"
 
 
 
@@ -67,8 +68,9 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(ui->actionOpen, SIGNAL(triggered()), this, SLOT(OpenConnection()));
 	connect(ui->action_Close, SIGNAL(triggered()), this, SLOT(CloseConnection()));
 	connect(ui->actionDevice_Database, SIGNAL(triggered()), this, SLOT(OpenDeviceDB()));
-	connect(di, &DeviceInfo::openMetaDataWindow, this, &MainWindow::openMetaDataWindow);
 	connect(ui->action_Configuration, SIGNAL(triggered()), this, SLOT(openConfigWindow()));
+	connect(ui->actionAbout, SIGNAL(triggered()), this, SLOT(openAboutWindow()));
+	connect(di, &DeviceInfo::openMetaDataWindow, this, &MainWindow::openMetaDataWindow);
 
 	this->ntw = new nodeTableWidget(this);
 	connect(this->ntw, &nodeTableWidget::currentRowChanged, this, &MainWindow::NodeSelected);
@@ -87,7 +89,22 @@ MainWindow::MainWindow(QWidget *parent) :
 	DeviceStatusDW->setWidget(ni);
 	this->m_DockManager->addDockWidget(ads::CenterDockWidgetArea, DeviceStatusDW, RightDockWidget);
 
+	ValueTable *userValues = new ValueTable(QTOZW_ValueIds::ValueIdGenres::User, this);
+	ads::CDockWidget* userValueDW = new ads::CDockWidget("User Values");
+	userValueDW->setWidget(userValues);
+	this->m_DockManager->addDockWidget(ads::CenterDockWidgetArea, userValueDW, RightDockWidget);
 
+	ValueTable *systemValues = new ValueTable(QTOZW_ValueIds::ValueIdGenres::System, this);
+	ads::CDockWidget *systemValueDW = new ads::CDockWidget("System Values");
+	systemValueDW->setWidget(systemValues);
+	this->m_DockManager->addDockWidget(ads::CenterDockWidgetArea, systemValueDW, RightDockWidget);
+
+	ValueTable *configValues = new ValueTable(QTOZW_ValueIds::ValueIdGenres::Config, this);
+	ads::CDockWidget *configValueDW = new ads::CDockWidget("Config Values");
+	configValueDW->setWidget(configValues);
+	this->m_DockManager->addDockWidget(ads::CenterDockWidgetArea, configValueDW, RightDockWidget);
+
+	RightDockWidget->setCurrentDockWidget(DeviceInfoDW);
 
 
 	QStringList PossibleDBPaths;
@@ -174,6 +191,12 @@ MainWindow::MainWindow(QWidget *parent) :
 
     this->m_qtozwmanager->initilizeSource(this->settings.value("StartServer").toBool());
     this->m_logWindow.setModel(this->m_qtozwmanager->getLogModel());
+
+	userValues->setModel(this->m_qtozwmanager->getValueModel(), this->ntw->selectionModel());
+	systemValues->setModel(this->m_qtozwmanager->getValueModel(), this->ntw->selectionModel());
+	configValues->setModel(this->m_qtozwmanager->getValueModel(), this->ntw->selectionModel());
+
+
 	di->setQTOZWManager(this->m_qtozwmanager);
 	ni->setQTOZWManager(this->m_qtozwmanager);
 
@@ -314,4 +337,10 @@ void MainWindow::OpenDeviceDB() {
 void MainWindow::openConfigWindow() {
     Configuration *cfg = new Configuration(this->m_qtozwmanager->getOptions(), this);
     cfg->show();
+}
+
+void MainWindow::openAboutWindow() {
+	SplashDialog *sw = new SplashDialog(this->m_openzwave, this);
+	sw->show();
+	sw->move(this->geometry().center() - sw->rect().center());
 }

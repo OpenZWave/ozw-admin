@@ -23,6 +23,7 @@
 #include <QDir>
 #include <QDebug>
 #include <QLoggingCategory>
+#include <QStyleFactory>
 
 #include "util.h"
 #include "mainwindow.h"
@@ -54,7 +55,6 @@ int main(int argc, char *argv[])
     QCoreApplication::setApplicationName("ozw-admin");
     QCoreApplication::setApplicationVersion(DEF2STR(APP_VERSION));
     QApplication a(argc, argv);
-
 
     MainWindow w;
     w.show();

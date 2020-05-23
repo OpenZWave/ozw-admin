@@ -51,6 +51,7 @@ public slots:
     void openLogWindow();
     void OpenDeviceDB();
     void QTOZW_Ready();
+    void openAboutWindow();
 
     void openMetaDataWindow();
     void openConfigWindow();

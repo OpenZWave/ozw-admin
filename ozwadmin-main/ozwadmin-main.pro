@@ -60,6 +60,7 @@ FORMS    += mainwindow.ui \
 
 RESOURCES += \
     ozwadmin-main.qrc \
+    stylesheets/darkorange/darkorange.qrc
 
 include(../ozw-admin.pri)
 
