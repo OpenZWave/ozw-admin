@@ -26,6 +26,7 @@ SOURCES += main.cpp\
     metadatawindow.cpp \
     nodestatus.cpp \
     nodetablewidget.cpp \
+    ozwcore.cpp \
     splashdialog.cpp \
     startup.cpp \
     startupprogress.cpp \
@@ -40,6 +41,7 @@ HEADERS  += mainwindow.h \
     metadatawindow.h \
     nodestatus.h \
     nodetablewidget.h \
+    ozwcore.h \
     splashdialog.h \
     startup.h \
     startupprogress.h \

@@ -1,0 +1,20 @@
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "${workspaceFolder}/../open-zwave/cpp/src/**",
+                "${workspaceFolder}/../qt-openzwave/qt-openzwave/include/**",
+                "${workspaceFolder}/../qt-openzwave/qt-openzwavedatabase/include/**",
+                "/usr/include/qt5/**"
+            ],
+            "defines": [],
+            "compilerPath": "/usr/bin/gcc",
+            "cStandard": "c11",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "clang-x64"
+        }
+    ],
+    "version": 4
+}

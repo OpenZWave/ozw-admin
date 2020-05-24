@@ -43,6 +43,7 @@
 #include "valuetable.h"
 #include "nodeflagswidget.h"
 #include "qt-ads/DockAreaWidget.h"
+#include "ozwcore.h"
 
 
 
@@ -58,6 +59,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	this->ui->setupUi(this);
 	this->m_DockManager = new ads::CDockManager(this);
 
+	OZWCore::get()->initilize();
 
 	DeviceInfo *di = new DeviceInfo(this);
 	NodeStatus *ni = new NodeStatus(this);
