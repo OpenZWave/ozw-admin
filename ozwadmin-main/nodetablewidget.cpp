@@ -1,3 +1,6 @@
+
+#include <QMenu>
+
 #include <qt-openzwave/qtozwnodemodel.h>
 #include <qt-openzwave/qtozwproxymodels.h>
 
@@ -22,6 +25,9 @@ nodeTableWidget::nodeTableWidget(QWidget *parent) :
 	this->ui->nodeList->horizontalHeader()->setSectionsMovable(true);
 	//    this->ui->nodeList->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
 	//    this->ui->nodeList->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+
+	this->ui->nodeList->setContextMenuPolicy(Qt::CustomContextMenu);
+	connect(this->ui->nodeList, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(rightClickMenu(QPoint)));
 }
 
 nodeTableWidget::~nodeTableWidget()
@@ -55,4 +61,15 @@ QModelIndex nodeTableWidget::currentIndex()
 QItemSelectionModel *nodeTableWidget::selectionModel()
 {
 	return this->ui->nodeList->selectionModel();
+}
+
+void nodeTableWidget::rightClickMenu(QPoint pos) 
+{
+    QModelIndex index=this->ui->nodeList->indexAt(pos);
+
+    QMenu *menu=new QMenu(this);
+    menu->addAction(new QAction("Action 1", this));
+    menu->addAction(new QAction("Action 2", this));
+    menu->addAction(new QAction("Action 3", this));
+    menu->popup(this->ui->nodeList->viewport()->mapToGlobal(pos));
 }

@@ -68,6 +68,11 @@
    </attribute>
    <addaction name="actionOpen"/>
    <addaction name="action_Close"/>
+   <addaction name="separator"/>
+   <addaction name="action_AddNode"/>
+   <addaction name="action_Delete_Node"/>
+   <addaction name="action_Heal_Network"/>
+   <addaction name="separator"/>
    <addaction name="actionOpen_Log_Window"/>
    <addaction name="actionDevice_Database"/>
   </widget>
@@ -93,6 +98,9 @@
    </property>
   </action>
   <action name="actionDevice_Database">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>&amp;Device Database</string>
    </property>
@@ -116,6 +124,21 @@
   <action name="actionAbout">
    <property name="text">
     <string>About</string>
+   </property>
+  </action>
+  <action name="action_AddNode">
+   <property name="text">
+    <string>&amp;Add Node</string>
+   </property>
+  </action>
+  <action name="action_Delete_Node">
+   <property name="text">
+    <string>&amp;Delete Node</string>
+   </property>
+  </action>
+  <action name="action_Heal_Network">
+   <property name="text">
+    <string>&amp;Heal Network</string>
    </property>
   </action>
  </widget>

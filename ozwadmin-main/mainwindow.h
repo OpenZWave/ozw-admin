@@ -23,14 +23,13 @@
 #include <QModelIndex>
 #include <QDir>
 #include <QTimer>
-
-#include <qt-openzwave/qtopenzwave.h>
-#include <qt-openzwave/qtozwmanager.h>
+#include <QMessageBox>
 
 #include "qt-ads/DockManager.h"
 #include "logwindow.h"
 #include "statusbarmessages.h"
 #include "nodetablewidget.h"
+#include "controllercommands.h"
 
 namespace Ui {
 class MainWindow;
@@ -42,7 +41,6 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
-    Q_PROPERTY(QString SerialPort MEMBER m_serialport)
 public slots:
     void OpenConnection();
     void CloseConnection();
@@ -52,23 +50,23 @@ public slots:
     void OpenDeviceDB();
     void QTOZW_Ready();
     void openAboutWindow();
-
     void openMetaDataWindow();
     void openConfigWindow();
-
+    void addNode();
+    void delNode();
+    void healNetwork();
+    
+    QMessageBox::StandardButton openCriticalDialog(QString title, QString msg);
 
 private:
+    void connected(bool);
+    ControllerCommands *m_controllerCommands;
+
     Ui::MainWindow *ui;
-    QString m_serialport;
-    QSettings settings;
     statusBarMessages sbMsg;
 	nodeTableWidget *ntw;
 
-    QTOpenZwave *m_openzwave;
-    QTOZWManager *m_qtozwmanager;
     LogWindow m_logWindow;
-    QDir m_configpath;
-    QDir m_userpath;
     ads::CDockManager* m_DockManager;
 };
 

@@ -2,6 +2,7 @@
 #define NODETABLEWIDGET_H
 
 #include <QWidget>
+#include <QPoint>
 #include <qabstractitemmodel.h>
 #include <qitemselectionmodel.h>
 
@@ -22,6 +23,8 @@ public:
 	QItemSelectionModel *selectionModel();
 Q_SIGNALS:
 	void currentRowChanged(const QModelIndex &current, const QModelIndex &previous);
+public Q_SLOTS:
+    void rightClickMenu(QPoint pos);
 private:
     Ui::nodeTableWidget *ui;
 };

@@ -13,7 +13,26 @@
             "compilerPath": "/usr/bin/gcc",
             "cStandard": "c11",
             "cppStandard": "c++17",
-            "intelliSenseMode": "clang-x64"
+            "intelliSenseMode": "clang-x64",
+            "compileCommands": "${workspaceFolder}/compile_commands.json"
+        },
+        {
+            "name": "Mac",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "${workspaceFolder}/../open-zwave/cpp/src/**",
+                "${workspaceFolder}/../qt-openzwave/qt-openzwave/include/**",
+                "${workspaceFolder}/../qt-openzwave/qt-openzwavedatabase/include/**"
+            ],
+            "macFrameworkPath": [
+                "/Users/fish/Qt/5.12.6/clang_64/lib/"
+            ],
+            "defines": [],
+            "compilerPath": "/usr/bin/gcc",
+            "cStandard": "c11",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "clang-x64",
+            "compileCommands": "${workspaceFolder}/compile_commands.json"
         }
     ],
     "version": 4

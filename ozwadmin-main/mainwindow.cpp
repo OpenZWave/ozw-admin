@@ -19,11 +19,10 @@
 #include <QInputDialog>
 #include <QSettings>
 #include <QFileInfo>
-#include <QMessageBox>
 #include <QFileDialog>
 #include <QStandardPaths>
 
-#include <qt-openzwave/qt-openzwavedatabase.h>
+
 
 #include <qt-openzwave/qtozwoptions.h>
 #include <qt-openzwave/qtozw_pods.h>
@@ -46,11 +45,6 @@
 #include "ozwcore.h"
 
 
-
-
-
-
-
 MainWindow::MainWindow(QWidget *parent) :
 	QMainWindow(parent),
 	ui(new Ui::MainWindow),
@@ -58,8 +52,14 @@ MainWindow::MainWindow(QWidget *parent) :
 {
 	this->ui->setupUi(this);
 	this->m_DockManager = new ads::CDockManager(this);
+	this->m_controllerCommands = new ControllerCommands(this);
+	this->connected(false);
 
+
+	connect(OZWCore::get(), &OZWCore::raiseCriticalError, this, &MainWindow::openCriticalDialog, Qt::DirectConnection);
 	OZWCore::get()->initilize();
+
+
 
 	DeviceInfo *di = new DeviceInfo(this);
 	NodeStatus *ni = new NodeStatus(this);
@@ -72,6 +72,11 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(ui->actionDevice_Database, SIGNAL(triggered()), this, SLOT(OpenDeviceDB()));
 	connect(ui->action_Configuration, SIGNAL(triggered()), this, SLOT(openConfigWindow()));
 	connect(ui->actionAbout, SIGNAL(triggered()), this, SLOT(openAboutWindow()));
+	connect(ui->action_AddNode, SIGNAL(triggered()), this, SLOT(addNode()));
+	connect(ui->action_Delete_Node, SIGNAL(triggered()), this, SLOT(delNode()));
+	connect(ui->action_Heal_Network, SIGNAL(triggered()), this, SLOT(healNetwork()));
+
+
 	connect(di, &DeviceInfo::openMetaDataWindow, this, &MainWindow::openMetaDataWindow);
 
 	this->ntw = new nodeTableWidget(this);
@@ -87,6 +92,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	ads::CDockWidget* DeviceInfoDW = new ads::CDockWidget("Node Info");
 	DeviceInfoDW->setWidget(di);
 	auto RightDockWidget = this->m_DockManager->addDockWidget(ads::RightDockWidgetArea, DeviceInfoDW);
+	
 	ads::CDockWidget* DeviceStatusDW = new ads::CDockWidget("Node Status");
 	DeviceStatusDW->setWidget(ni);
 	this->m_DockManager->addDockWidget(ads::CenterDockWidgetArea, DeviceStatusDW, RightDockWidget);
@@ -109,100 +115,22 @@ MainWindow::MainWindow(QWidget *parent) :
 	RightDockWidget->setCurrentDockWidget(DeviceInfoDW);
 
 
-	QStringList PossibleDBPaths;
-	PossibleDBPaths << settings.value("openzwave/ConfigPath", QDir::toNativeSeparators("../../../config/")).toString().append("/");
-	PossibleDBPaths << QStandardPaths::standardLocations(QStandardPaths::AppDataLocation);
+    this->sbMsg.setQTOZWManager(OZWCore::get()->getQTOZWManager());
+    
+	QObject::connect(OZWCore::get()->getQTOZWManager(), &QTOZWManager::ready, this, &MainWindow::QTOZW_Ready);
 
-	QString path, dbPath, userPath;
-	foreach(path, PossibleDBPaths) {
-		qCDebug(ozwadmin) << "Checking " << QFileInfo(QDir::toNativeSeparators(path + "/config/manufacturer_specific.xml")).absoluteFilePath() << " for manufacturer_specific.xml";
-		if (QFileInfo(QDir::toNativeSeparators(path + "/config/manufacturer_specific.xml")).exists()) {
-			dbPath = QFileInfo(QDir::toNativeSeparators(path + "/config/manufacturer_specific.xml")).absoluteFilePath();
-			break;
-		}
-		qCDebug(ozwadmin) << "Checking " << QFileInfo(QDir::toNativeSeparators(path + "../config/manufacturer_specific.xml")).absoluteFilePath() << " for manufacturer_specific.xml";
-		if (QFile(QDir::toNativeSeparators(path + "/../config/manufacturer_specific.xml")).exists()) {
-			dbPath = QFileInfo(QDir::toNativeSeparators(path + "/../config/manufacturer_specific.xml")).absoluteFilePath();
-			break;
-		}
-	}
-	PossibleDBPaths.clear();
-	PossibleDBPaths << settings.value("openzwave/UserPath", QDir::toNativeSeparators("../../../config/")).toString().append("/");
-	PossibleDBPaths << QStandardPaths::standardLocations(QStandardPaths::AppDataLocation);
+    OZWCore::get()->getQTOZWManager()->initilizeSource(OZWCore::get()->settings.value("StartServer").toBool());
+    this->m_logWindow.setModel(OZWCore::get()->getQTOZWManager()->getLogModel());
 
-	foreach(path, PossibleDBPaths) {
-		qCDebug(ozwadmin) << "Checking " << QFileInfo(QDir::toNativeSeparators(path + "/config/Options.xml")).absoluteFilePath() << " for Options.xml";
-		if (QFileInfo(QDir::toNativeSeparators(path + "/config/Options.xml")).exists()) {
-			userPath = QFileInfo(QDir::toNativeSeparators(path + "/config/Options.xml")).absoluteFilePath();
-			break;
-		}
-		qCDebug(ozwadmin) << "Checking " << QFileInfo(QDir::toNativeSeparators(path + "/../config/Options.xml")).absoluteFilePath() << " for Options.xml";
-		if (QFile(QDir::toNativeSeparators(path + "/../config/Options.xml")).exists()) {
-			userPath = QFileInfo(QDir::toNativeSeparators(path + "/../config/Options.xml")).absoluteFilePath();
-			break;
-		}
-	}
-
-	qCDebug(ozwadmin) << "DBPath: " << dbPath;
-	qCDebug(ozwadmin) << "userPath: " << userPath;
-
-	if (dbPath.isEmpty()) {
-		qCInfo(ozwadmin) << "Deploying OZW Database to " << QStandardPaths::standardLocations(QStandardPaths::AppDataLocation).at(0);
-		QStringList paths;
-		paths << "." << "../../qt-openzwave/qt-openzwavedatabase/";
-		if (!initConfigDatabase(paths)) {
-			QMessageBox::critical(this, "Missing qt-openzwavedatabase.rcc Database File", "The qt-openzwavedatabase.rcc file could not be found");
-			exit(-1);
-		}
-		QString dir = QStandardPaths::standardLocations(QStandardPaths::AppDataLocation).at(0);
-		if (copyConfigDatabase(QDir(dir).absolutePath())) {
-			qCInfo(ozwadmin) << "Copied Database to " << dir;
-		}
-		else {
-			QMessageBox::critical(this, "Missing qt-openzwavedatabase.rcc Database File", "The qt-openzwavedatabase.rcc file could not be found");
-			exit(-1);
-		}
-		dbPath = QFileInfo(dir.append("/config/")).absolutePath();
-		m_configpath.setPath(dbPath);
-		settings.setValue("openzwave/ConfigPath", m_configpath.absolutePath());
-		qCInfo(ozwadmin) << "m_configPath set to " << m_configpath.absolutePath();
-	}
-	else
-	{
-		m_configpath.setPath(QFileInfo(dbPath).absolutePath());
-		settings.setValue("openzwave/ConfigPath", m_configpath.absolutePath());
-		qCInfo(ozwadmin) << "Found Existing DB Path" << m_configpath.absolutePath();
-	}
-
-	if (userPath.isEmpty()) {
-		userPath = dbPath;
-		m_userpath.setPath(QFileInfo(userPath).absolutePath());
-		settings.setValue("openzwave/UserPath", m_userpath.absolutePath());
-		qCInfo(ozwadmin) << "UserPath is Set to DBPath: " << m_userpath.absolutePath();
-	}
-	else {
-		m_userpath.setPath(QFileInfo(userPath).absolutePath());
-		qCInfo(ozwadmin) << "UserPath is Set from Settings" << m_userpath.absolutePath();
-		settings.setValue("openzwave/UserPath", m_userpath.absolutePath());
-	}
-
-    this->m_openzwave = new QTOpenZwave(this, m_configpath, m_userpath);
-    this->m_qtozwmanager = this->m_openzwave->GetManager();
-    this->sbMsg.setQTOZWManager(this->m_qtozwmanager);
-    QObject::connect(this->m_qtozwmanager, &QTOZWManager::ready, this, &MainWindow::QTOZW_Ready);
-
-    this->m_qtozwmanager->initilizeSource(this->settings.value("StartServer").toBool());
-    this->m_logWindow.setModel(this->m_qtozwmanager->getLogModel());
-
-	userValues->setModel(this->m_qtozwmanager->getValueModel(), this->ntw->selectionModel());
-	systemValues->setModel(this->m_qtozwmanager->getValueModel(), this->ntw->selectionModel());
-	configValues->setModel(this->m_qtozwmanager->getValueModel(), this->ntw->selectionModel());
+	userValues->setModel(OZWCore::get()->getQTOZWManager()->getValueModel(), this->ntw->selectionModel());
+	systemValues->setModel(OZWCore::get()->getQTOZWManager()->getValueModel(), this->ntw->selectionModel());
+	configValues->setModel(OZWCore::get()->getQTOZWManager()->getValueModel(), this->ntw->selectionModel());
 
 
-	di->setQTOZWManager(this->m_qtozwmanager);
-	ni->setQTOZWManager(this->m_qtozwmanager);
+	di->setQTOZWManager(OZWCore::get()->getQTOZWManager());
+	ni->setQTOZWManager(OZWCore::get()->getQTOZWManager());
 
-	SplashDialog *sw = new SplashDialog(this->m_openzwave, this);
+	SplashDialog *sw = new SplashDialog(OZWCore::get()->getQTOZW(), this);
 	sw->show();
 	sw->move(this->geometry().center() - sw->rect().center());
 
@@ -220,32 +148,30 @@ void MainWindow::QTOZW_Ready() {
     qCDebug(ozwadmin) << "QTOZW Ready";
 
     /* apply our Local Configuration Options to the OZW Options Class */
-    settings.beginGroup("openzwave");
-    QStringList optionlist = settings.allKeys();
+    OZWCore::get()->settings.beginGroup("openzwave");
+    QStringList optionlist = OZWCore::get()->settings.allKeys();
     for (int i = 0; i < optionlist.size(); i++) {
-        qCDebug(ozwadmin) << "Updating Option " << optionlist.at(i) << " to " << settings.value(optionlist.at(i));
-        QTOZWOptions *ozwoptions = this->m_qtozwmanager->getOptions();
+        qCDebug(ozwadmin) << "Updating Option " << optionlist.at(i) << " to " << OZWCore::get()->settings.value(optionlist.at(i));
+        QTOZWOptions *ozwoptions = OZWCore::get()->getQTOZWManager()->getOptions();
         QStringList listtypes;
         listtypes << "SaveLogLevel" << "QueueLogLevel" << "DumpLogLevel";
         if (listtypes.contains(optionlist.at(i))) {
             OptionList list = ozwoptions->property(optionlist.at(i).toLocal8Bit()).value<OptionList>();
             if (list.getEnums().size() > 0)
-                list.setSelected(settings.value(optionlist.at(i)).toString());
+                list.setSelected(OZWCore::get()->settings.value(optionlist.at(i)).toString());
         }
         else
         {
-            ozwoptions->setProperty(optionlist.at(i).toLocal8Bit(), settings.value(optionlist.at(i)));
+            ozwoptions->setProperty(optionlist.at(i).toLocal8Bit(), OZWCore::get()->settings.value(optionlist.at(i)));
         }
     }
-    settings.endGroup();
+    OZWCore::get()->settings.endGroup();
 
-	this->ntw->setModel(this->m_qtozwmanager->getNodeModel());
+	this->ntw->setModel(OZWCore::get()->getQTOZWManager()->getNodeModel());
 }
 
 void MainWindow::OpenConnection() {
-
-    this->ui->actionOpen->setEnabled(false);
-    this->ui->action_Close->setEnabled(true);
+	this->connected(true);
 
 	Startup su(this);
 	su.setModal(true);
@@ -261,37 +187,42 @@ void MainWindow::OpenConnection() {
 			qCDebug(ozwadmin) << "Connecting to " << server;
 			startupprogress *sup = new startupprogress(true, this);
             sup->setWindowFlags(Qt::Window | Qt::WindowTitleHint | Qt::CustomizeWindowHint);
-			sup->setQTOZWManager(this->m_qtozwmanager);
+			sup->setQTOZWManager(OZWCore::get()->getQTOZWManager());
 			sup->show();
-            this->m_qtozwmanager->setClientAuth(su.getauthKey());
-			this->m_qtozwmanager->initilizeReplica(server);
-            this->settings.setValue("connection/remotehost", su.getremoteHost());
-            this->settings.setValue("connection/remoteport", su.getremotePort());
-            this->settings.setValue("connection/authKey", su.getauthKey());
+            OZWCore::get()->getQTOZWManager()->setClientAuth(su.getauthKey());
+			OZWCore::get()->getQTOZWManager()->initilizeReplica(server);
+            OZWCore::get()->settings.setValue("connection/remotehost", su.getremoteHost());
+            OZWCore::get()->settings.setValue("connection/remoteport", su.getremotePort());
+            OZWCore::get()->settings.setValue("connection/authKey", su.getauthKey());
 			return;
 		}
 		else 
 		{
 			qCDebug(ozwadmin) << "Doing Local Connection: " << su.getserialPort() << su.getstartServer();
-			this->m_serialport = su.getserialPort();
 			startupprogress *sup = new startupprogress(false, this);
-			sup->setQTOZWManager(this->m_qtozwmanager);
+			sup->setQTOZWManager(OZWCore::get()->getQTOZWManager());
 			sup->show();
-			this->m_qtozwmanager->open(this->m_serialport);
-            this->settings.setValue("connection/serialport", su.getserialPort());
-            this->settings.setValue("connection/startserver", su.getstartServer());
+			OZWCore::get()->getQTOZWManager()->open(su.getserialPort());
+            OZWCore::get()->settings.setValue("connection/serialport", su.getserialPort());
+            OZWCore::get()->settings.setValue("connection/startserver", su.getstartServer());
 			return;
 		}
     } else {
         qCDebug(ozwadmin) << "Open Dialog was Canceled" << ret;
-        this->ui->actionOpen->setEnabled(true);
-        this->ui->action_Close->setEnabled(false);
-
+		this->connected(false);
     }
 
 }
 void MainWindow::CloseConnection() {
-
+	if (OZWCore::get()->getQTOZWManager()->getConnectionType() == QTOZWManager::connectionType::Local) {
+		OZWCore::get()->getQTOZWManager()->close();
+	} else if (OZWCore::get()->getQTOZWManager()->getConnectionType() == QTOZWManager::connectionType::Remote) {
+		QMessageBox::critical(this, "Close Connection", "TODO: Please restart the application for now");
+		exit(1);
+	} else {
+		QMessageBox::critical(this, "Unknown Connection Type", "Unknown Connection Type");
+	}
+	this->connected(false);
 }
 
 
@@ -326,7 +257,7 @@ void MainWindow::openMetaDataWindow() {
     const QAbstractItemModel *model = index.model();
     quint8 node = model->data(model->index(index.row(), QTOZW_Nodes::NodeColumns::NodeID)).value<quint8>();
     MetaDataWindow *mdwin = new MetaDataWindow(this);
-    mdwin->populate(this->m_qtozwmanager, node);
+    mdwin->populate(OZWCore::get()->getQTOZWManager(), node);
     mdwin->setModal(true);
     mdwin->exec();
 }
@@ -337,12 +268,35 @@ void MainWindow::OpenDeviceDB() {
 }
 
 void MainWindow::openConfigWindow() {
-    Configuration *cfg = new Configuration(this->m_qtozwmanager->getOptions(), this);
+    Configuration *cfg = new Configuration(OZWCore::get()->getQTOZWManager()->getOptions(), this);
     cfg->show();
 }
 
 void MainWindow::openAboutWindow() {
-	SplashDialog *sw = new SplashDialog(this->m_openzwave, this);
+	SplashDialog *sw = new SplashDialog(OZWCore::get()->getQTOZW(), this);
 	sw->show();
 	sw->move(this->geometry().center() - sw->rect().center());
+}
+
+QMessageBox::StandardButton MainWindow::openCriticalDialog(QString title, QString msg) {
+	return QMessageBox::critical(this, title, msg);
+}
+
+
+void MainWindow::addNode() {
+	this->m_controllerCommands->addNode();
+}
+void MainWindow::delNode() {
+	this->m_controllerCommands->delNode();
+}
+void MainWindow::healNetwork() {
+	this->m_controllerCommands->healNetwork();
+}
+
+void MainWindow::connected(bool connected) {
+	this->ui->actionOpen->setEnabled(!connected);
+    this->ui->action_Close->setEnabled(connected);
+	this->ui->action_AddNode->setEnabled(connected);
+	this->ui->action_Delete_Node->setEnabled(connected);
+	this->ui->action_Heal_Network->setEnabled(connected);
 }

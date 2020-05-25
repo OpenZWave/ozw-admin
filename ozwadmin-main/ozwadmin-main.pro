@@ -20,6 +20,7 @@ DEFINES +=APP_VERSION=$$VERSION
 
 SOURCES += main.cpp\
     configuration.cpp \
+    controllercommands.cpp \
     deviceinfo.cpp \
     logwindow.cpp \
     mainwindow.cpp \
@@ -36,6 +37,7 @@ SOURCES += main.cpp\
 
 HEADERS  += mainwindow.h \
     configuration.h \
+    controllercommands.h \
     deviceinfo.h \
     logwindow.h \
     metadatawindow.h \
