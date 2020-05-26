@@ -43,7 +43,7 @@ public slots:
     void starting();
     void started(quint32 homeID);
     void stopped(quint32 homeID);
-//    void remoteConnectionStatus(WebSocketIoDevice::connectionStatus status, QAbstractSocket::SocketError error);
+    void remoteConnectionStatus(QTOZWManager::connectionStatus status, QAbstractSocket::SocketError error);
 
     QString vidKeyDetails(quint64);
 

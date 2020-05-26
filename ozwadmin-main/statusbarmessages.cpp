@@ -33,7 +33,7 @@ statusBarMessages::statusBarMessages(QObject *parent) : QObject(parent)
     QObject::connect(qtozwm, &QTOZWManager::driverAwakeNodesQueried, this, &statusBarMessages::driverAwakeNodesQueried);
     QObject::connect(qtozwm, &QTOZWManager::controllerCommand, this, &statusBarMessages::controllerCommand);
     QObject::connect(qtozwm, &QTOZWManager::ozwNotification, this, &statusBarMessages::ozwNotification);
-//    QObject::connect(qtozwm, &QTOZWManager::remoteConnectionStatus, this, &statusBarMessages::remoteConnectionStatus);
+    QObject::connect(qtozwm, &QTOZWManager::remoteConnectionStatus, this, &statusBarMessages::remoteConnectionStatus);
     QObject::connect(qtozwm, &QTOZWManager::ozwUserAlert, this, &statusBarMessages::ozwUserAlert);
     QObject::connect(qtozwm, &QTOZWManager::manufacturerSpecificDBReady, this, &statusBarMessages::manufacturerSpecificDBReady);
 }
@@ -134,11 +134,12 @@ void statusBarMessages::started(quint32 homeID) {
 void statusBarMessages::stopped(quint32 homeID) {
     emit newMessage(QString("Stopped Z-Wave Network: %1").arg(homeID));
 }
-#if 0
-void statusBarMessages::remoteConnectionStatus(connectionStatus status, QAbstractSocket::SocketError error) {
-
+void statusBarMessages::remoteConnectionStatus(QTOZWManager::connectionStatus status, QAbstractSocket::SocketError error) {
+    QMetaEnum statusEnum = QMetaEnum::fromType<QTOZWManager::connectionStatus>();
+    QMetaEnum socketEnum = QMetaEnum::fromType<QAbstractSocket::SocketError>();
+    QString message(QString("Remote Connection Status: %1 (Socket State: %2)").arg(statusEnum.valueToKey(status)).arg(socketEnum.valueToKey(error)));
+    emit newMessage(message);
 }
-#endif
 
 QString statusBarMessages::vidKeyDetails(quint64 key) {
     quint8 node = OZWCore::get()->getQTOZWManager()->getNodeId(key);

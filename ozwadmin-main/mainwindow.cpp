@@ -84,6 +84,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	connect(di, &DeviceInfo::openMetaDataWindow, this, &MainWindow::openMetaDataWindow);
 
+	connect(OZWCore::get()->getQTOZWManager(), &QTOZWManager::remoteConnectionStatus, this, &MainWindow::remoteConnectionStatus);
+
 	this->ntw = new nodeTableWidget(this);
 	connect(this->ntw, &nodeTableWidget::currentRowChanged, this, &MainWindow::NodeSelected);
 	connect(this->ntw, &nodeTableWidget::currentRowChanged, di, &DeviceInfo::NodeSelected);
@@ -311,3 +313,15 @@ void MainWindow::connected(bool connected) {
 void MainWindow::setStatusBarMsg(QString Msg) {
 	 this->statusBar()->showMessage(QTime::currentTime().toString("hh:m:ss ap").append(" Event: ").append(Msg), 5000);
 }
+
+void MainWindow::remoteConnectionStatus(QTOZWManager::connectionStatus status, QAbstractSocket::SocketError error) {
+	Q_UNUSED(error);
+	if (status == QTOZWManager::connectionStatus::ConnectionErrorState) {
+		openCriticalDialog("Connection Error", "Connection Error");
+		CloseConnection();
+	} else if (status == QTOZWManager::connectionStatus::VersionMisMatchError) {
+		openCriticalDialog("Version MisMatch", "The ozwdaemon version is not compatible with this version of ozw-admin");
+		CloseConnection();
+	}
+
+}  

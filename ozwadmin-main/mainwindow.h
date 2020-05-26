@@ -55,7 +55,8 @@ public slots:
     void delNode();
     void healNetwork();
     void setStatusBarMsg(QString);
-    
+    void remoteConnectionStatus(QTOZWManager::connectionStatus status, QAbstractSocket::SocketError error);  
+
     QMessageBox::StandardButton openCriticalDialog(QString title, QString msg);
 
 private:
