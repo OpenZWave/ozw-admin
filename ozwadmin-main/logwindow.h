@@ -8,7 +8,7 @@ namespace Ui {
 class LogWindow;
 }
 
-class LogWindow : public QDialog
+class LogWindow : public QWidget
 {
     Q_OBJECT
 

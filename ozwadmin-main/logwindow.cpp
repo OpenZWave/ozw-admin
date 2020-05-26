@@ -4,11 +4,12 @@
 #include "ui_logwindow.h"
 
 LogWindow::LogWindow(QWidget *parent) :
-    QDialog(parent),
+    QWidget(parent),
     ui(new Ui::LogWindow)
 {
     ui->setupUi(this);
     this->ui->logview->verticalHeader()->hide();
+    this->ui->logview->horizontalHeader()->setStretchLastSection(true);
     this->ui->logview->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
 //    this->ui->val_system_tbl->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
 //    this->ui->logview->resizeColumnsToContents();

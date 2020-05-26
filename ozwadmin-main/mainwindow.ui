@@ -45,7 +45,6 @@
     <property name="title">
      <string>Window</string>
     </property>
-    <addaction name="actionOpen_Log_Window"/>
     <addaction name="separator"/>
     <addaction name="action_Driver_Statistics"/>
    </widget>
@@ -73,7 +72,6 @@
    <addaction name="action_Delete_Node"/>
    <addaction name="action_Heal_Network"/>
    <addaction name="separator"/>
-   <addaction name="actionOpen_Log_Window"/>
    <addaction name="actionDevice_Database"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
@@ -85,11 +83,6 @@
   <action name="actionE_xit">
    <property name="text">
     <string>E&amp;xit</string>
-   </property>
-  </action>
-  <action name="actionOpen_Log_Window">
-   <property name="text">
-    <string>Open Log Window</string>
    </property>
   </action>
   <action name="action_Driver_Statistics">

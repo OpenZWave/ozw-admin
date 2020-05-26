@@ -11,9 +11,8 @@ class statusBarMessages : public QObject
     Q_OBJECT
 public:
     explicit statusBarMessages(QObject *parent = nullptr);
-    void setQTOZWManager(QTOZWManager *m_qtozwmanager);
 signals:
-
+    void newMessage(QString);
 public slots:
     void ready();
     void valueAdded(quint64 vidKey);
@@ -46,9 +45,9 @@ public slots:
     void stopped(quint32 homeID);
 //    void remoteConnectionStatus(WebSocketIoDevice::connectionStatus status, QAbstractSocket::SocketError error);
 
+    QString vidKeyDetails(quint64);
 
 private:
-    void setMessage(QString);
 
 };
 

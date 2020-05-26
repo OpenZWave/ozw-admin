@@ -22,6 +22,7 @@ SOURCES += main.cpp\
     configuration.cpp \
     controllercommands.cpp \
     deviceinfo.cpp \
+    eventwindow.cpp \
     logwindow.cpp \
     mainwindow.cpp \
     metadatawindow.cpp \
@@ -39,6 +40,7 @@ HEADERS  += mainwindow.h \
     configuration.h \
     controllercommands.h \
     deviceinfo.h \
+    eventwindow.h \
     logwindow.h \
     metadatawindow.h \
     nodestatus.h \
@@ -54,6 +56,7 @@ HEADERS  += mainwindow.h \
 FORMS    += mainwindow.ui \
     configuration.ui \
     deviceinfo.ui \
+    eventwindow.ui \
     logwindow.ui \
     metadatawindow.ui \
     nodestatus.ui \

@@ -1,13 +1,11 @@
 #include <QMainWindow>
 #include <QStatusBar>
 #include "statusbarmessages.h"
+#include "ozwcore.h"
 
 statusBarMessages::statusBarMessages(QObject *parent) : QObject(parent)
 {
-
-}
-
-void statusBarMessages::setQTOZWManager(QTOZWManager *qtozwm) {
+    QTOZWManager *qtozwm = OZWCore::get()->getQTOZWManager();
     QObject::connect(qtozwm, &QTOZWManager::manufacturerSpecificDBReady, this, &statusBarMessages::manufacturerSpecificDBReady);
     QObject::connect(qtozwm, &QTOZWManager::ready, this, &statusBarMessages::ready);
     QObject::connect(qtozwm, &QTOZWManager::starting, this, &statusBarMessages::starting);
@@ -40,109 +38,101 @@ void statusBarMessages::setQTOZWManager(QTOZWManager *qtozwm) {
     QObject::connect(qtozwm, &QTOZWManager::manufacturerSpecificDBReady, this, &statusBarMessages::manufacturerSpecificDBReady);
 }
 
-void statusBarMessages::setMessage(QString Msg) {
-    QMainWindow *mw = qobject_cast<QMainWindow *>(parent());
-    if (mw)
-        mw->statusBar()->showMessage(QTime::currentTime().toString("hh:m:ss ap").append(" Event: ").append(Msg), 5000);
-}
-
-
-
 void statusBarMessages::ready() {
-    setMessage("OpenZwave Ready");
+    emit newMessage("OpenZwave Ready");
 }
 void statusBarMessages::valueAdded(quint64 vidKey) {
-    setMessage(QString("Value Added: %1").arg(vidKey));
+    emit newMessage(QString("Value Added: %1").arg(vidKeyDetails(vidKey)));
 }
 void statusBarMessages::valueRemoved(quint64 vidKey) {
-    setMessage(QString("Value Removed: %1").arg(vidKey));
+    emit newMessage(QString("Value Removed: %1").arg(vidKeyDetails(vidKey)));
 }
 void statusBarMessages::valueChanged(quint64 vidKey) {
-    setMessage(QString("Value Changed: %1").arg(vidKey));
+    emit newMessage(QString("Value Changed: %1").arg(vidKeyDetails(vidKey)));
 }
 void statusBarMessages::valueRefreshed(quint64 vidKey) {
-    setMessage(QString("Value Refreshed: %1").arg(vidKey));
+    emit newMessage(QString("Value Refreshed: %1").arg(vidKeyDetails(vidKey)));
 }
 void statusBarMessages::nodeNew(quint8 node) {
-    setMessage(QString("New Node: %1").arg(node));
+    emit newMessage(QString("New Node: %1").arg(node));
 }
 void statusBarMessages::nodeAdded(quint8 node) {
-    setMessage(QString("Node Added: %1").arg(node));
+    emit newMessage(QString("Node Added: %1").arg(node));
 }
 void statusBarMessages::nodeRemoved(quint8 node) {
-    setMessage(QString("Node Removed: %1").arg(node));
+    emit newMessage(QString("Node Removed: %1").arg(node));
 }
 void statusBarMessages::nodeReset(quint8 node) {
-    setMessage(QString("Node Reset: %1").arg(node));
+    emit newMessage(QString("Node Reset: %1").arg(node));
 }
 void statusBarMessages::nodeNaming(quint8 node) {
-    setMessage(QString("Node Name Received: %1").arg(node));
+    emit newMessage(QString("Node Name Received: %1").arg(node));
 }
 void statusBarMessages::nodeEvent(quint8 node, quint8 event) {
-    setMessage(QString("Node %1 Basic Event Received: %2").arg(node).arg(event));
+    emit newMessage(QString("Node %1 Basic Event Received: %2").arg(node).arg(event));
 }
 void statusBarMessages::nodeProtocolInfo(quint8 node) {
-    setMessage(QString("Node Basic Protocol Information Received: %2").arg(node));
+    emit newMessage(QString("Node Basic Protocol Information Received: %2").arg(node));
 }
 void statusBarMessages::nodeEssentialNodeQueriesComplete(quint8 node) {
-    setMessage(QString("Essential Node Queries Complete: %2").arg(node));
+    emit newMessage(QString("Essential Node Queries Complete: %2").arg(node));
 }
 void statusBarMessages::nodeQueriesComplete(quint8 node) {
-    setMessage(QString("Node Queries Complete: %2").arg(node));
+    emit newMessage(QString("Node Queries Complete: %2").arg(node));
 }
 void statusBarMessages::nodeGroupChanged(quint8 node, quint8 group) {
-    setMessage(QString("Node %1 Group Update Received: %2").arg(node).arg(group));
+    emit newMessage(QString("Node %1 Group Update Received: %2").arg(node).arg(group));
 }
 void statusBarMessages::driverReady(quint32 homeID) {
-    setMessage(QString("Driver Ready for HomeID: %2").arg(homeID));
+    emit newMessage(QString("Driver Ready for HomeID: %2").arg(homeID));
 }
 void statusBarMessages::driverFailed(quint32 homeID) {
-    setMessage(QString("Driver Failed for HomeID: %2").arg(homeID));
+    emit newMessage(QString("Driver Failed for HomeID: %2").arg(homeID));
 }
 void statusBarMessages::driverReset(quint32 homeID) {
-    setMessage(QString("Driver Reset for HomeID: %2").arg(homeID));
+    emit newMessage(QString("Driver Reset for HomeID: %2").arg(homeID));
 }
 void statusBarMessages::driverRemoved(quint32 homeID) {
-    setMessage(QString("Driver Removed for HomeID: %2").arg(homeID));
+    emit newMessage(QString("Driver Removed for HomeID: %2").arg(homeID));
 }
 void statusBarMessages::driverAllNodesQueriedSomeDead() {
-    setMessage(QString("ZWave Network Node Queries Completed - Some Dead Nodes"));
+    emit newMessage(QString("ZWave Network Node Queries Completed - Some Dead Nodes"));
 }
 void statusBarMessages::driverAllNodesQueried() {
-    setMessage(QString("ZWave Network Node Queries Completed"));
+    emit newMessage(QString("ZWave Network Node Queries Completed"));
 }
 void statusBarMessages::driverAwakeNodesQueried() {
-    setMessage(QString("ZWave Network Awake Node Queries Completed"));
+    emit newMessage(QString("ZWave Network Awake Node Queries Completed"));
 }
 void statusBarMessages::controllerCommand(quint8 node, NotificationTypes::QTOZW_Notification_Controller_Cmd command, NotificationTypes::QTOZW_Notification_Controller_State state, NotificationTypes::QTOZW_Notification_Controller_Error error) {
     Q_UNUSED(node);
-    Q_UNUSED(command);
-    Q_UNUSED(state);
-    Q_UNUSED(error);
-    setMessage(QString("ZWave Controller Command Executed"));
+    QMetaEnum commandEnum = QMetaEnum::fromType<NotificationTypes::QTOZW_Notification_Controller_Cmd>();
+    QMetaEnum stateEnum = QMetaEnum::fromType<NotificationTypes::QTOZW_Notification_Controller_State>();
+    QMetaEnum errorEnum = QMetaEnum::fromType<NotificationTypes::QTOZW_Notification_Controller_Error>();
+    emit newMessage(QString("ZWave Controller Command Executed: %1 State: %2 Error: %3").arg(commandEnum.valueToKey(command)).arg(stateEnum.valueToKey(state)).arg(errorEnum.valueToKey(error)));
 }
 void statusBarMessages::ozwNotification(quint8 node, NotificationTypes::QTOZW_Notification_Code event) {
     Q_UNUSED(node);
-    Q_UNUSED(event);
-    setMessage(QString("ZWave Network Notification Received"));
+    QMetaEnum eventEnum = QMetaEnum::fromType<NotificationTypes::QTOZW_Notification_Code>();
+    emit newMessage(QString("ZWave Network Notification Received: %1").arg(eventEnum.valueToKey(event)));
 }
 void statusBarMessages::ozwUserAlert(quint8 node, NotificationTypes::QTOZW_Notification_User event, quint8 retry) {
     Q_UNUSED(node);
-    Q_UNUSED(event);
     Q_UNUSED(retry);
-    setMessage(QString("ZWave User Alert Received"));
+    QMetaEnum eventEnum = QMetaEnum::fromType<NotificationTypes::QTOZW_Notification_User>();
+    emit newMessage(QString("ZWave User Alert Received: %1").arg(eventEnum.valueToKey(event)));
 }
 void statusBarMessages::manufacturerSpecificDBReady() {
-    setMessage(QString("Manufacturer Specific Database Loaded"));
+    emit newMessage(QString("Manufacturer Specific Database Loaded"));
 }
 void statusBarMessages::starting() {
-    setMessage(QString("Starting Z-Wave Network"));
+    emit newMessage(QString("Starting Z-Wave Network"));
 }
 void statusBarMessages::started(quint32 homeID) {
-    setMessage(QString("Started Z-Wave Network: %1").arg(homeID));
+    emit newMessage(QString("Started Z-Wave Network: %1").arg(homeID));
 }
 void statusBarMessages::stopped(quint32 homeID) {
-    setMessage(QString("Stopped Z-Wave Network: %1").arg(homeID));
+    emit newMessage(QString("Stopped Z-Wave Network: %1").arg(homeID));
 }
 #if 0
 void statusBarMessages::remoteConnectionStatus(connectionStatus status, QAbstractSocket::SocketError error) {
@@ -150,3 +140,10 @@ void statusBarMessages::remoteConnectionStatus(connectionStatus status, QAbstrac
 }
 #endif
 
+QString statusBarMessages::vidKeyDetails(quint64 key) {
+    quint8 node = OZWCore::get()->getQTOZWManager()->getNodeId(key);
+    quint8 instance = OZWCore::get()->getQTOZWManager()->getInstance(key);
+    QString label = OZWCore::get()->getQTOZWManager()->getValueLabel(key);
+    QString status(QString("Node %1, Instance %2, Label %3").arg(node).arg(instance).arg(label));
+    return status;
+}

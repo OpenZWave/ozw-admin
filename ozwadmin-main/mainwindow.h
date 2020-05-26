@@ -46,7 +46,6 @@ public slots:
     void CloseConnection();
     void resizeColumns();
     void NodeSelected(QModelIndex,QModelIndex);
-    void openLogWindow();
     void OpenDeviceDB();
     void QTOZW_Ready();
     void openAboutWindow();
@@ -55,6 +54,7 @@ public slots:
     void addNode();
     void delNode();
     void healNetwork();
+    void setStatusBarMsg(QString);
     
     QMessageBox::StandardButton openCriticalDialog(QString title, QString msg);
 
@@ -63,10 +63,8 @@ private:
     ControllerCommands *m_controllerCommands;
 
     Ui::MainWindow *ui;
-    statusBarMessages sbMsg;
+    statusBarMessages *sbMsg;
 	nodeTableWidget *ntw;
-
-    LogWindow m_logWindow;
     ads::CDockManager* m_DockManager;
 };
 

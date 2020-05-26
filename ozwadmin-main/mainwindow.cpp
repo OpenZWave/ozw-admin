@@ -43,29 +43,34 @@
 #include "nodeflagswidget.h"
 #include "qt-ads/DockAreaWidget.h"
 #include "ozwcore.h"
+#include "eventwindow.h"
 
 
 MainWindow::MainWindow(QWidget *parent) :
 	QMainWindow(parent),
-	ui(new Ui::MainWindow),
-	sbMsg(this)
+	ui(new Ui::MainWindow)
 {
+	connect(OZWCore::get(), &OZWCore::raiseCriticalError, this, &MainWindow::openCriticalDialog, Qt::DirectConnection);
+	OZWCore::get()->initilize();
+
+	this->sbMsg = new statusBarMessages(this);
+	connect(this->sbMsg, &statusBarMessages::newMessage, this, &MainWindow::setStatusBarMsg);
+
+
 	this->ui->setupUi(this);
 	this->m_DockManager = new ads::CDockManager(this);
 	this->m_controllerCommands = new ControllerCommands(this);
 	this->connected(false);
 
-
-	connect(OZWCore::get(), &OZWCore::raiseCriticalError, this, &MainWindow::openCriticalDialog, Qt::DirectConnection);
-	OZWCore::get()->initilize();
-
-
-
 	DeviceInfo *di = new DeviceInfo(this);
 	NodeStatus *ni = new NodeStatus(this);
+	EventWindow *ew = new EventWindow(this);
+	LogWindow *lw = new LogWindow(this);
+	connect(this->sbMsg, &statusBarMessages::newMessage, ew, &EventWindow::newEvent);
+
+
 	statusBar()->showMessage(tr("Starting..."));
 	this->ui->action_Close->setEnabled(false);
-	connect(ui->actionOpen_Log_Window, SIGNAL(triggered()), this, SLOT(openLogWindow()));
 
 	connect(ui->actionOpen, SIGNAL(triggered()), this, SLOT(OpenConnection()));
 	connect(ui->action_Close, SIGNAL(triggered()), this, SLOT(CloseConnection()));
@@ -114,18 +119,24 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	RightDockWidget->setCurrentDockWidget(DeviceInfoDW);
 
+	ads::CDockWidget *eventViewDW = new ads::CDockWidget("Event List");
+	eventViewDW->setWidget(ew);
+	auto BottomDockWidget = this->m_DockManager->addDockWidget(ads::BottomDockWidgetArea, eventViewDW);
 
-    this->sbMsg.setQTOZWManager(OZWCore::get()->getQTOZWManager());
-    
+	ads::CDockWidget *logWindowDW = new ads::CDockWidget("OZW Logs");
+	logWindowDW->setWidget(lw);
+	this->m_DockManager->addDockWidget(ads::CenterDockWidgetArea, logWindowDW, BottomDockWidget);
+	BottomDockWidget->setCurrentDockWidget(eventViewDW);
+
+
 	QObject::connect(OZWCore::get()->getQTOZWManager(), &QTOZWManager::ready, this, &MainWindow::QTOZW_Ready);
 
     OZWCore::get()->getQTOZWManager()->initilizeSource(OZWCore::get()->settings.value("StartServer").toBool());
-    this->m_logWindow.setModel(OZWCore::get()->getQTOZWManager()->getLogModel());
 
 	userValues->setModel(OZWCore::get()->getQTOZWManager()->getValueModel(), this->ntw->selectionModel());
 	systemValues->setModel(OZWCore::get()->getQTOZWManager()->getValueModel(), this->ntw->selectionModel());
 	configValues->setModel(OZWCore::get()->getQTOZWManager()->getValueModel(), this->ntw->selectionModel());
-
+	lw->setModel(OZWCore::get()->getQTOZWManager()->getLogModel());
 
 	di->setQTOZWManager(OZWCore::get()->getQTOZWManager());
 	ni->setQTOZWManager(OZWCore::get()->getQTOZWManager());
@@ -247,10 +258,6 @@ void MainWindow::NodeSelected(QModelIndex current,QModelIndex previous) {
 }
 
 
-void MainWindow::openLogWindow() {
-    this->m_logWindow.show();
-}
-
 void MainWindow::openMetaDataWindow() {
     qCDebug(ozwadmin) << "Opening Window";
     QModelIndex index = this->ntw->currentIndex();
@@ -299,4 +306,8 @@ void MainWindow::connected(bool connected) {
 	this->ui->action_AddNode->setEnabled(connected);
 	this->ui->action_Delete_Node->setEnabled(connected);
 	this->ui->action_Heal_Network->setEnabled(connected);
+}
+
+void MainWindow::setStatusBarMsg(QString Msg) {
+	 this->statusBar()->showMessage(QTime::currentTime().toString("hh:m:ss ap").append(" Event: ").append(Msg), 5000);
 }
