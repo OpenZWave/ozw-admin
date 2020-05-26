@@ -77,10 +77,6 @@ unix {
     SOURCES += qt-ads/linux/FloatingWidgetTitleBar.cpp
 }
 
-
-
-
-
 FORMS    += HelpEditorDlg.ui \
 	ListDialog.ui \
 	bitsetwidget.ui \
@@ -90,13 +86,13 @@ include(../ozw-admin.pri)
 
 INCLUDEPATH += ../devicedb-lib ../ozwadmin-main qt-ads
 
+DEFINES += ADS_STATIC
 
 macx: {
     CONFIG += c++11
     LIBS += -framework IOKit -framework CoreFoundation
     #QMAKE_MAC_SDK = macosx10.11
 #    QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.11
-
 }
 
 RESOURCES += \
