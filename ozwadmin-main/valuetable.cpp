@@ -5,6 +5,8 @@
 
 #include "valuetable.h"
 #include "value_delegate.h"
+#include "ozwcore.h"
+#include "util.h"
 
 ValueTable::ValueTable(QTOZW_ValueIds::ValueIdGenres genre, QWidget *parent) :
     QTableView(parent)
@@ -21,7 +23,7 @@ ValueTable::ValueTable(QTOZW_ValueIds::ValueIdGenres genre, QWidget *parent) :
 	this->setSelectionMode(QAbstractItemView::SingleSelection);
 	this->setSortingEnabled(true);
 	this->horizontalHeader()->setSectionsMovable(true);
-	//    this->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+	this->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
 	//    this->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
 	this->resizeColumnsToContents();
 }

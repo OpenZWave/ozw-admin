@@ -48,29 +48,22 @@
 
 MainWindow::MainWindow(QWidget *parent) :
 	QMainWindow(parent),
-	ui(new Ui::MainWindow)
+	ui(new Ui::MainWindow),
+	m_WindowsSetup(false)
 {
+
+	this->ui->setupUi(this);
+	this->statusBar()->showMessage(tr("Starting..."));
+	this->connected(false);
+
 	connect(OZWCore::get(), &OZWCore::raiseCriticalError, this, &MainWindow::openCriticalDialog, Qt::DirectConnection);
 	OZWCore::get()->initilize();
 
 	this->sbMsg = new statusBarMessages(this);
-	connect(this->sbMsg, &statusBarMessages::newMessage, this, &MainWindow::setStatusBarMsg);
 
-
-	this->ui->setupUi(this);
 	this->m_DockManager = new ads::CDockManager(this);
 	this->m_controllerCommands = new ControllerCommands(this);
-	this->connected(false);
 
-	DeviceInfo *di = new DeviceInfo(this);
-	NodeStatus *ni = new NodeStatus(this);
-	EventWindow *ew = new EventWindow(this);
-	LogWindow *lw = new LogWindow(this);
-	connect(this->sbMsg, &statusBarMessages::newMessage, ew, &EventWindow::newEvent);
-
-
-	statusBar()->showMessage(tr("Starting..."));
-	this->ui->action_Close->setEnabled(false);
 
 	connect(ui->actionOpen, SIGNAL(triggered()), this, SLOT(OpenConnection()));
 	connect(ui->action_Close, SIGNAL(triggered()), this, SLOT(CloseConnection()));
@@ -80,76 +73,15 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(ui->action_AddNode, SIGNAL(triggered()), this, SLOT(addNode()));
 	connect(ui->action_Delete_Node, SIGNAL(triggered()), this, SLOT(delNode()));
 	connect(ui->action_Heal_Network, SIGNAL(triggered()), this, SLOT(healNetwork()));
-
-
-	connect(di, &DeviceInfo::openMetaDataWindow, this, &MainWindow::openMetaDataWindow);
-
+	connect(this->sbMsg, &statusBarMessages::newMessage, this, &MainWindow::setStatusBarMsg);
 	connect(OZWCore::get()->getQTOZWManager(), &QTOZWManager::remoteConnectionStatus, this, &MainWindow::remoteConnectionStatus);
-
-	this->ntw = new nodeTableWidget(this);
-	connect(this->ntw, &nodeTableWidget::currentRowChanged, this, &MainWindow::NodeSelected);
-	connect(this->ntw, &nodeTableWidget::currentRowChanged, di, &DeviceInfo::NodeSelected);
-	connect(this->ntw, &nodeTableWidget::currentRowChanged, ni, &NodeStatus::NodeSelected);
+	connect(OZWCore::get()->getQTOZWManager(), &QTOZWManager::ready, this, &MainWindow::QTOZW_Ready);
 	
-	
-	ads::CDockWidget* NodeListDW = new ads::CDockWidget("Node List");
-	NodeListDW->setWidget(this->ntw);
-	this->m_DockManager->addDockWidget(ads::LeftDockWidgetArea, NodeListDW);
-
-	ads::CDockWidget* DeviceInfoDW = new ads::CDockWidget("Node Info");
-	DeviceInfoDW->setWidget(di);
-	auto RightDockWidget = this->m_DockManager->addDockWidget(ads::RightDockWidgetArea, DeviceInfoDW);
-	
-	ads::CDockWidget* DeviceStatusDW = new ads::CDockWidget("Node Status");
-	DeviceStatusDW->setWidget(ni);
-	this->m_DockManager->addDockWidget(ads::CenterDockWidgetArea, DeviceStatusDW, RightDockWidget);
-
-	ValueTable *userValues = new ValueTable(QTOZW_ValueIds::ValueIdGenres::User, this);
-	ads::CDockWidget* userValueDW = new ads::CDockWidget("User Values");
-	userValueDW->setWidget(userValues);
-	this->m_DockManager->addDockWidget(ads::CenterDockWidgetArea, userValueDW, RightDockWidget);
-
-	ValueTable *systemValues = new ValueTable(QTOZW_ValueIds::ValueIdGenres::System, this);
-	ads::CDockWidget *systemValueDW = new ads::CDockWidget("System Values");
-	systemValueDW->setWidget(systemValues);
-	this->m_DockManager->addDockWidget(ads::CenterDockWidgetArea, systemValueDW, RightDockWidget);
-
-	ValueTable *configValues = new ValueTable(QTOZW_ValueIds::ValueIdGenres::Config, this);
-	ads::CDockWidget *configValueDW = new ads::CDockWidget("Config Values");
-	configValueDW->setWidget(configValues);
-	this->m_DockManager->addDockWidget(ads::CenterDockWidgetArea, configValueDW, RightDockWidget);
-
-	RightDockWidget->setCurrentDockWidget(DeviceInfoDW);
-
-	ads::CDockWidget *eventViewDW = new ads::CDockWidget("Event List");
-	eventViewDW->setWidget(ew);
-	auto BottomDockWidget = this->m_DockManager->addDockWidget(ads::BottomDockWidgetArea, eventViewDW);
-
-	ads::CDockWidget *logWindowDW = new ads::CDockWidget("OZW Logs");
-	logWindowDW->setWidget(lw);
-	this->m_DockManager->addDockWidget(ads::CenterDockWidgetArea, logWindowDW, BottomDockWidget);
-	BottomDockWidget->setCurrentDockWidget(eventViewDW);
-
-
-	QObject::connect(OZWCore::get()->getQTOZWManager(), &QTOZWManager::ready, this, &MainWindow::QTOZW_Ready);
-
-    OZWCore::get()->getQTOZWManager()->initilizeSource(OZWCore::get()->settings.value("StartServer").toBool());
-
-	userValues->setModel(OZWCore::get()->getQTOZWManager()->getValueModel(), this->ntw->selectionModel());
-	systemValues->setModel(OZWCore::get()->getQTOZWManager()->getValueModel(), this->ntw->selectionModel());
-	configValues->setModel(OZWCore::get()->getQTOZWManager()->getValueModel(), this->ntw->selectionModel());
-	lw->setModel(OZWCore::get()->getQTOZWManager()->getLogModel());
-
-	di->setQTOZWManager(OZWCore::get()->getQTOZWManager());
-	ni->setQTOZWManager(OZWCore::get()->getQTOZWManager());
-
-	SplashDialog *sw = new SplashDialog(OZWCore::get()->getQTOZW(), this);
+	SplashDialog *sw = new SplashDialog(this);
 	sw->show();
 	sw->move(this->geometry().center() - sw->rect().center());
 
 	QTimer::singleShot(5000, sw, SLOT(close()));
-
-
 }
 
 MainWindow::~MainWindow()
@@ -180,7 +112,74 @@ void MainWindow::QTOZW_Ready() {
     }
     OZWCore::get()->settings.endGroup();
 
+	openDefaultWindows();
+
+
+}
+void MainWindow::openDefaultWindows() {
+
+	this->ntw = new nodeTableWidget(this);
+	DeviceInfo *di = new DeviceInfo(this);
+	NodeStatus *ni = new NodeStatus(this);
+	EventWindow *ew = new EventWindow(this);
+	LogWindow *lw = new LogWindow(this);
+	ValueTable *userValues = new ValueTable(QTOZW_ValueIds::ValueIdGenres::User, this);
+	ValueTable *systemValues = new ValueTable(QTOZW_ValueIds::ValueIdGenres::System, this);
+	ValueTable *configValues = new ValueTable(QTOZW_ValueIds::ValueIdGenres::Config, this);
+
+
+	connect(this->ntw, &nodeTableWidget::currentRowChanged, this, &MainWindow::NodeSelected);
+	connect(this->ntw, &nodeTableWidget::currentRowChanged, di, &DeviceInfo::NodeSelected);
+	connect(this->ntw, &nodeTableWidget::currentRowChanged, ni, &NodeStatus::NodeSelected);
+	connect(this->sbMsg, &statusBarMessages::newMessage, ew, &EventWindow::newEvent);
+	connect(di, &DeviceInfo::openMetaDataWindow, this, &MainWindow::openMetaDataWindow);
+
+	/* Create Dock Widgets/Panels */
+	ads::CDockWidget* NodeListDW = new ads::CDockWidget("Node List");
+	NodeListDW->setWidget(this->ntw);
+	this->m_DockManager->addDockWidget(ads::LeftDockWidgetArea, NodeListDW);
+
+	ads::CDockWidget* DeviceInfoDW = new ads::CDockWidget("Node Info");
+	DeviceInfoDW->setWidget(di);
+	auto RightDockWidget = this->m_DockManager->addDockWidget(ads::RightDockWidgetArea, DeviceInfoDW);
+	
+	ads::CDockWidget* DeviceStatusDW = new ads::CDockWidget("Node Status");
+	DeviceStatusDW->setWidget(ni);
+	this->m_DockManager->addDockWidget(ads::CenterDockWidgetArea, DeviceStatusDW, RightDockWidget);
+
+	ads::CDockWidget* userValueDW = new ads::CDockWidget("User Values");
+	userValueDW->setWidget(userValues);
+	this->m_DockManager->addDockWidget(ads::CenterDockWidgetArea, userValueDW, RightDockWidget);
+
+	ads::CDockWidget *systemValueDW = new ads::CDockWidget("System Values");
+	systemValueDW->setWidget(systemValues);
+	this->m_DockManager->addDockWidget(ads::CenterDockWidgetArea, systemValueDW, RightDockWidget);
+
+	ads::CDockWidget *configValueDW = new ads::CDockWidget("Config Values");
+	configValueDW->setWidget(configValues);
+	this->m_DockManager->addDockWidget(ads::CenterDockWidgetArea, configValueDW, RightDockWidget);
+
+	ads::CDockWidget *eventViewDW = new ads::CDockWidget("Event List");
+	eventViewDW->setWidget(ew);
+	auto BottomDockWidget = this->m_DockManager->addDockWidget(ads::BottomDockWidgetArea, eventViewDW);
+
+	ads::CDockWidget *logWindowDW = new ads::CDockWidget("OZW Logs");
+	logWindowDW->setWidget(lw);
+	this->m_DockManager->addDockWidget(ads::CenterDockWidgetArea, logWindowDW, BottomDockWidget);
+
+	/* set Active Tabs */
+	RightDockWidget->setCurrentDockWidget(DeviceInfoDW);
+	BottomDockWidget->setCurrentDockWidget(eventViewDW);
+
 	this->ntw->setModel(OZWCore::get()->getQTOZWManager()->getNodeModel());
+	userValues->setModel(OZWCore::get()->getQTOZWManager()->getValueModel(), this->ntw->selectionModel());
+	systemValues->setModel(OZWCore::get()->getQTOZWManager()->getValueModel(), this->ntw->selectionModel());
+	configValues->setModel(OZWCore::get()->getQTOZWManager()->getValueModel(), this->ntw->selectionModel());
+	lw->setModel(OZWCore::get()->getQTOZWManager()->getLogModel());
+
+	di->setQTOZWManager(OZWCore::get()->getQTOZWManager());
+	ni->setQTOZWManager(OZWCore::get()->getQTOZWManager());
+	this->m_WindowsSetup = true;
 }
 
 void MainWindow::OpenConnection() {
@@ -215,6 +214,7 @@ void MainWindow::OpenConnection() {
 			startupprogress *sup = new startupprogress(false, this);
 			sup->setQTOZWManager(OZWCore::get()->getQTOZWManager());
 			sup->show();
+		    OZWCore::get()->getQTOZWManager()->initilizeSource(OZWCore::get()->settings.value("StartServer").toBool());
 			OZWCore::get()->getQTOZWManager()->open(su.getserialPort());
             OZWCore::get()->settings.setValue("connection/serialport", su.getserialPort());
             OZWCore::get()->settings.setValue("connection/startserver", su.getstartServer());
@@ -282,7 +282,7 @@ void MainWindow::openConfigWindow() {
 }
 
 void MainWindow::openAboutWindow() {
-	SplashDialog *sw = new SplashDialog(OZWCore::get()->getQTOZW(), this);
+	SplashDialog *sw = new SplashDialog(this);
 	sw->show();
 	sw->move(this->geometry().center() - sw->rect().center());
 }

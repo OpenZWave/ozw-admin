@@ -13,7 +13,7 @@ class SplashDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit SplashDialog(QTOpenZwave *qtozw, QWidget *parent = nullptr);
+    explicit SplashDialog(QWidget *parent = nullptr);
     ~SplashDialog();
 
 private:

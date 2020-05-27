@@ -10,6 +10,7 @@ public:
     ValueTable(QTOZW_ValueIds::ValueIdGenres genre, QWidget *parent = nullptr);
 
     void setModel(QAbstractItemModel *model, QItemSelectionModel *selectionModel);
+public slots:
 
 private:
     QTOZW_proxyValueModel *m_proxyModel;

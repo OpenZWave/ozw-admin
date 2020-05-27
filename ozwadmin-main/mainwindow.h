@@ -61,12 +61,14 @@ public slots:
 
 private:
     void connected(bool);
+    void openDefaultWindows();
     ControllerCommands *m_controllerCommands;
 
     Ui::MainWindow *ui;
     statusBarMessages *sbMsg;
 	nodeTableWidget *ntw;
     ads::CDockManager* m_DockManager;
+    bool m_WindowsSetup;
 };
 
 #endif // MAINWINDOW_H

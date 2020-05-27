@@ -137,8 +137,16 @@ void statusBarMessages::stopped(quint32 homeID) {
 void statusBarMessages::remoteConnectionStatus(QTOZWManager::connectionStatus status, QAbstractSocket::SocketError error) {
     QMetaEnum statusEnum = QMetaEnum::fromType<QTOZWManager::connectionStatus>();
     QMetaEnum socketEnum = QMetaEnum::fromType<QAbstractSocket::SocketError>();
-    QString message(QString("Remote Connection Status: %1 (Socket State: %2)").arg(statusEnum.valueToKey(status)).arg(socketEnum.valueToKey(error)));
-    emit newMessage(message);
+    if (error != QAbstractSocket::SocketError::UnknownSocketError) {
+        QString message(QString("Remote Connection Status: %1 (Socket State: %2)").arg(statusEnum.valueToKey(status)).arg(socketEnum.valueToKey(error)));
+        emit newMessage(message);
+    }
+    else
+    {
+        QString message(QString("Remote Connection Status: %1").arg(statusEnum.valueToKey(status)));
+        emit newMessage(message);
+    }
+    
 }
 
 QString statusBarMessages::vidKeyDetails(quint64 key) {

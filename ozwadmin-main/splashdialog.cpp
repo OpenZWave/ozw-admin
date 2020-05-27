@@ -2,8 +2,9 @@
 #include <qt-openzwave/qtozwmanager.h>
 #include "splashdialog.h"
 #include "ui_splashdialog.h"
+#include "ozwcore.h"
 
-SplashDialog::SplashDialog(QTOpenZwave *qtozw, QWidget *parent) :
+SplashDialog::SplashDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::SplashDialog)
 {
@@ -23,7 +24,12 @@ SplashDialog::SplashDialog(QTOpenZwave *qtozw, QWidget *parent) :
                  "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p></body></html>");
 
 
-    ui->InfoText->setText(info.arg(qtozw->GetManager()->getVersionAsString()).arg(qtozw->getVersion()).arg(qVersion()));
+    if (OZWCore::get()->getQTOZWManager()->isReady()) {
+        ui->InfoText->setText(info.arg(OZWCore::get()->getQTOZWManager()->getVersionAsString()).arg(OZWCore::get()->getQTOZW()->getVersion()).arg(qVersion()));
+    } else {
+        /* GetManager() will only be valid after either connecting to a local or remote port */
+        ui->InfoText->setText(info.arg("Unknown").arg(OZWCore::get()->getQTOZW()->getVersion()).arg(qVersion()));
+    }
     setWindowFlags(Qt::SplashScreen|Qt::WindowStaysOnTopHint);
     QString ozwadminversion("Version %1");
     this->ui->OZWAdminVersionLbl->setText(ozwadminversion.arg(QCoreApplication::applicationVersion()));
