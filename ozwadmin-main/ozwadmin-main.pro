@@ -103,5 +103,6 @@ macx: {
     QMAKE_EXTRA_TARGETS += MakeBundle
     QMAKE_POST_LINK += $$MakeBundle.commands
     ICON = res/ozw_logo.icns
+    QMAKE_INFO_PLIST = ../scripts/Info.plist
 }
 

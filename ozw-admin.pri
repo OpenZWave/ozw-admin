@@ -2,7 +2,7 @@ top_srcdir=$$PWD
 top_builddir=$$shadowed($$PWD)
 unix { 
     macx {
-        QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.14
+        QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.11
     }
     !macx: QMAKE_CXXFLAGS += -Wno-deprecated-copy
 }
