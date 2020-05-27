@@ -8,6 +8,7 @@
 !include "MUI2.nsh"
 
 ; ===== General =====
+RequestExecutionLevel Admin
 Name "${APPLICATION_NAME} ${APPLICATION_VERSION}"
 OutFile "${APPLICATION_NAME}-${APPLICATION_VERSION}-installer.exe"
 InstallDir "$PROGRAMFILES\${APPLICATION_NAME}"
@@ -32,6 +33,9 @@ SetCompressor "lzma"
 
 !insertmacro MUI_LANGUAGE "English"
 
+Function .onInit
+SetShellVarContext All
+FunctionEnd
 
 ; ===== Installer =====
 Section ""
@@ -121,3 +125,4 @@ SectionEnd
 Function RunApplication
 	ExecShell "" "$INSTDIR\ozwadmin.exe"
 FunctionEnd
+
