@@ -47,6 +47,7 @@
     </property>
     <addaction name="separator"/>
     <addaction name="action_Driver_Statistics"/>
+    <addaction name="separator"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">

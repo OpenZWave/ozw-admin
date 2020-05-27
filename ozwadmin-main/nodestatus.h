@@ -23,7 +23,7 @@ public:
 	void setQTOZWManager(QTOZWManager *manager);
 public Q_SLOTS:
 	void NodeSelected(QModelIndex, QModelIndex);
-
+	
 private:
 	void updateNodeStats();
 

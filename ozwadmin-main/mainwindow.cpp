@@ -137,34 +137,44 @@ void MainWindow::openDefaultWindows() {
 	/* Create Dock Widgets/Panels */
 	ads::CDockWidget* NodeListDW = new ads::CDockWidget("Node List");
 	NodeListDW->setWidget(this->ntw);
+	this->ui->menuWindow->addAction(NodeListDW->toggleViewAction());
 	this->m_DockManager->addDockWidget(ads::LeftDockWidgetArea, NodeListDW);
 
 	ads::CDockWidget* DeviceInfoDW = new ads::CDockWidget("Node Info");
 	DeviceInfoDW->setWidget(di);
+	this->ui->menuWindow->addAction(DeviceInfoDW->toggleViewAction());
 	auto RightDockWidget = this->m_DockManager->addDockWidget(ads::RightDockWidgetArea, DeviceInfoDW);
 	
 	ads::CDockWidget* DeviceStatusDW = new ads::CDockWidget("Node Status");
 	DeviceStatusDW->setWidget(ni);
+	this->ui->menuWindow->addAction(DeviceStatusDW->toggleViewAction());
 	this->m_DockManager->addDockWidget(ads::CenterDockWidgetArea, DeviceStatusDW, RightDockWidget);
 
 	ads::CDockWidget* userValueDW = new ads::CDockWidget("User Values");
 	userValueDW->setWidget(userValues);
+	this->ui->menuWindow->addAction(userValueDW->toggleViewAction());
 	this->m_DockManager->addDockWidget(ads::CenterDockWidgetArea, userValueDW, RightDockWidget);
 
 	ads::CDockWidget *systemValueDW = new ads::CDockWidget("System Values");
 	systemValueDW->setWidget(systemValues);
+	this->ui->menuWindow->addAction(systemValueDW->toggleViewAction());
 	this->m_DockManager->addDockWidget(ads::CenterDockWidgetArea, systemValueDW, RightDockWidget);
 
 	ads::CDockWidget *configValueDW = new ads::CDockWidget("Config Values");
 	configValueDW->setWidget(configValues);
+	this->ui->menuWindow->addAction(configValueDW->toggleViewAction());
 	this->m_DockManager->addDockWidget(ads::CenterDockWidgetArea, configValueDW, RightDockWidget);
+
+	this->ui->menuWindow->addSeparator();
 
 	ads::CDockWidget *eventViewDW = new ads::CDockWidget("Event List");
 	eventViewDW->setWidget(ew);
+	this->ui->menuWindow->addAction(eventViewDW->toggleViewAction());
 	auto BottomDockWidget = this->m_DockManager->addDockWidget(ads::BottomDockWidgetArea, eventViewDW);
 
 	ads::CDockWidget *logWindowDW = new ads::CDockWidget("OZW Logs");
 	logWindowDW->setWidget(lw);
+	this->ui->menuWindow->addAction(logWindowDW->toggleViewAction());
 	this->m_DockManager->addDockWidget(ads::CenterDockWidgetArea, logWindowDW, BottomDockWidget);
 
 	/* set Active Tabs */

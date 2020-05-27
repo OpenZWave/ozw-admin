@@ -12,6 +12,9 @@ public:
     void setModel(QAbstractItemModel *model, QItemSelectionModel *selectionModel);
 public slots:
 
+private slots:
+    void resizeContents();
+    
 private:
     QTOZW_proxyValueModel *m_proxyModel;
     QTOZW_ValueIds::ValueIdGenres m_genre;

@@ -7,6 +7,7 @@
 #include "nodetablewidget.h"
 #include "ui_nodetablewidget.h"
 #include "node_delegate.h"
+#include "util.h"
 
 
 nodeTableWidget::nodeTableWidget(QWidget *parent) :
@@ -23,8 +24,6 @@ nodeTableWidget::nodeTableWidget(QWidget *parent) :
 	this->ui->nodeList->setSelectionMode(QAbstractItemView::SingleSelection);
 	this->ui->nodeList->setSortingEnabled(true);
 	this->ui->nodeList->horizontalHeader()->setSectionsMovable(true);
-	//    this->ui->nodeList->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
-	//    this->ui->nodeList->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
 
 	this->ui->nodeList->setContextMenuPolicy(Qt::CustomContextMenu);
 	connect(this->ui->nodeList, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(rightClickMenu(QPoint)));
@@ -37,9 +36,9 @@ nodeTableWidget::~nodeTableWidget()
 
 void nodeTableWidget::setModel(QAbstractItemModel *model) 
 {
-	QTOZW_proxyNodeModel *nodeList = new QTOZW_proxyNodeModel(this);
-	nodeList->setSourceModel(model);
-	this->ui->nodeList->setModel(nodeList);
+	QTOZW_proxyNodeModel *proxyNodeList = new QTOZW_proxyNodeModel(this);
+	proxyNodeList->setSourceModel(model);
+	this->ui->nodeList->setModel(proxyNodeList);
 	for (int i = 0; i <= QTOZW_Nodes::NodeColumns::NodeCount; i++) {
 		switch (i) {
 		case QTOZW_Nodes::NodeColumns::NodeID:
@@ -51,7 +50,10 @@ void nodeTableWidget::setModel(QAbstractItemModel *model)
 			this->ui->nodeList->horizontalHeader()->hideSection(i);
 		}
 	}
-	QObject::connect(ui->nodeList->selectionModel(), &QItemSelectionModel::currentRowChanged, this, &nodeTableWidget::currentRowChanged);
+	connect(ui->nodeList->selectionModel(), &QItemSelectionModel::currentRowChanged, this, &nodeTableWidget::currentRowChanged);
+	connect(proxyNodeList, &QTOZW_proxyNodeModel::rowsInserted, this, &nodeTableWidget::resizeContents);
+	connect(proxyNodeList, &QTOZW_proxyNodeModel::rowsRemoved, this, &nodeTableWidget::resizeContents);
+	QTimer::singleShot(100, this, &nodeTableWidget::resizeContents);
 }
 
 QModelIndex nodeTableWidget::currentIndex()
@@ -65,11 +67,15 @@ QItemSelectionModel *nodeTableWidget::selectionModel()
 
 void nodeTableWidget::rightClickMenu(QPoint pos) 
 {
-    QModelIndex index=this->ui->nodeList->indexAt(pos);
+    //QModelIndex index=this->ui->nodeList->indexAt(pos);
 
     QMenu *menu=new QMenu(this);
     menu->addAction(new QAction("Action 1", this));
     menu->addAction(new QAction("Action 2", this));
     menu->addAction(new QAction("Action 3", this));
     menu->popup(this->ui->nodeList->viewport()->mapToGlobal(pos));
+}
+
+void nodeTableWidget::resizeContents() {
+	this->ui->nodeList->resizeColumnsToContents();
 }

@@ -25,6 +25,9 @@ Q_SIGNALS:
 	void currentRowChanged(const QModelIndex &current, const QModelIndex &previous);
 public Q_SLOTS:
     void rightClickMenu(QPoint pos);
+private slots:
+	void resizeContents();
+
 private:
     Ui::nodeTableWidget *ui;
 };
