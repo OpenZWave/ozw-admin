@@ -23,7 +23,7 @@ Q_SIGNALS:
 
 public Q_SLOTS:
 	void manufacturerSpecificDBReady();
-	void ready();
+	void ready(bool ready);
 	void starting();
 	void started(quint32 homeID);
 	void driverReady(quint32 homeID);

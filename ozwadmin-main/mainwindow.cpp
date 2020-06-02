@@ -56,7 +56,8 @@ MainWindow::MainWindow(QWidget *parent) :
 	this->statusBar()->showMessage(tr("Starting..."));
 	this->connected(false);
 
-	connect(OZWCore::get(), &OZWCore::raiseCriticalError, this, &MainWindow::openCriticalDialog, Qt::DirectConnection);
+	connect(OZWCore::get(), &OZWCore::raiseCriticalError, this, &MainWindow::openCriticalDialog);
+
 	OZWCore::get()->initilize();
 
 	this->sbMsg = new statusBarMessages(this);
@@ -75,7 +76,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(ui->action_Heal_Network, SIGNAL(triggered()), this, SLOT(healNetwork()));
 	connect(this->sbMsg, &statusBarMessages::newMessage, this, &MainWindow::setStatusBarMsg);
 	connect(OZWCore::get()->getQTOZWManager(), &QTOZWManager::remoteConnectionStatus, this, &MainWindow::remoteConnectionStatus);
-	connect(OZWCore::get()->getQTOZWManager(), &QTOZWManager::ready, this, &MainWindow::QTOZW_Ready);
+	connect(OZWCore::get()->getQTOZWManager(), &QTOZWManager::readyChanged, this, &MainWindow::QTOZW_Ready);
 	
 	SplashDialog *sw = new SplashDialog(this);
 	sw->show();
@@ -89,7 +90,9 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::QTOZW_Ready() {
+void MainWindow::QTOZW_Ready(bool ready) {
+	// TODO: Close Windows if they are open on Non-Ready Status 
+	if (!ready) return;
     qCDebug(ozwadmin) << "QTOZW Ready";
 
     /* apply our Local Configuration Options to the OZW Options Class */
@@ -111,10 +114,7 @@ void MainWindow::QTOZW_Ready() {
         }
     }
     OZWCore::get()->settings.endGroup();
-
 	openDefaultWindows();
-
-
 }
 void MainWindow::openDefaultWindows() {
 
@@ -188,7 +188,6 @@ void MainWindow::openDefaultWindows() {
 	lw->setModel(OZWCore::get()->getQTOZWManager()->getLogModel());
 
 	di->setQTOZWManager(OZWCore::get()->getQTOZWManager());
-	ni->setQTOZWManager(OZWCore::get()->getQTOZWManager());
 	this->m_WindowsSetup = true;
 }
 
@@ -246,10 +245,10 @@ void MainWindow::CloseConnection() {
 	if (OZWCore::get()->getQTOZWManager()->getConnectionType() == QTOZWManager::connectionType::Local) {
 		OZWCore::get()->getQTOZWManager()->close();
 	} else if (OZWCore::get()->getQTOZWManager()->getConnectionType() == QTOZWManager::connectionType::Remote) {
-		QMessageBox::critical(this, "Close Connection", "TODO: Please restart the application for now");
-		exit(1);
+		//QMessageBox::critical(this, "Close Connection", "TODO: Please restart the application for now");
+		//exit(1);
 	} else {
-		QMessageBox::critical(this, "Unknown Connection Type", "Unknown Connection Type");
+		//QMessageBox::critical(this, "Unknown Connection Type", "Unknown Connection Type");
 	}
 	this->connected(false);
 }
@@ -303,8 +302,10 @@ void MainWindow::openAboutWindow() {
 	sw->move(this->geometry().center() - sw->rect().center());
 }
 
-QMessageBox::StandardButton MainWindow::openCriticalDialog(QString title, QString msg) {
-	return QMessageBox::critical(this, title, msg);
+void MainWindow::openCriticalDialog(QString title, QString msg) {
+	QMessageBox *msgBox = new QMessageBox(QMessageBox::Critical, title, msg, QMessageBox::Ok, this);
+	msgBox->exec();	
+	return;
 }
 
 

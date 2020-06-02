@@ -20,7 +20,6 @@ public:
     explicit NodeStatus(QWidget *parent = nullptr);
     ~NodeStatus();
 
-	void setQTOZWManager(QTOZWManager *manager);
 public Q_SLOTS:
 	void NodeSelected(QModelIndex, QModelIndex);
 	
@@ -29,7 +28,6 @@ private:
 
 
     Ui::NodeStatus *ui;
-	QTOZWManager *m_qtozwmanager;
 	QTimer m_statTimer;
 	QModelIndex currentNode;
 };

@@ -1,7 +1,8 @@
-#include "nodestatus.h"
-#include "ui_nodestatus.h"
 #include <qt-openzwave/qtopenzwave.h>
 #include <qt-openzwave/qtozwmanager.h>
+#include "nodestatus.h"
+#include "ui_nodestatus.h"
+#include "ozwcore.h"
 
 NodeStatus::NodeStatus(QWidget *parent) :
     QWidget(parent),
@@ -17,16 +18,20 @@ NodeStatus::~NodeStatus()
     delete ui;
 }
 
-void NodeStatus::setQTOZWManager(QTOZWManager *manager) {
-	this->m_qtozwmanager = manager;
-
-}
-
 void NodeStatus::updateNodeStats() {
+
+	if (OZWCore::get()->getQTOZWManager()->isReady()) {
+		if (!this->m_statTimer.isActive())
+			this->m_statTimer.start(1000);
+	} else {
+		this->m_statTimer.stop();
+	}
+
+
 	const QAbstractItemModel * model = this->currentNode.model();
 	quint8 node = model->data(model->index(this->currentNode.row(), QTOZW_Nodes::NodeColumns::NodeID)).value<quint8>();
 	QBitArray flags = model->data(model->index(this->currentNode.row(), QTOZW_Nodes::NodeColumns::NodeFlags)).value<QBitArray>();
-	this->ui->ns_querystage->setText(this->m_qtozwmanager->GetNodeQueryStage(node));
+	this->ui->ns_querystage->setText(OZWCore::get()->getQTOZWManager()->GetNodeQueryStage(node));
 	this->ui->ns_sleeping->setChecked(!flags.at(QTOZW_Nodes::nodeFlags::isAwake));
 
 	if (flags.at(QTOZW_Nodes::nodeFlags::isFailed)) {
@@ -39,7 +44,7 @@ void NodeStatus::updateNodeStats() {
 		this->ui->ns_status->setText("Awake");
 	}
 
-	NodeStatistics ns = this->m_qtozwmanager->GetNodeStatistics(node);
+	NodeStatistics ns = OZWCore::get()->getQTOZWManager()->GetNodeStatistics(node);
 	this->ui->ns_lastseen->setText(ns.lastReceivedTimeStamp.toString());
 	this->ui->ns_lreqrtt->setText(QVariant::fromValue<quint32>(ns.lastRequestRTT).toString());
 	this->ui->ns_quality->setText(QVariant::fromValue<quint32>(ns.quality).toString());
@@ -74,8 +79,6 @@ void NodeStatus::updateNodeStats() {
 	this->ui->ens_routeSpeed->setText(ns.routeSpeed);
 	this->ui->ens_routeScheme->setText(ns.routeScheme);
 
-	if (!this->m_statTimer.isActive())
-		this->m_statTimer.start(1000);
 }
 
 void NodeStatus::NodeSelected(QModelIndex current, QModelIndex previous) {

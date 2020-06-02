@@ -17,7 +17,7 @@ startupprogress::startupprogress(bool remote, QWidget *parent) :
 
 	/* connect the signals */
 	QObject::connect(OZWCore::get()->getQTOZWManager(), &QTOZWManager::manufacturerSpecificDBReady, this, &startupprogress::manufacturerSpecificDBReady);
-	QObject::connect(OZWCore::get()->getQTOZWManager(), &QTOZWManager::ready, this, &startupprogress::ready);
+	QObject::connect(OZWCore::get()->getQTOZWManager(), &QTOZWManager::readyChanged, this, &startupprogress::ready);
 	QObject::connect(OZWCore::get()->getQTOZWManager(), &QTOZWManager::starting, this, &startupprogress::starting);
 	QObject::connect(OZWCore::get()->getQTOZWManager(), &QTOZWManager::started, this, &startupprogress::started);
 	QObject::connect(OZWCore::get()->getQTOZWManager(), &QTOZWManager::driverReady, this, &startupprogress::driverReady);
@@ -45,7 +45,8 @@ void startupprogress::manufacturerSpecificDBReady() {
 	ui->label->setText("Manufacturer Specific Database Ready");
 }
 
-void startupprogress::ready() {
+void startupprogress::ready(bool ready) {
+	if (!ready) return;
 	ui->label->setText("OpenZWave Ready");
     this->close();
 }

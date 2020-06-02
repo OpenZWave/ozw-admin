@@ -14,7 +14,7 @@ public:
 signals:
     void newMessage(QString);
 public slots:
-    void ready();
+    void ready(bool ready);
     void valueAdded(quint64 vidKey);
     void valueRemoved(quint64 vidKey);
     void valueChanged(quint64 vidKey);

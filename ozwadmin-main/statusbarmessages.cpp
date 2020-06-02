@@ -7,7 +7,7 @@ statusBarMessages::statusBarMessages(QObject *parent) : QObject(parent)
 {
     QTOZWManager *qtozwm = OZWCore::get()->getQTOZWManager();
     QObject::connect(qtozwm, &QTOZWManager::manufacturerSpecificDBReady, this, &statusBarMessages::manufacturerSpecificDBReady);
-    QObject::connect(qtozwm, &QTOZWManager::ready, this, &statusBarMessages::ready);
+    QObject::connect(qtozwm, &QTOZWManager::readyChanged, this, &statusBarMessages::ready);
     QObject::connect(qtozwm, &QTOZWManager::starting, this, &statusBarMessages::starting);
     QObject::connect(qtozwm, &QTOZWManager::started, this, &statusBarMessages::started);
     QObject::connect(qtozwm, &QTOZWManager::valueAdded, this, &statusBarMessages::valueAdded);
@@ -38,8 +38,8 @@ statusBarMessages::statusBarMessages(QObject *parent) : QObject(parent)
     QObject::connect(qtozwm, &QTOZWManager::manufacturerSpecificDBReady, this, &statusBarMessages::manufacturerSpecificDBReady);
 }
 
-void statusBarMessages::ready() {
-    emit newMessage("OpenZwave Ready");
+void statusBarMessages::ready(bool ready) {
+    if (ready) emit newMessage("OpenZwave Ready");
 }
 void statusBarMessages::valueAdded(quint64 vidKey) {
     emit newMessage(QString("Value Added: %1").arg(vidKeyDetails(vidKey)));

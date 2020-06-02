@@ -49,7 +49,7 @@ public slots:
     void resizeColumns();
     void NodeSelected(QModelIndex,QModelIndex);
     void OpenDeviceDB();
-    void QTOZW_Ready();
+    void QTOZW_Ready(bool ready);
     void openAboutWindow();
     void openMetaDataWindow();
     void openConfigWindow();
@@ -58,9 +58,8 @@ public slots:
     void healNetwork();
     void setStatusBarMsg(QString);
     void remoteConnectionStatus(QTOZWManager::connectionStatus status, QAbstractSocket::SocketError error);  
-
-    QMessageBox::StandardButton openCriticalDialog(QString title, QString msg);
-
+private slots:
+    void openCriticalDialog(QString title, QString msg);
 private:
     void connected(bool);
     void openDefaultWindows();
