@@ -20,8 +20,10 @@
 #include <QApplication>
 #include <QCheckBox>
 #include <QLoggingCategory>
+#include <QAbstractSocket>
 
 const char *nodeBasicStr (qint8 basic);
+QString SockErrorToString(QAbstractSocket::SocketError error);
 
 Q_DECLARE_LOGGING_CATEGORY(ozwadmin);
 

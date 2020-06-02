@@ -19,6 +19,7 @@ OZWCore *OZWCore::get() {
 
 
 void OZWCore::initilize() {
+#ifndef Q_OS_WASM
 	QStringList PossibleDBPaths;
 	PossibleDBPaths << settings.value("openzwave/ConfigPath", QDir::toNativeSeparators("../../../config/")).toString().append("/");
 	PossibleDBPaths << QStandardPaths::standardLocations(QStandardPaths::AppDataLocation);
@@ -97,7 +98,10 @@ void OZWCore::initilize() {
 		qCInfo(ozwadmin) << "UserPath is Set from Settings" << m_userpath.absolutePath();
 		settings.setValue("openzwave/UserPath", m_userpath.absolutePath());
 	}
-
+#else 
+	m_configpath = ".";
+	m_userpath = ".";
+#endif
     this->m_openzwave = new QTOpenZwave(this, m_configpath, m_userpath);
     this->m_qtozwmanager = this->m_openzwave->GetManager();
 }

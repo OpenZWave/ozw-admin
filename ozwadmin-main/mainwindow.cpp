@@ -193,7 +193,6 @@ void MainWindow::openDefaultWindows() {
 }
 
 void MainWindow::OpenConnection() {
-	this->connected(true);
 
 	Startup su(this);
 	su.setModal(true);
@@ -201,33 +200,17 @@ void MainWindow::OpenConnection() {
 	if (ret == QDialog::Accepted) {
 
 		if (su.getremote() == true) {
-			qCDebug(ozwadmin) << "Doing Remote Connection:" << su.getremoteHost() << su.getremotePort();
 			QUrl server;
 			server.setHost(su.getremoteHost());
 			server.setPort(su.getremotePort());
 			server.setScheme("ws");
-			qCDebug(ozwadmin) << "Connecting to " << server;
-			startupprogress *sup = new startupprogress(true, this);
-            sup->setWindowFlags(Qt::Window | Qt::WindowTitleHint | Qt::CustomizeWindowHint);
-			sup->setQTOZWManager(OZWCore::get()->getQTOZWManager());
-			sup->show();
-            OZWCore::get()->getQTOZWManager()->setClientAuth(su.getauthKey());
-			OZWCore::get()->getQTOZWManager()->initilizeReplica(server);
-            OZWCore::get()->settings.setValue("connection/remotehost", su.getremoteHost());
-            OZWCore::get()->settings.setValue("connection/remoteport", su.getremotePort());
-            OZWCore::get()->settings.setValue("connection/authKey", su.getauthKey());
+			connectToRemote(server, su.getauthKey());
 			return;
 		}
 		else 
 		{
-			qCDebug(ozwadmin) << "Doing Local Connection: " << su.getserialPort() << su.getstartServer();
-			startupprogress *sup = new startupprogress(false, this);
-			sup->setQTOZWManager(OZWCore::get()->getQTOZWManager());
-			sup->show();
-		    OZWCore::get()->getQTOZWManager()->initilizeSource(OZWCore::get()->settings.value("StartServer").toBool());
-			OZWCore::get()->getQTOZWManager()->open(su.getserialPort());
-            OZWCore::get()->settings.setValue("connection/serialport", su.getserialPort());
             OZWCore::get()->settings.setValue("connection/startserver", su.getstartServer());
+			connectToLocal(su.getserialPort());			
 			return;
 		}
     } else {
@@ -236,6 +219,29 @@ void MainWindow::OpenConnection() {
     }
 
 }
+
+void MainWindow::connectToLocal(QString serial) {
+	this->connected(true);
+	OZWCore::get()->settings.setValue("connection/serialport", serial);
+	qCDebug(ozwadmin) << "Doing Local Connection: " << serial << OZWCore::get()->settings.value("StartServer").toBool();
+	startupprogress *sup = new startupprogress(false, this);
+	sup->show();
+	OZWCore::get()->getQTOZWManager()->initilizeSource(OZWCore::get()->settings.value("connection/startserver").toBool());
+	OZWCore::get()->getQTOZWManager()->open(serial);
+}
+
+void MainWindow::connectToRemote(QUrl server, QString key) {
+	this->connected(true);
+	OZWCore::get()->settings.setValue("connection/remotehost", server);
+	OZWCore::get()->settings.setValue("connection/authKey", key);
+	qCDebug(ozwadmin) << "Doing Remote Connection:" << server;
+	startupprogress *sup = new startupprogress(true, this);
+	sup->setWindowFlags(Qt::Window | Qt::WindowTitleHint | Qt::CustomizeWindowHint);
+	sup->show();
+	OZWCore::get()->getQTOZWManager()->setClientAuth(key);
+	OZWCore::get()->getQTOZWManager()->initilizeReplica(server);	
+}
+
 void MainWindow::CloseConnection() {
 	if (OZWCore::get()->getQTOZWManager()->getConnectionType() == QTOZWManager::connectionType::Local) {
 		OZWCore::get()->getQTOZWManager()->close();
@@ -325,13 +331,13 @@ void MainWindow::setStatusBarMsg(QString Msg) {
 }
 
 void MainWindow::remoteConnectionStatus(QTOZWManager::connectionStatus status, QAbstractSocket::SocketError error) {
-	Q_UNUSED(error);
+	qCDebug(ozwadmin) << "Remote Connection Status: " << status << error;
 	if (status == QTOZWManager::connectionStatus::ConnectionErrorState) {
-		openCriticalDialog("Connection Error", "Connection Error");
+		QString errorstr("Connection Error: %1");
+		openCriticalDialog("Connection Error", errorstr.arg(SockErrorToString(error)));
 		CloseConnection();
 	} else if (status == QTOZWManager::connectionStatus::VersionMisMatchError) {
 		openCriticalDialog("Version MisMatch", "The ozwdaemon version is not compatible with this version of ozw-admin");
 		CloseConnection();
 	}
-
 }  

@@ -11,7 +11,7 @@ LogWindow::LogWindow(QWidget *parent) :
     this->ui->logview->verticalHeader()->hide();
     this->ui->logview->horizontalHeader()->setStretchLastSection(true);
     this->ui->logview->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
-//    this->ui->val_system_tbl->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    this->ui->logview->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
 //    this->ui->logview->resizeColumnsToContents();
 
 

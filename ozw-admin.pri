@@ -6,6 +6,10 @@ unix {
     }
     !macx: QMAKE_CXXFLAGS += -Wno-deprecated-copy
 }
+emscripten: {
+	QMAKE_CXXFLAGS += -Wno-deprecated-copy
+	QMAKE_LFLAGS += -g --source-map-base "http://localhost:8000/"
+}
 
 unix {
     CONFIG-= no-pkg-config
@@ -39,7 +43,11 @@ unix {
     	message("    OpenZWave Database Path: $$OZW_DATABASE_PATH")
     	message(" ")
     	INCLUDEPATH+=$$OZW_INCLUDE_PATH
-    	LIBS+=$$OZW_LIBS
+	!emscripten {
+	    	LIBS+=$$OZW_LIBS
+	} else {
+		message("    Not Adding libopenzwave to LIBS")
+	}
     } else { 
 	exists( $$top_srcdir/../open-zwave/cpp/src/) {
 		message("Found OZW in $$absolute_path($$top_srcdir/../open-zwave/)")
@@ -56,7 +64,11 @@ unix {
     		message("    OpenZWave Database Path: $$OZW_DATABASE_PATH")
     		message(" ")
     		INCLUDEPATH+=$$OZW_INCLUDE_PATH
-    		LIBS+=$$OZW_LIBS
+		!emscripten { 
+	    		LIBS+=$$OZW_LIBS
+		} else {
+			message("    Not Adding libopenzwave to LIBS")
+		}
 	} else {
 		packagesExist("libopenzwave") {
 			PKGCONFIG += libopenzwave
@@ -72,7 +84,7 @@ unix {
 			error("Can't find OpenZWave Library and Headers");
 		}
 	}
-    }
+}
 
     !isEmpty(QTOZW_LIB_PATH) {
 	!exists($$QTOZW_LIB_PATH/qt-openzwave/libqt-openzwave.so): error("Can't find libqt-openzwave.so")

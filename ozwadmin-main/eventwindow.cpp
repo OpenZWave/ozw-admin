@@ -4,6 +4,7 @@
 
 #include "eventwindow.h"
 #include "ui_eventwindow.h"
+#include "util.h"
 
 
 EventWindow::EventWindow(QWidget *parent) :
@@ -11,10 +12,12 @@ EventWindow::EventWindow(QWidget *parent) :
     ui(new Ui::EventWindow)
 {
     ui->setupUi(this);
+    ui->eventTable->verticalHeader()->hide();
     ui->eventTable->horizontalHeader()->setStretchLastSection(true);
     ui->eventTable->setHorizontalHeaderItem(0, new QTableWidgetItem("Time"));
     ui->eventTable->setHorizontalHeaderItem(1, new QTableWidgetItem("Message"));
     ui->eventTable->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    ui->eventTable->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
 
 }
 

@@ -78,4 +78,9 @@ void nodeTableWidget::rightClickMenu(QPoint pos)
 
 void nodeTableWidget::resizeContents() {
 	this->ui->nodeList->resizeColumnsToContents();
+	if (!this->ui->nodeList->selectionModel()->hasSelection()) {
+		if (this->ui->nodeList->model()->rowCount() > 0) {
+			this->ui->nodeList->selectRow(0);
+		}
+	}
 }

@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
 
 #if 1
     QLoggingCategory::setFilterRules("*.debug=false\n"
-                                     "qt.remoteobjects.debug=false\n"
+                                     "qt.remoteobjects.debug=true\n"
                                      "qt.remoteobjects.warning=true\n"
                                      "ozw.*.debug=true\n"
                                      "ozw.library.debug=false\n"
@@ -56,7 +56,46 @@ int main(int argc, char *argv[])
     QCoreApplication::setApplicationVersion(DEF2STR(APP_VERSION));
     QApplication a(argc, argv);
 
+
+    QCommandLineParser parser;
+    parser.setApplicationDescription("OpenZWave Admin GUI");
+    parser.addHelpOption();
+    parser.addVersionOption();
+
+    QCommandLineOption serialPort(QStringList() << "s" << "serial-port",
+        "AutoStart connecting to the Specified Serial Port of the USB Stick",
+        "serialPort"
+    );
+    parser.addOption(serialPort);
+
+    QCommandLineOption remoteHost(QStringList() << "host",
+        "AutoStart connecting to the Specified Remote Host/Port (1983 is default port)",
+        "host:port"
+    );
+    parser.addOption(remoteHost);
+
+    QCommandLineOption remoteKey(QStringList()  << "password",
+        "Remote Host Password (optional)",
+        "password"
+    );
+    parser.addOption(remoteKey);
+
+
+    parser.process(a);
+
     MainWindow w;
     w.show();
+    if (parser.isSet(serialPort)) {
+        w.connectToLocal(parser.value(serialPort));
+    } else if (parser.isSet(remoteHost)) {
+        QString key;
+        if (parser.isSet(remoteKey)) {
+            key = parser.value(remoteKey);
+        }
+        QUrl server = QUrl::fromUserInput(parser.value(remoteHost), "");
+        server.setScheme("ws");
+        w.connectToRemote(server, key);
+    }
+
     return a.exec();
 }

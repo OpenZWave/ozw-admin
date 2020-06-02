@@ -2,12 +2,29 @@
 <ui version="4.0">
  <class>LogWindow</class>
  <widget class="QWidget" name="LogWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>280</width>
+    <height>216</height>
+   </rect>
+  </property>
   <property name="windowTitle">
    <string>OZW Log</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <widget class="QTableView" name="logview">
+     <property name="font">
+      <font>
+       <pointsize>8</pointsize>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QTableWidget::item { padding: 0px }
+QHeaderView::section:horizontal {margin-right: 2; border: 1px solid}</string>
+     </property>
      <property name="frameShape">
       <enum>QFrame::NoFrame</enum>
      </property>

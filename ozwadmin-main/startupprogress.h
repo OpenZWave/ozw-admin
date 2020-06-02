@@ -17,7 +17,6 @@ class startupprogress : public QDialog
 public:
     explicit startupprogress(bool remote, QWidget *parent = nullptr);
     ~startupprogress();
-	void setQTOZWManager(QTOZWManager *);
 
 Q_SIGNALS:
     void cancel();
@@ -42,7 +41,6 @@ private Q_SLOTS:
 private:
     Ui::startupprogress *ui;
 	bool m_remote;
-	QTOZWManager *m_qtozwmanager;
 };
 
 #endif // STARTUPPROGRESS_H

@@ -1,7 +1,9 @@
+#include <QObject>
 
 #include "startupprogress.h"
 #include "ui_startupprogress.h"
 #include "util.h"
+#include "ozwcore.h"
 
 
 startupprogress::startupprogress(bool remote, QWidget *parent) :
@@ -12,29 +14,25 @@ startupprogress::startupprogress(bool remote, QWidget *parent) :
     ui->setupUi(this);
 	ui->progressBar->setValue(0);
 	ui->label->setText("Starting....");
+
+	/* connect the signals */
+	QObject::connect(OZWCore::get()->getQTOZWManager(), &QTOZWManager::manufacturerSpecificDBReady, this, &startupprogress::manufacturerSpecificDBReady);
+	QObject::connect(OZWCore::get()->getQTOZWManager(), &QTOZWManager::ready, this, &startupprogress::ready);
+	QObject::connect(OZWCore::get()->getQTOZWManager(), &QTOZWManager::starting, this, &startupprogress::starting);
+	QObject::connect(OZWCore::get()->getQTOZWManager(), &QTOZWManager::started, this, &startupprogress::started);
+	QObject::connect(OZWCore::get()->getQTOZWManager(), &QTOZWManager::driverReady, this, &startupprogress::driverReady);
+	QObject::connect(OZWCore::get()->getQTOZWManager(), &QTOZWManager::driverAllNodesQueriedSomeDead, this, &startupprogress::driverAllNodesQueriedSomeDead);
+	QObject::connect(OZWCore::get()->getQTOZWManager(), &QTOZWManager::driverAllNodesQueried, this, &startupprogress::driverAllNodesQueried);
+	QObject::connect(OZWCore::get()->getQTOZWManager(), &QTOZWManager::driverAwakeNodesQueried, this, &startupprogress::driverAwakeNodesQueried);
+	QObject::connect(OZWCore::get()->getQTOZWManager(), &QTOZWManager::ozwNotification, this, &startupprogress::ozwNotification);
+    QObject::connect(OZWCore::get()->getQTOZWManager(), &QTOZWManager::remoteConnectionStatus, this, &startupprogress::remoteConnectionStatus);
+    QObject::connect(this->ui->cancelbtn, &QPushButton::clicked, this, &startupprogress::clicked);
+
 }
 
 startupprogress::~startupprogress()
 {
     delete ui;
-}
-
-void startupprogress::setQTOZWManager(QTOZWManager *qtozw) 
-{
-	m_qtozwmanager = qtozw;
-
-	/* connect the signals */
-	QObject::connect(this->m_qtozwmanager, &QTOZWManager::manufacturerSpecificDBReady, this, &startupprogress::manufacturerSpecificDBReady);
-	QObject::connect(this->m_qtozwmanager, &QTOZWManager::ready, this, &startupprogress::ready);
-	QObject::connect(this->m_qtozwmanager, &QTOZWManager::starting, this, &startupprogress::starting);
-	QObject::connect(this->m_qtozwmanager, &QTOZWManager::started, this, &startupprogress::started);
-	QObject::connect(this->m_qtozwmanager, &QTOZWManager::driverReady, this, &startupprogress::driverReady);
-	QObject::connect(this->m_qtozwmanager, &QTOZWManager::driverAllNodesQueriedSomeDead, this, &startupprogress::driverAllNodesQueriedSomeDead);
-	QObject::connect(this->m_qtozwmanager, &QTOZWManager::driverAllNodesQueried, this, &startupprogress::driverAllNodesQueried);
-	QObject::connect(this->m_qtozwmanager, &QTOZWManager::driverAwakeNodesQueried, this, &startupprogress::driverAwakeNodesQueried);
-	QObject::connect(this->m_qtozwmanager, &QTOZWManager::ozwNotification, this, &startupprogress::ozwNotification);
-    QObject::connect(this->m_qtozwmanager, &QTOZWManager::remoteConnectionStatus, this, &startupprogress::remoteConnectionStatus);
-    QObject::connect(this->ui->cancelbtn, &QPushButton::clicked, this, &startupprogress::clicked);
 }
 
 void startupprogress::clicked(bool checked) {
@@ -96,6 +94,7 @@ void startupprogress::driverAwakeNodesQueried() {
 	this->close();
 }
 void startupprogress::ozwNotification(quint8 node, NotificationTypes::QTOZW_Notification_Code event) {
+	Q_UNUSED(node);
 	qCDebug(ozwadmin) << event;
 }
 

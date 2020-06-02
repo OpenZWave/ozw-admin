@@ -8,7 +8,7 @@ QT       += core gui xml svg remoteobjects widgets
 
 TARGET = ozwadmin-widgets
 TEMPLATE = lib
-CONFIG += staticlib
+CONFIG += staticlib silent
 
 
 SOURCES += widgets.cpp \

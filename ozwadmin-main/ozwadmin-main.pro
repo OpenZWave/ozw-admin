@@ -5,7 +5,7 @@
 #-------------------------------------------------
 
 QT       += core gui widgets xml remoteobjects websockets svg
-#CONFIG  += silent
+CONFIG   += silent
 
 TARGET = ../ozwadmin
 TEMPLATE = app
@@ -89,7 +89,6 @@ windows {
 }
 
 INCLUDEPATH += ../devicedb-lib ../ozwadmin-widgets
-
 
 macx: {
     LIBS += -framework IOKit -framework CoreFoundation

@@ -41,6 +41,8 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+    void connectToLocal(QString serial);
+    void connectToRemote(QUrl server, QString key);
 public slots:
     void OpenConnection();
     void CloseConnection();

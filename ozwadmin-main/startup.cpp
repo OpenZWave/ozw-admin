@@ -1,10 +1,12 @@
 #include <QMessageBox>
 #include <QIntValidator>
 #include <QSettings>
+#include <QUrl>
+#include <QDebug>
 
 #include "startup.h"
 #include "ui_startup.h"
-
+#include "ozwcore.h"
 
 Startup::Startup(QWidget *parent) :
     QDialog(parent),
@@ -17,18 +19,19 @@ Startup::Startup(QWidget *parent) :
     ui->remoteport->setMaximumWidth(w+8);
     QObject::connect(ui->startlocal, &QPushButton::clicked, this, &Startup::localPressed);
     QObject::connect(ui->startremote, &QPushButton::clicked, this, &Startup::remotePressed);
-    QSettings settings;
 #if defined(Q_OS_MACOS)
-    ui->serialport->setText(settings.value("connection/serialport", "/dev/cu.SLAB_USBtoUART").toString());
+    ui->serialport->setText(OZWCore::get()->settings.value("connection/serialport", "/dev/cu.SLAB_USBtoUART").toString());
 #elif defined(Q_OS_WIN)
-    ui->serialport->setText(settings.value("connection/serialport", "COM1").toString());
+    ui->serialport->setText(OZWCore::get()->settings.value("connection/serialport", "COM1").toString());
 #else
-    ui->serialport->setText(settings.value("connection/serialport", "/dev/ttyUSB0").toString());
+    ui->serialport->setText(OZWCore::get()->settings.value("connection/serialport", "/dev/ttyUSB0").toString());
 #endif
-    ui->enableserver->setChecked(settings.value("connection/startserver", true).toBool());
-    ui->remotehost->setText(settings.value("connection/remotehost", "localhost").toString());
-    ui->remoteport->setText(settings.value("connection/remoteport", "1983").toString());
-    ui->authKey->setText(settings.value("connection/authKey", "").toString());
+    ui->enableserver->setChecked(OZWCore::get()->settings.value("connection/startserver", true).toBool());
+    QUrl server = QUrl::fromUserInput(OZWCore::get()->settings.value("connection/remotehost", "ws://localhost:1983").toString());
+    qDebug() << server;
+    ui->remotehost->setText(server.host());
+    ui->remoteport->setText(QString::number(server.port()));
+    ui->authKey->setText(OZWCore::get()->settings.value("connection/authKey", "").toString());
 }
 
 Startup::~Startup()
