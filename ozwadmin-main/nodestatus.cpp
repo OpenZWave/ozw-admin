@@ -19,7 +19,6 @@ NodeStatus::~NodeStatus()
 }
 
 void NodeStatus::updateNodeStats() {
-
 	if (OZWCore::get()->getQTOZWManager()->isReady()) {
 		if (!this->m_statTimer.isActive())
 			this->m_statTimer.start(1000);

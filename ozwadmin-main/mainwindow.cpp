@@ -185,7 +185,6 @@ void MainWindow::openDefaultWindows() {
 	userValues->setModel(OZWCore::get()->getQTOZWManager()->getValueModel(), this->ntw->selectionModel());
 	systemValues->setModel(OZWCore::get()->getQTOZWManager()->getValueModel(), this->ntw->selectionModel());
 	configValues->setModel(OZWCore::get()->getQTOZWManager()->getValueModel(), this->ntw->selectionModel());
-	lw->setModel(OZWCore::get()->getQTOZWManager()->getLogModel());
 
 	di->setQTOZWManager(OZWCore::get()->getQTOZWManager());
 	this->m_WindowsSetup = true;
@@ -242,9 +241,9 @@ void MainWindow::connectToRemote(QUrl server, QString key) {
 }
 
 void MainWindow::CloseConnection() {
-	if (OZWCore::get()->getQTOZWManager()->getConnectionType() == QTOZWManager::connectionType::Local) {
+	if (OZWCore::get()->getQTOZWManager()->getConnectionType() == ConnectionType::Type::Local) {
 		OZWCore::get()->getQTOZWManager()->close();
-	} else if (OZWCore::get()->getQTOZWManager()->getConnectionType() == QTOZWManager::connectionType::Remote) {
+	} else if (OZWCore::get()->getQTOZWManager()->getConnectionType() == ConnectionType::Type::Remote) {
 		//QMessageBox::critical(this, "Close Connection", "TODO: Please restart the application for now");
 		//exit(1);
 	} else {

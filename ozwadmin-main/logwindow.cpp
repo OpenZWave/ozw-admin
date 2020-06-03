@@ -2,6 +2,8 @@
 
 #include "logwindow.h"
 #include "ui_logwindow.h"
+#include "ozwcore.h"
+#include "util.h"
 
 LogWindow::LogWindow(QWidget *parent) :
     QWidget(parent),
@@ -14,6 +16,8 @@ LogWindow::LogWindow(QWidget *parent) :
     this->ui->logview->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
 //    this->ui->logview->resizeColumnsToContents();
 
+    this->m_log = OZWCore::get()->getQTOZWManager()->getLog();
+    connect(this->m_log, &QTOZWLog::newLogLine, this, &LogWindow::newMsg);
 
 }
 
@@ -21,6 +25,11 @@ LogWindow::~LogWindow()
 {
     delete ui;
 }
+
+void LogWindow::newMsg(QDateTime time, LogLevels::Level level, quint8 s_node, QString s_msg) {
+            qCDebug(ozwadmin) << time << level << s_node << s_msg;
+}
+
 
 void LogWindow::setModel(QAbstractItemModel *model) {
     this->ui->logview->setModel(model);

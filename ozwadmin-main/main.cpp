@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
 
 #if 1
     QLoggingCategory::setFilterRules("*.debug=false\n"
-                                     "qt.remoteobjects.debug=true\n"
+                                     "qt.remoteobjects.debug=false\n"
                                      "qt.remoteobjects.warning=true\n"
                                      "ozw.*.debug=true\n"
                                      "ozw.library.debug=false\n"
