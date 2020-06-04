@@ -232,7 +232,9 @@ int main(int argc, char *argv[])
         }
     }
     settings.setValue("openzwave/UserPath", userPath);
+#ifndef Q_OS_WIN
     finiConfigDatabase();
+#endif
     qCInfo(ozwadmin) << "DBPath: " << dbPath;
     qCInfo(ozwadmin) << "userPath: " << userPath;
 
