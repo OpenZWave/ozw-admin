@@ -177,6 +177,9 @@ void MainWindow::openDefaultWindows() {
 	this->ui->menuWindow->addAction(logWindowDW->toggleViewAction());
 	this->m_DockManager->addDockWidget(ads::CenterDockWidgetArea, logWindowDW, BottomDockWidget);
 
+	lw->init();
+
+
 	/* set Active Tabs */
 	RightDockWidget->setCurrentDockWidget(DeviceInfoDW);
 	BottomDockWidget->setCurrentDockWidget(eventViewDW);

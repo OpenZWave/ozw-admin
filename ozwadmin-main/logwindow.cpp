@@ -14,31 +14,39 @@ LogWindow::LogWindow(QWidget *parent) :
     this->ui->logview->horizontalHeader()->setStretchLastSection(true);
     this->ui->logview->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
     this->ui->logview->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
-//    this->ui->logview->resizeColumnsToContents();
 
     this->m_log = OZWCore::get()->getQTOZWManager()->getLog();
     connect(this->m_log, &QTOZWLog::newLogLine, this, &LogWindow::newMsg);
+    this->m_log->syncroniseLogs();
 
+    this->m_scrollTimer.setInterval(500);
+    connect(&this->m_scrollTimer, &QTimer::timeout, this, &LogWindow::scrollWindow);
 }
 
 LogWindow::~LogWindow()
 {
+    this->m_scrollTimer.stop();
     delete ui;
 }
 
 void LogWindow::newMsg(QDateTime time, LogLevels::Level level, quint8 s_node, QString s_msg) {
-            qCDebug(ozwadmin) << time << level << s_node << s_msg;
+    Q_UNUSED(time);
+    Q_UNUSED(level);
+    Q_UNUSED(s_node);
+    Q_UNUSED(s_msg);
+    if (!this->m_scrollTimer.isActive())
+        this->m_scrollTimer.start();
 }
 
+void LogWindow::scrollWindow()
+{
+    if (this->ui->pauseScroll->isChecked())
+        this->ui->logview->scrollToBottom();
 
-void LogWindow::setModel(QAbstractItemModel *model) {
-    this->ui->logview->setModel(model);
-//    this->ui->logview->resizeColumnsToContents();
-    connect(this->ui->logview->model(), &QAbstractItemModel::rowsAboutToBeInserted,
-            this->ui->logview, [&] {
-      auto bar = this->ui->logview->verticalScrollBar();
-      viewAtBottom = bar ? (bar->value() == bar->maximum()) : false;
-    });
-    connect(this->ui->logview->model(), &QAbstractItemModel::rowsInserted,
-            this->ui->logview, [&]{ if (viewAtBottom) this->ui->logview->scrollToBottom(); });
+    this->m_scrollTimer.stop();
+}
+
+void LogWindow::init() {
+    this->m_logModel = new QTOZWLogModel(this->m_log, this);
+    this->ui->logview->setModel(this->m_logModel);
 }

@@ -15,6 +15,33 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
+    <widget class="QToolButton" name="pauseScroll">
+     <property name="text">
+      <string/>
+     </property>
+     <property name="icon">
+      <iconset resource="ozwadmin-main.qrc">
+       <normaloff>:/res/buttonIcons/play.svg</normaloff>
+       <normalon>:/res/buttonIcons/pause.svg</normalon>:/res/buttonIcons/play.svg</iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>12</width>
+       <height>12</height>
+      </size>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+     <property name="autoRaise">
+      <bool>false</bool>
+     </property>
+    </widget>
+   </item>
+   <item>
     <widget class="QTableView" name="logview">
      <property name="font">
       <font>
@@ -53,6 +80,8 @@ QHeaderView::section:horizontal {margin-right: 2; border: 1px solid}</string>
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="ozwadmin-main.qrc"/>
+ </resources>
  <connections/>
 </ui>

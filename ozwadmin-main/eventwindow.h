@@ -2,6 +2,8 @@
 #define EVENTWINDOW_H
 
 #include <QWidget>
+#include <QTimer>
+
 
 namespace Ui {
 class EventWindow;
@@ -17,8 +19,11 @@ public:
 
 public slots:
     void newEvent(QString);
+private slots:
+    void scrollWindow();
 private:
     Ui::EventWindow *ui;
+    QTimer m_scrollTimer;
 };
 
 #endif // EVENTWINDOW_H

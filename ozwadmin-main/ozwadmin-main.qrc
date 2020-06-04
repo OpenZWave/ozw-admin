@@ -12,5 +12,7 @@
         <file>res/nodeflags/Sleeping.svg</file>
         <file>res/nodeflags/zwaveplus.png</file>
         <file>res/start.svg</file>
+        <file>res/buttonIcons/pause.svg</file>
+        <file>res/buttonIcons/play.svg</file>
     </qresource>
 </RCC>

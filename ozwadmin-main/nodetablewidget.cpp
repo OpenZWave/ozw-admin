@@ -53,7 +53,7 @@ void nodeTableWidget::setModel(QAbstractItemModel *model)
 	connect(ui->nodeList->selectionModel(), &QItemSelectionModel::currentRowChanged, this, &nodeTableWidget::currentRowChanged);
 	connect(proxyNodeList, &QTOZW_proxyNodeModel::rowsInserted, this, &nodeTableWidget::resizeContents);
 	connect(proxyNodeList, &QTOZW_proxyNodeModel::rowsRemoved, this, &nodeTableWidget::resizeContents);
-	QTimer::singleShot(100, this, &nodeTableWidget::resizeContents);
+	QTimer::singleShot(500, this, &nodeTableWidget::resizeContents);
 }
 
 QModelIndex nodeTableWidget::currentIndex()
