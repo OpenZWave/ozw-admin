@@ -31,6 +31,7 @@ void ValueTable::setModel(QAbstractItemModel *model, QItemSelectionModel *select
     this->m_proxyModel->setSelectionModel(selectionModel);
     connect(this->m_proxyModel, &QAbstractItemModel::rowsInserted, this, &ValueTable::resizeContents);
     connect(this->m_proxyModel, &QAbstractItemModel::rowsRemoved, this, &ValueTable::resizeContents);
+    connect(selectionModel, &QItemSelectionModel::selectionChanged, this, &ValueTable::logChanges);
     QTableView::setModel(this->m_proxyModel);
 
     for (int i = 0; i <= QTOZW_ValueIds::ValueIdColumns::ValueIdCount; i++) {
@@ -44,9 +45,16 @@ void ValueTable::setModel(QAbstractItemModel *model, QItemSelectionModel *select
             this->horizontalHeader()->hideSection(i);
         }
     }
-    QTimer::singleShot(100, this, &ValueTable::resizeContents);
+    QTimer::singleShot(500, this, &ValueTable::resizeContents);
 }
 
 void ValueTable::resizeContents() {
     this->resizeColumnsToContents();
+}
+
+void ValueTable::logChanges()
+{
+    qCDebug(ozwadmin) << "SelectionChanged UnFiltered Rows:" << this->m_proxyModel->sourceModel()->rowCount();
+    qCDebug(ozwadmin) << "\t Filtered Rows: " << this->m_proxyModel->rowCount();
+    qCDebug(ozwadmin) << "\t TableView Rows:" << QTableView::model()->rowCount();
 }
