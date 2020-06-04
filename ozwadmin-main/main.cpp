@@ -25,6 +25,8 @@
 #include <QLoggingCategory>
 #include <QStyleFactory>
 
+#include <qt-openzwave/qt-openzwavedatabase.h>
+
 #include "util.h"
 #include "mainwindow.h"
 
@@ -80,8 +82,140 @@ int main(int argc, char *argv[])
     );
     parser.addOption(remoteKey);
 
+    QCommandLineOption configDir(QStringList() << "c" << "config-dir",
+        "Directory containing the OZW Config Files",
+        "configDir"
+    );
+
+    parser.addOption(configDir);
+
+    QCommandLineOption userDir(QStringList() << "u" << "user-dir",
+        "Directory for the OZW User Files",
+        "userDir"
+    );
+
+    parser.addOption(userDir);
+
 
     parser.process(a);
+
+    QSettings settings;
+
+    QString dbPath, userPath;
+
+    if (parser.isSet(configDir)) {
+        QStringList PossibleDBPaths;
+        PossibleDBPaths << parser.value(configDir);
+        QString path;
+        foreach(path, PossibleDBPaths) {
+            qCDebug(ozwadmin) << "Checking " << QFileInfo(QDir::toNativeSeparators(path)).absoluteFilePath() << " for manufacturer_specific.xml";
+            if (QFileInfo(QDir::toNativeSeparators(path+"/manufacturer_specific.xml")).exists()) {
+                dbPath = QFileInfo(QDir::toNativeSeparators(path).append("/")).absoluteFilePath();
+                break;
+            }
+        }
+        /* if we dont have a dbPath, Deploy our config files there */
+        if (dbPath.isEmpty()) {
+            qCWarning(ozwadmin) << "Configuration Database Does Not Exist - Copying Database to Location " << QFileInfo(parser.value(configDir).append("/")).absoluteFilePath();
+            QStringList Locations;
+            Locations << ".";
+            if (initConfigDatabase(Locations)) {
+                copyConfigDatabase(QFileInfo(parser.value(configDir).append("/")).absoluteFilePath());
+            } else {
+                qCWarning(ozwadmin) << "Cant find qt-openzwavedatabase.rcc";
+                QCoreApplication::exit(-1);
+            }
+            dbPath = QFileInfo(parser.value(configDir).append("/")).absoluteFilePath();
+        }
+    } else {
+        /* search Default Locations for Config Files */
+        QStringList PossibleDBPaths;
+        PossibleDBPaths << settings.value("openzwave/ConfigPath", QDir::toNativeSeparators("../../../config/")).toString().append("/");
+        PossibleDBPaths << "./config/";
+        PossibleDBPaths << QDir::toNativeSeparators("../../../config/");
+        PossibleDBPaths << QStandardPaths::standardLocations(QStandardPaths::AppDataLocation);
+        QString path;
+        foreach(path, PossibleDBPaths) {
+            qCDebug(ozwadmin) << "Checking " << QFileInfo(QDir::toNativeSeparators(path)).absoluteFilePath() << " for manufacturer_specific.xml";
+            if (QFileInfo(QDir::toNativeSeparators(path+"/manufacturer_specific.xml")).exists()) {
+                dbPath = QFileInfo(QDir::toNativeSeparators(path).append("/")).absoluteFilePath();
+                break;
+            }
+        }
+        /* if we dont have a dbPath, Deploy our config files there */
+        if (dbPath.isEmpty()) {
+            dbPath = QFileInfo("./").absoluteFilePath();
+            qCWarning(ozwadmin) << "Configuration Database Does Not Exist - Copying Database to Default Location " << dbPath;
+            QStringList Locations;
+            Locations << ".";
+            if (initConfigDatabase(Locations)) {
+                copyConfigDatabase(dbPath);
+            } else {
+                qCWarning(ozwadmin) << "Cant find qt-openzwavedatabase.rcc";
+                QCoreApplication::exit(-1);
+            }
+        }
+    }
+    settings.setValue("openzwave/ConfigPath", dbPath);
+
+    if (parser.isSet(userDir)) {
+        QStringList PossibleCfgPaths;
+        PossibleCfgPaths << parser.value(userDir);
+        QString path;
+        foreach(path, PossibleCfgPaths) {
+            qCDebug(ozwadmin) << "Checking " << QFileInfo(QDir::toNativeSeparators(path)).absoluteFilePath() << " for options.xml";
+            if (QFileInfo(QDir::toNativeSeparators(path+"/options.xml")).exists()) {
+                userPath = QFileInfo(QDir::toNativeSeparators(path).append("/")).absoluteFilePath();
+                break;
+            }
+        }
+        /* if we dont have a userPath, Deploy our config files there */
+        if (userPath.isEmpty()) {
+            qCWarning(ozwadmin) << "User Configuration Path Does Not Exist - Copying Config Files to Location " << QFileInfo(parser.value(userDir).append("/")).absoluteFilePath();
+            QStringList Locations;
+            Locations << ".";
+            if (initConfigDatabase(Locations)) {
+                copyUserDatabase(QFileInfo(parser.value(userDir).append("/")).absoluteFilePath());
+            } else {
+                qCWarning(ozwadmin) << "Cant find qt-openzwavedatabase.rcc";
+                QCoreApplication::exit(-1);
+            }
+            userPath = QFileInfo(parser.value(userDir).append("/")).absoluteFilePath();
+        }
+    } else {
+        /* search Default Locations for Config Files */
+        QStringList PossibleUserPaths;
+        PossibleUserPaths << settings.value("openzwave/UserPath", QDir::toNativeSeparators("../../../config/")).toString().append("/");
+        PossibleUserPaths << "./config/";
+        PossibleUserPaths << QDir::toNativeSeparators("../../../config/");
+        PossibleUserPaths << QStandardPaths::standardLocations(QStandardPaths::AppDataLocation);
+        QString path;
+        foreach(path, PossibleUserPaths) {
+            qCDebug(ozwadmin) << "Checking " << QFileInfo(QDir::toNativeSeparators(path)).absoluteFilePath() << " for options.xml";
+            if (QFileInfo(QDir::toNativeSeparators(path+"/options.xml")).exists()) {
+                userPath = QFileInfo(QDir::toNativeSeparators(path).append("/")).absoluteFilePath();
+                break;
+            }
+        }
+        /* if we dont have a dbPath, Deploy our config files there */
+        if (userPath.isEmpty()) {
+            userPath = QFileInfo("./").absoluteFilePath();
+            qCWarning(ozwadmin) << "Configuration Database Does Not Exist - Copying Database to Default Location " << dbPath;
+            QStringList Locations;
+            Locations << ".";
+            if (initConfigDatabase(Locations)) {
+                copyUserDatabase(userPath);
+            } else {
+                qCWarning(ozwadmin) << "Cant find qt-openzwavedatabase.rcc";
+                QCoreApplication::exit(-1);
+            }
+        }
+    }
+    settings.setValue("openzwave/UserPath", userPath);
+    finiConfigDatabase();
+    qCInfo(ozwadmin) << "DBPath: " << dbPath;
+    qCInfo(ozwadmin) << "userPath: " << userPath;
+
 
     MainWindow w;
     w.show();

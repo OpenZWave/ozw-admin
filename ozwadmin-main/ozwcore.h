@@ -29,8 +29,8 @@ private:
     QTOpenZwave *m_openzwave;
     QTOZWManager *m_qtozwmanager;
     QString m_serialport;
-    QDir m_configpath;
-    QDir m_userpath;
+    QString m_configpath;
+    QString m_userpath;
 };
 
 
