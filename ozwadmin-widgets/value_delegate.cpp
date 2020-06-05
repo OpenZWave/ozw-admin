@@ -21,17 +21,26 @@ void Value_Delegate::paint(QPainter *painter, const QStyleOptionViewItem &option
     switch (typeIndex.data().value<QTOZW_ValueIds::ValueIdTypes>()) {
         case QTOZW_ValueIds::ValueIdTypes::List: {
             QTOZW_ValueIDList val = index.data().value<QTOZW_ValueIDList>();
+            const QWidget* const widget = option.widget;
+            QStyle* const style = widget ? widget->style() : QApplication::style();
             QStyleOptionComboBox comboBoxOption;
             comboBoxOption.rect = option.rect;
             comboBoxOption.state = option.state;
+            comboBoxOption.direction = option.direction;
+            //comboBoxOption.currentIcon = index.data(Qt::DecorationRole).value<QIcon>();
+            //comboBoxOption.currentText = index.data(Qt::DisplayRole).toString();
+            comboBoxOption.fontMetrics = option.fontMetrics;
+            const int iconWidth = style->pixelMetric(QStyle::PM_SmallIconSize, Q_NULLPTR, widget);
+            comboBoxOption.iconSize = QSize(iconWidth, iconWidth);
+            comboBoxOption.palette = option.palette;
+            comboBoxOption.styleObject = option.styleObject;
             if (readOnly) {
                 comboBoxOption.state |= QStyle::State_ReadOnly;
             }
             comboBoxOption.currentText = val.selectedItem;
 
-            QApplication::style()->drawComplexControl(QStyle::CC_ComboBox, &comboBoxOption, painter);
-            QApplication::style()->drawControl(QStyle::CE_ComboBoxLabel, &comboBoxOption, painter);
-
+            QApplication::style()->drawComplexControl(QStyle::CC_ComboBox, &comboBoxOption, painter, widget);
+            QApplication::style()->drawControl(QStyle::CE_ComboBoxLabel, &comboBoxOption, painter, widget);
             break;
         }
         case QTOZW_ValueIds::ValueIdTypes::Bool: {
@@ -102,7 +111,7 @@ QSize Value_Delegate::sizeHint(const QStyleOptionViewItem &option, const QModelI
             comboBoxOption.state = option.state;
             comboBoxOption.currentText = val.selectedItem;
             QFontMetrics fm(option.font);
-            Q_FOREACH (const auto& value, val.values) {
+            Q_FOREACH (const auto& value, val.labels) {
                 hint = hint.expandedTo(qApp->style()->sizeFromContents(QStyle::CT_ComboBox,
                                        &comboBoxOption, QSize(fm.width(value), hint.height())));
               }
@@ -127,6 +136,9 @@ QSize Value_Delegate::sizeHint(const QStyleOptionViewItem &option, const QModelI
 
 QWidget *Value_Delegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
+    if (!(index.flags() & Qt::ItemIsEditable)) { 
+        return nullptr;
+    }
     QModelIndex typeIndex = index.sibling(index.row(), QTOZW_ValueIds::ValueIdColumns::Type);
     switch (typeIndex.data().value<QTOZW_ValueIds::ValueIdTypes>()) {
         case QTOZW_ValueIds::ValueIdTypes::List: {

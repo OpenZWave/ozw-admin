@@ -31,6 +31,7 @@
 #include "mainwindow.h"
 
 Q_LOGGING_CATEGORY(ozwadmin, "ozwadmin");
+Q_LOGGING_CATEGORY(ozwvd, "ozwadmin.valuedelgate");
 
 
 #define DEF2STR2(x) #x
@@ -47,7 +48,8 @@ int main(int argc, char *argv[])
                                      "qt.remoteobjects.warning=true\n"
                                      "ozw.*.debug=true\n"
                                      "ozw.library.debug=false\n"
-									 "ozwadmin.debug=true\n");
+									 "ozwadmin.debug=true\n"
+                                     "ozwadmin.*=true\n");
 #else
     QLoggingCategory::setFilterRules("default.debug=true");
 #endif

@@ -5,6 +5,11 @@
 #include <QComboBox>
 #include <QCheckBox>
 #include <QSpinBox>
+#include <QLoggingCategory>
+
+
+Q_DECLARE_LOGGING_CATEGORY(ozwvd);
+
 
 class Value_Delegate : public QStyledItemDelegate
 {

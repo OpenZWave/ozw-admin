@@ -23,6 +23,7 @@ ValueTable::ValueTable(QTOZW_ValueIds::ValueIdGenres genre, QWidget *parent) :
 	this->setSelectionMode(QAbstractItemView::SingleSelection);
 	this->setSortingEnabled(true);
 	this->horizontalHeader()->setSectionsMovable(true);
+    this->horizontalHeader()->setSectionResizeMode(1, QHeaderView::ResizeToContents);
 }
 
 void ValueTable::setModel(QAbstractItemModel *model, QItemSelectionModel *selectionModel)
@@ -31,7 +32,7 @@ void ValueTable::setModel(QAbstractItemModel *model, QItemSelectionModel *select
     this->m_proxyModel->setSelectionModel(selectionModel);
     connect(this->m_proxyModel, &QAbstractItemModel::rowsInserted, this, &ValueTable::resizeContents);
     connect(this->m_proxyModel, &QAbstractItemModel::rowsRemoved, this, &ValueTable::resizeContents);
-    connect(selectionModel, &QItemSelectionModel::currentRowChanged, this, &ValueTable::logChanges);
+    //connect(selectionModel, &QItemSelectionModel::currentRowChanged, this, &ValueTable::logChanges);
     QTableView::setModel(this->m_proxyModel);
 
     for (int i = 0; i <= QTOZW_ValueIds::ValueIdColumns::ValueIdCount; i++) {
