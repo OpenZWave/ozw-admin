@@ -31,7 +31,7 @@ void ValueTable::setModel(QAbstractItemModel *model, QItemSelectionModel *select
     this->m_proxyModel->setSelectionModel(selectionModel);
     connect(this->m_proxyModel, &QAbstractItemModel::rowsInserted, this, &ValueTable::resizeContents);
     connect(this->m_proxyModel, &QAbstractItemModel::rowsRemoved, this, &ValueTable::resizeContents);
-    connect(selectionModel, &QItemSelectionModel::selectionChanged, this, &ValueTable::logChanges);
+    connect(selectionModel, &QItemSelectionModel::currentRowChanged, this, &ValueTable::logChanges);
     QTableView::setModel(this->m_proxyModel);
 
     for (int i = 0; i <= QTOZW_ValueIds::ValueIdColumns::ValueIdCount; i++) {
@@ -52,9 +52,20 @@ void ValueTable::resizeContents() {
     this->resizeColumnsToContents();
 }
 
-void ValueTable::logChanges()
+void forEach(QAbstractItemModel* model, QModelIndex parent = QModelIndex()) {
+    for(int r = 0; r < model->rowCount(parent); ++r) {
+        qCDebug(ozwadmin) << "\t\t" << model->data(model->index(r, QTOZW_ValueIds::Node, parent)).toInt() <<  model->data(model->index(r, QTOZW_ValueIds::Genre, parent)).toInt();
+    }
+}
+
+
+
+void ValueTable::logChanges(const QModelIndex &current, const QModelIndex &previous)
 {
     qCDebug(ozwadmin) << "SelectionChanged UnFiltered Rows:" << this->m_proxyModel->sourceModel()->rowCount();
+    qCDebug(ozwadmin) << "\t Filter Node:" << this->m_proxyModel->getCurrentFilteredNode();
+    qCDebug(ozwadmin) << "\t Genre Filter:" << (int)this->m_proxyModel->getFilterGenre();
     qCDebug(ozwadmin) << "\t Filtered Rows: " << this->m_proxyModel->rowCount();
     qCDebug(ozwadmin) << "\t TableView Rows:" << QTableView::model()->rowCount();
+    forEach(this->m_proxyModel->sourceModel());
 }

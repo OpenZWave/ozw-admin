@@ -14,7 +14,7 @@ public slots:
 
 private slots:
     void resizeContents();
-    void logChanges();
+    void logChanges(const QModelIndex &current, const QModelIndex &previous);
 private:
     QTOZW_proxyValueModel *m_proxyModel;
     QTOZW_ValueIds::ValueIdGenres m_genre;
