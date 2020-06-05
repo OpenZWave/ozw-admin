@@ -12,8 +12,8 @@ LogWindow::LogWindow(QWidget *parent) :
     ui->setupUi(this);
     this->ui->logview->verticalHeader()->hide();
     this->ui->logview->horizontalHeader()->setStretchLastSection(true);
-    this->ui->logview->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
-    this->ui->logview->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+//    this->ui->logview->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+//    this->ui->logview->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
 
     this->m_log = OZWCore::get()->getQTOZWManager()->getLog();
     connect(this->m_log, &QTOZWLog::newLogLine, this, &LogWindow::newMsg);

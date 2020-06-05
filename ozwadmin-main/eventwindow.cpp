@@ -15,8 +15,8 @@ EventWindow::EventWindow(QWidget *parent) :
     ui->eventTable->horizontalHeader()->setStretchLastSection(true);
     ui->eventTable->setHorizontalHeaderItem(0, new QTableWidgetItem("Time"));
     ui->eventTable->setHorizontalHeaderItem(1, new QTableWidgetItem("Message"));
-    ui->eventTable->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
-    ui->eventTable->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    //ui->eventTable->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    //ui->eventTable->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
     this->m_scrollTimer.setInterval(500);
     connect(&this->m_scrollTimer, &QTimer::timeout, this, &EventWindow::scrollWindow);
 }
