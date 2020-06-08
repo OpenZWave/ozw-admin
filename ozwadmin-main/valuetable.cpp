@@ -23,17 +23,17 @@ ValueTable::ValueTable(QTOZW_ValueIds::ValueIdGenres genre, QWidget *parent) :
 	this->setSelectionMode(QAbstractItemView::SingleSelection);
 	this->setSortingEnabled(true);
 	this->horizontalHeader()->setSectionsMovable(true);
-    this->horizontalHeader()->setSectionResizeMode(1, QHeaderView::ResizeToContents);
 }
 
 void ValueTable::setModel(QAbstractItemModel *model, QItemSelectionModel *selectionModel)
 {
     this->m_proxyModel->setSourceModel(model);
     this->m_proxyModel->setSelectionModel(selectionModel);
-    connect(this->m_proxyModel, &QAbstractItemModel::rowsInserted, this, &ValueTable::resizeContents);
-    connect(this->m_proxyModel, &QAbstractItemModel::rowsRemoved, this, &ValueTable::resizeContents);
+
     //connect(selectionModel, &QItemSelectionModel::currentRowChanged, this, &ValueTable::logChanges);
     QTableView::setModel(this->m_proxyModel);
+    /* move the Instance Column to the first entry */
+    this->horizontalHeader()->moveSection(QTOZW_ValueIds::ValueIdColumns::Instance, 0);
 
     for (int i = 0; i <= QTOZW_ValueIds::ValueIdColumns::ValueIdCount; i++) {
         switch (i) {
@@ -41,16 +41,12 @@ void ValueTable::setModel(QAbstractItemModel *model, QItemSelectionModel *select
             case QTOZW_ValueIds::ValueIdColumns::Value:
             case QTOZW_ValueIds::ValueIdColumns::Instance:
             case QTOZW_ValueIds::ValueIdColumns::Help:
-            break;
+                this->horizontalHeader()->setSectionResizeMode(i, QHeaderView::ResizeToContents);
+                break;
         default:
             this->horizontalHeader()->hideSection(i);
         }
     }
-    QTimer::singleShot(500, this, &ValueTable::resizeContents);
-}
-
-void ValueTable::resizeContents() {
-    this->resizeColumnsToContents();
 }
 
 void forEach(QAbstractItemModel* model, QModelIndex parent = QModelIndex()) {
@@ -58,8 +54,6 @@ void forEach(QAbstractItemModel* model, QModelIndex parent = QModelIndex()) {
         qCDebug(ozwadmin) << "\t\t" << model->data(model->index(r, QTOZW_ValueIds::Node, parent)).toInt() <<  model->data(model->index(r, QTOZW_ValueIds::Genre, parent)).toInt();
     }
 }
-
-
 
 void ValueTable::logChanges(const QModelIndex &current, const QModelIndex &previous)
 {
