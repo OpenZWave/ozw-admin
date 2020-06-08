@@ -247,8 +247,8 @@ void MainWindow::CloseConnection() {
 	if (OZWCore::get()->getQTOZWManager()->getConnectionType() == ConnectionType::Type::Local) {
 		OZWCore::get()->getQTOZWManager()->close();
 	} else if (OZWCore::get()->getQTOZWManager()->getConnectionType() == ConnectionType::Type::Remote) {
-		//QMessageBox::critical(this, "Close Connection", "TODO: Please restart the application for now");
-		//exit(1);
+		QMessageBox::critical(this, "Close Connection", "TODO: Please restart the application for now");
+		QCoreApplication::exit(0);
 	} else {
 		//QMessageBox::critical(this, "Unknown Connection Type", "Unknown Connection Type");
 	}

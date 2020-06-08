@@ -20,6 +20,7 @@ public:
 private slots:
     void newMsg(QDateTime time, LogLevels::Level level, quint8 s_node, QString s_msg);
     void scrollWindow();
+    void logsReady(bool ready);
 private:
     Ui::LogWindow *ui;
     bool viewAtBottom = true;

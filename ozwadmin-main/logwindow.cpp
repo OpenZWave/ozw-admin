@@ -12,12 +12,9 @@ LogWindow::LogWindow(QWidget *parent) :
     ui->setupUi(this);
     this->ui->logview->verticalHeader()->hide();
     this->ui->logview->horizontalHeader()->setStretchLastSection(true);
-//    this->ui->logview->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
-//    this->ui->logview->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
 
     this->m_log = OZWCore::get()->getQTOZWManager()->getLog();
     connect(this->m_log, &QTOZWLog::newLogLine, this, &LogWindow::newMsg);
-    this->m_log->syncroniseLogs();
 
     this->m_scrollTimer.setInterval(500);
     connect(&this->m_scrollTimer, &QTimer::timeout, this, &LogWindow::scrollWindow);
@@ -49,4 +46,13 @@ void LogWindow::scrollWindow()
 void LogWindow::init() {
     this->m_logModel = new QTOZWLogModel(this->m_log, this);
     this->ui->logview->setModel(this->m_logModel);
+    connect(this->m_log, &QTOZWLog::readyChanged, this, &LogWindow::logsReady);
+    if (this->m_log->isReady()) 
+        this->logsReady(true);
+}
+
+void LogWindow::logsReady(bool ready) {
+    if (ready) {
+        this->m_log->syncroniseLogs();
+    }
 }
