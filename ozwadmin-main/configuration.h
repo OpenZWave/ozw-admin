@@ -18,7 +18,7 @@ class Configuration : public QDialog
     Q_OBJECT
 
 public:
-    explicit Configuration(QTOZWOptions *options, QWidget *parent = nullptr);
+    explicit Configuration(QWidget *parent = nullptr);
     ~Configuration();
     void saveConfiguration();
 
@@ -28,8 +28,8 @@ private:
     QtTreePropertyBrowser *m_variantEditor;
     QtVariantPropertyManager *variantManager;
     QtEnumPropertyManager *enumManager;
-    QTOZWOptions *m_options;
     QMap<QString, QtProperty *> m_variantToProperty;
+    QTOZWOptions *m_options;
 };
 
 #endif // CONFIGURATION_H

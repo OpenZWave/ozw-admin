@@ -52,7 +52,7 @@ public slots:
     void QTOZW_Ready(bool ready);
     void openAboutWindow();
     void openMetaDataWindow();
-    void openConfigWindow();
+    void openPreferencesWindow();
     void addNode();
     void delNode();
     void healNetwork();

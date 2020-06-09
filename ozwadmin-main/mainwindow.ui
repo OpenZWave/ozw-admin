@@ -37,7 +37,7 @@
     </property>
     <addaction name="separator"/>
     <addaction name="actionDevice_Database"/>
-    <addaction name="action_Configuration"/>
+    <addaction name="action_Preferences"/>
     <addaction name="separator"/>
     <addaction name="actionE_xit"/>
    </widget>
@@ -76,9 +76,12 @@
    <addaction name="actionDevice_Database"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
-  <action name="action_Configuration">
+  <action name="action_Preferences">
    <property name="text">
-    <string>&amp;Configuration</string>
+    <string>&amp;Preferences</string>
+   </property>
+   <property name="toolTip">
+    <string>Preferences</string>
    </property>
   </action>
   <action name="actionE_xit">

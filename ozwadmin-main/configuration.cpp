@@ -3,6 +3,8 @@
 
 #include "configuration.h"
 #include "ui_configuration.h"
+#include "ozwcore.h"
+#include "util.h"
 
 #include "propertybrowser/qtvariantproperty.h"
 #include "propertybrowser/qtpropertymanager.h"
@@ -10,360 +12,400 @@
 #include "propertybrowser/qteditorfactory.h"
 
 
-Configuration::Configuration(QTOZWOptions *options, QWidget *parent) :
+Configuration::Configuration(QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::Configuration),
-    m_options(options)
+    ui(new Ui::Configuration)
 {
     ui->setupUi(this);
     connect(this->ui->buttonBox, &QDialogButtonBox::accepted, this, &Configuration::saveConfiguration);
 
-    QtVariantEditorFactory *variantFactory = new QtVariantEditorFactory(this);
-    QtEnumEditorFactory *enumFactory = new QtEnumEditorFactory(this);
-    variantManager = new QtVariantPropertyManager(this);
-    enumManager = new QtEnumPropertyManager(this);
+    QTOZWManager *manager = OZWCore::get()->getQTOZWManager();
+    m_options = manager->getOptions();
+    QCoreApplication::processEvents();
+    if (m_options)
+        m_options->setReady(true);
+    else
+        qCDebug(ozwadmin) << "No m_options";
+
+    { 
+        QtVariantEditorFactory *variantFactory = new QtVariantEditorFactory(this);
+        QtEnumEditorFactory *enumFactory = new QtEnumEditorFactory(this);
+        variantManager = new QtVariantPropertyManager(this);
+        enumManager = new QtEnumPropertyManager(this);
 
 
-    this->m_variantEditor = new QtTreePropertyBrowser(this);
-    m_variantEditor->setFactoryForManager(variantManager, variantFactory);
-    m_variantEditor->setFactoryForManager(enumManager, enumFactory);
-    m_variantEditor->setPropertiesWithoutValueMarked(true);
-    m_variantEditor->setRootIsDecorated(false);
+        this->m_variantEditor = new QtTreePropertyBrowser(this);
+        m_variantEditor->setFactoryForManager(variantManager, variantFactory);
+        m_variantEditor->setFactoryForManager(enumManager, enumFactory);
+        m_variantEditor->setPropertiesWithoutValueMarked(true);
+        m_variantEditor->setRootIsDecorated(false);
 
-    QtProperty *topItem = variantManager->addProperty(QtVariantPropertyManager::groupTypeId(),
-                QLatin1String(" Paths"));
+        QtProperty *topItem = variantManager->addProperty(QtVariantPropertyManager::groupTypeId(),
+                    QLatin1String(" Paths"));
 
-    QtVariantProperty *variantitem;
-    QtProperty *enumitem;
+        QtVariantProperty *variantitem;
+        QtProperty *enumitem;
 
 
-    {
-        variantitem = variantManager->addProperty(QVariant::String, "ConfigPath");
-        variantitem->setValue(options->ConfigPath());
-        variantitem->setBold(settings.contains("openzwave/ConfigPath"));
-        topItem->addSubProperty(variantitem);
-        this->m_variantToProperty.insert("ConfigPath", variantitem);
+        {
+            variantitem = variantManager->addProperty(QVariant::String, "ConfigPath");
+            variantitem->setValue(m_options->ConfigPath());
+            variantitem->setBold(settings.contains("openzwave/ConfigPath"));
+            variantitem->setEnabled(!m_options->isLocked());
+            topItem->addSubProperty(variantitem);
+            this->m_variantToProperty.insert("ConfigPath", variantitem);
+        }
+        {
+            variantitem = variantManager->addProperty(QVariant::String, "UserPath");
+            variantitem->setValue(m_options->UserPath());
+            variantitem->setBold(settings.contains("openzwave/UserPath"));
+            variantitem->setEnabled(!m_options->isLocked());
+            topItem->addSubProperty(variantitem);
+            this->m_variantToProperty.insert("UserPath", variantitem);
+        }
+
+        m_variantEditor->addProperty(topItem);
+
+        topItem = variantManager->addProperty(QtVariantPropertyManager::groupTypeId(),
+                                            QLatin1String("Logging"));
+
+        {
+            variantitem = variantManager->addProperty(QVariant::Bool, "Logging");
+            variantitem->setValue(m_options->Logging());
+            variantitem->setBold(settings.contains("openzwave/Logging"));
+            variantitem->setEnabled(!m_options->isLocked());
+            topItem->addSubProperty(variantitem);
+            this->m_variantToProperty.insert("Logging", variantitem);
+        }
+
+        {
+            variantitem = variantManager->addProperty(QVariant::String, "LogFileName");
+            variantitem->setValue(m_options->LogFileName());
+            variantitem->setBold(settings.contains("openzwave/LogFileName"));
+            variantitem->setEnabled(!m_options->isLocked());
+            topItem->addSubProperty(variantitem);
+            this->m_variantToProperty.insert("LogFileName", variantitem);
+        }
+
+        {
+            variantitem = variantManager->addProperty(QVariant::Bool, "AppendLogFile");
+            variantitem->setValue(m_options->AppendLogFile());
+            variantitem->setBold(settings.contains("openzwave/AppendLogFile"));
+            variantitem->setEnabled(!m_options->isLocked());
+            topItem->addSubProperty(variantitem);
+            this->m_variantToProperty.insert("AppendLogFile", variantitem);
+        }
+
+        {
+            variantitem = variantManager->addProperty(QVariant::Bool, "ConsoleOutput");
+            variantitem->setValue(m_options->ConsoleOutput());
+            variantitem->setBold(settings.contains("openzwave/ConsoleOutput"));
+            variantitem->setEnabled(!m_options->isLocked());
+            topItem->addSubProperty(variantitem);
+            this->m_variantToProperty.insert("ConsoleOutput", variantitem);
+        }
+
+        {
+            enumitem = enumManager->addProperty("SaveLogLevel");
+            enumManager->setEnumNames(enumitem, m_options->SaveLogLevel().getEnums());
+            enumManager->setValue(enumitem, m_options->SaveLogLevel().getSelected());
+            enumitem->setBold(settings.contains("openzwave/SaveLogLevel"));
+            enumitem->setEnabled(!m_options->isLocked());
+            topItem->addSubProperty(enumitem);
+            this->m_variantToProperty.insert("SaveLogLevel", enumitem);
+        }
+
+        {
+            enumitem = enumManager->addProperty("QueueLogLevel");
+            enumManager->setEnumNames(enumitem, m_options->QueueLogLevel().getEnums());
+            enumManager->setValue(enumitem, m_options->QueueLogLevel().getSelected());
+            enumitem->setBold(settings.contains("openzwave/QueueLogLevel"));
+            enumitem->setEnabled(!m_options->isLocked());
+            topItem->addSubProperty(enumitem);
+            this->m_variantToProperty.insert("QueueLogLevel", enumitem);
+        }
+
+        {
+            enumitem = enumManager->addProperty("DumpTriggerLevel");
+            enumManager->setEnumNames(enumitem, m_options->DumpTriggerLevel().getEnums());
+            enumManager->setValue(enumitem, m_options->DumpTriggerLevel().getSelected());
+            enumitem->setBold(settings.contains("openzwave/DumpTriggerLevel"));
+            enumitem->setEnabled(!m_options->isLocked());
+            topItem->addSubProperty(enumitem);
+            this->m_variantToProperty.insert("DumpTriggerLevel", enumitem);
+        }
+
+        m_variantEditor->addProperty(topItem);
+
+        topItem = variantManager->addProperty(QtVariantPropertyManager::groupTypeId(),
+                                            QLatin1String("Driver"));
+
+        {
+            variantitem = variantManager->addProperty(QVariant::Bool, "NotifyTransactions");
+            variantitem->setValue(m_options->NotifyTransactions());
+            variantitem->setBold(settings.contains("openzwave/NotifyTransactions"));
+            variantitem->setEnabled(!m_options->isLocked());
+            topItem->addSubProperty(variantitem);
+            this->m_variantToProperty.insert("NotifyTransactions", variantitem);
+        }
+
+        {
+            variantitem = variantManager->addProperty(QVariant::String, "SaveConfiguration");
+            variantitem->setValue(m_options->SaveConfiguration());
+            variantitem->setBold(settings.contains("openzwave/SaveConfiguration"));
+            variantitem->setEnabled(!m_options->isLocked());
+            topItem->addSubProperty(variantitem);
+            this->m_variantToProperty.insert("SaveConfiguration", variantitem);
+        }
+
+        {
+            variantitem = variantManager->addProperty(QVariant::Int, "DriverMaxAttempts");
+            variantitem->setValue(m_options->DriverMaxAttempts());
+            variantitem->setBold(settings.contains("openzwave/DriverMaxAttempts"));
+            variantitem->setEnabled(!m_options->isLocked());
+            topItem->addSubProperty(variantitem);
+            this->m_variantToProperty.insert("DriverMaxAttempts", variantitem);
+        }
+
+        {
+            variantitem = variantManager->addProperty(QVariant::Bool, "SuppressValueRefresh");
+            variantitem->setValue(m_options->SuppressValueRefresh());
+            variantitem->setBold(settings.contains("openzwave/SuppressValueRefresh"));
+            variantitem->setEnabled(!m_options->isLocked());
+            topItem->addSubProperty(variantitem);
+            this->m_variantToProperty.insert("SuppressValueRefresh", variantitem);
+        }
+
+        {
+            variantitem = variantManager->addProperty(QVariant::Int, "RetryTimeout");
+            variantitem->setValue(m_options->RetryTimeout());
+            variantitem->setBold(settings.contains("openzwave/RetryTimeout"));
+            variantitem->setEnabled(!m_options->isLocked());
+            topItem->addSubProperty(variantitem);
+            this->m_variantToProperty.insert("RetryTimeout", variantitem);
+        }
+
+        {
+            variantitem = variantManager->addProperty(QVariant::Bool, "EnableSIS");
+            variantitem->setValue(m_options->EnableSIS());
+            variantitem->setBold(settings.contains("openzwave/EnableSIS"));
+            variantitem->setEnabled(!m_options->isLocked());
+            topItem->addSubProperty(variantitem);
+            this->m_variantToProperty.insert("EnableSIS", variantitem);
+        }
+
+        {
+            variantitem = variantManager->addProperty(QVariant::Bool, "NotifyOnDriverUnload");
+            variantitem->setValue(m_options->NotifyOnDriverUnload());
+            variantitem->setBold(settings.contains("openzwave/NotifyOnDriverUnload"));
+            variantitem->setEnabled(!m_options->isLocked());
+            topItem->addSubProperty(variantitem);
+            this->m_variantToProperty.insert("NotifyOnDriverUnload", variantitem);
+        }
+
+        m_variantEditor->addProperty(topItem);
+
+        topItem = variantManager->addProperty(QtVariantPropertyManager::groupTypeId(),
+                                            QLatin1String("Associations"));
+
+        {
+            variantitem = variantManager->addProperty(QVariant::Bool, "Associate");
+            variantitem->setValue(m_options->Associate());
+            variantitem->setBold(settings.contains("openzwave/Associate"));
+            variantitem->setEnabled(!m_options->isLocked());
+            topItem->addSubProperty(variantitem);
+            this->m_variantToProperty.insert("Associate", variantitem);
+        }
+
+        {
+            variantitem = variantManager->addProperty(QVariant::Bool, "PerformReturnRoutes");
+            variantitem->setValue(m_options->PerformReturnRoutes());
+            variantitem->setBold(settings.contains("openzwave/PerformReturnRoutes"));
+            variantitem->setEnabled(!m_options->isLocked());
+            topItem->addSubProperty(variantitem);
+            this->m_variantToProperty.insert("PerformReturnRoutes", variantitem);
+        }
+
+
+        m_variantEditor->addProperty(topItem);
+
+        topItem = variantManager->addProperty(QtVariantPropertyManager::groupTypeId(),
+                                            QLatin1String("Polling"));
+
+        {
+            variantitem = variantManager->addProperty(QVariant::Int, "PollInterval");
+            variantitem->setValue(m_options->PollInterval());
+            variantitem->setBold(settings.contains("openzwave/PollInterval"));
+            variantitem->setEnabled(!m_options->isLocked());
+            topItem->addSubProperty(variantitem);
+            this->m_variantToProperty.insert("PollInterval", variantitem);
+        }
+
+        {
+            variantitem = variantManager->addProperty(QVariant::Bool, "IntervalBetweenPolls");
+            variantitem->setValue(m_options->IntervalBetweenPolls());
+            variantitem->setBold(settings.contains("openzwave/IntervalBetweenPolls"));
+            variantitem->setEnabled(!m_options->isLocked());
+            topItem->addSubProperty(variantitem);
+            this->m_variantToProperty.insert("IntervalBetweenPolls", variantitem);
+        }
+
+        m_variantEditor->addProperty(topItem);
+
+        topItem = variantManager->addProperty(QtVariantPropertyManager::groupTypeId(),
+                                            QLatin1String("CommandClasses"));
+
+        {
+            variantitem = variantManager->addProperty(QVariant::String, "Exclude");
+            variantitem->setValue(m_options->Exclude());
+            variantitem->setBold(settings.contains("openzwave/Exclude"));
+            variantitem->setEnabled(!m_options->isLocked());
+            topItem->addSubProperty(variantitem);
+            this->m_variantToProperty.insert("Exclude", variantitem);
+        }
+
+        {
+            variantitem = variantManager->addProperty(QVariant::String, "Include");
+            variantitem->setValue(m_options->Include());
+            variantitem->setBold(settings.contains("openzwave/Include"));
+            variantitem->setEnabled(!m_options->isLocked());
+            topItem->addSubProperty(variantitem);
+            this->m_variantToProperty.insert("Include", variantitem);
+        }
+
+
+        m_variantEditor->addProperty(topItem);
+
+        topItem = variantManager->addProperty(QtVariantPropertyManager::groupTypeId(),
+                                            QLatin1String("Security"));
+
+        {
+            enumitem = enumManager->addProperty("SecurityStrategy");
+            enumManager->setEnumNames(enumitem, m_options->SecurityStrategy().getEnums());
+            enumManager->setValue(enumitem, m_options->SecurityStrategy().getSelected());
+            enumitem->setBold(settings.contains("openzwave/SecurityStrategy"));
+            enumitem->setEnabled(!m_options->isLocked());
+            topItem->addSubProperty(enumitem);
+            this->m_variantToProperty.insert("SecurityStrategy", enumitem);
+        }
+
+        {
+            variantitem = variantManager->addProperty(QVariant::Bool, "CustomSecuredCC");
+            variantitem->setValue(m_options->CustomSecuredCC());
+            variantitem->setBold(settings.contains("openzwave/CustomSecuredCC"));
+            variantitem->setEnabled(!m_options->isLocked());
+            topItem->addSubProperty(variantitem);
+            this->m_variantToProperty.insert("CustomSecuredCC", variantitem);
+        }
+
+        {
+            variantitem = variantManager->addProperty(QVariant::String, "EnforceSecureReception");
+            variantitem->setValue(m_options->EnforceSecureReception());
+            variantitem->setBold(settings.contains("openzwave/EnforceSecureReception"));
+            variantitem->setEnabled(!m_options->isLocked());
+            topItem->addSubProperty(variantitem);
+            this->m_variantToProperty.insert("EnforceSecureReception", variantitem);
+        }
+
+        {
+            variantitem = variantManager->addProperty(QVariant::String, "NetworkKey");
+            variantitem->setValue(m_options->NetworkKey());
+            variantitem->setBold(settings.contains("openzwave/NetworkKey"));
+            variantitem->setEnabled(!m_options->isLocked());
+            topItem->addSubProperty(variantitem);
+            this->m_variantToProperty.insert("NetworkKey", variantitem);
+        }
+
+
+        m_variantEditor->addProperty(topItem);
+
+        topItem = variantManager->addProperty(QtVariantPropertyManager::groupTypeId(),
+                                            QLatin1String("Sleeping Devices"));
+
+        {
+            variantitem = variantManager->addProperty(QVariant::Bool, "AssumeAwake");
+            variantitem->setValue(m_options->AssumeAwake());
+            variantitem->setBold(settings.contains("openzwave/AssumeAwake"));
+            variantitem->setEnabled(!m_options->isLocked());
+            topItem->addSubProperty(variantitem);
+            this->m_variantToProperty.insert("AssumeAwake", variantitem);
+        }
+
+        m_variantEditor->addProperty(topItem);
+
+        topItem = variantManager->addProperty(QtVariantPropertyManager::groupTypeId(),
+                                            QLatin1String("UserCode CommandClass"));
+
+
+        {
+            variantitem = variantManager->addProperty(QVariant::Bool, "RefreshAllUserCodes");
+            variantitem->setValue(m_options->RefreshAllUserCodes());
+            variantitem->setBold(settings.contains("openzwave/RefreshAllUserCodes"));
+            variantitem->setEnabled(!m_options->isLocked());
+            topItem->addSubProperty(variantitem);
+            this->m_variantToProperty.insert("RefreshAllUserCodes", variantitem);
+        }
+
+        m_variantEditor->addProperty(topItem);
+
+        topItem = variantManager->addProperty(QtVariantPropertyManager::groupTypeId(),
+                                            QLatin1String("Device Database"));
+
+
+        {
+            variantitem = variantManager->addProperty(QVariant::String, "AutoUpdateConfigFile");
+            variantitem->setValue(m_options->AutoUpdateConfigFile());
+            variantitem->setBold(settings.contains("openzwave/AutoUpdateConfigFile"));
+            variantitem->setEnabled(!m_options->isLocked());
+            topItem->addSubProperty(variantitem);
+            this->m_variantToProperty.insert("AutoUpdateConfigFile", variantitem);
+        }
+
+        {
+            enumitem = enumManager->addProperty("ReloadAfterUpdate");
+            enumManager->setEnumNames(enumitem, m_options->ReloadAfterUpdate().getEnums());
+            enumManager->setValue(enumitem, m_options->ReloadAfterUpdate().getSelected());
+            enumitem->setBold(settings.contains("openzwave/ReloadAfterUpdate"));
+            enumitem->setEnabled(!m_options->isLocked());
+            topItem->addSubProperty(enumitem);
+            this->m_variantToProperty.insert("ReloadAfterUpdate", enumitem);
+        }
+
+
+        m_variantEditor->addProperty(topItem);
+
+        topItem = variantManager->addProperty(QtVariantPropertyManager::groupTypeId(),
+                                            QLatin1String("Lanaguage"));
+
+
+        {
+            variantitem = variantManager->addProperty(QVariant::String, "Language");
+            variantitem->setValue(m_options->Language());
+            variantitem->setBold(settings.contains("openzwave/Language"));
+            variantitem->setEnabled(!m_options->isLocked());
+            topItem->addSubProperty(variantitem);
+            this->m_variantToProperty.insert("Language", variantitem);
+        }
+
+        m_variantEditor->addProperty(topItem);
+
+        topItem = variantManager->addProperty(QtVariantPropertyManager::groupTypeId(),
+                                            QLatin1String("Multi Channel Devices"));
+
+
+        {
+            variantitem = variantManager->addProperty(QVariant::Bool, "IncludeInstanceLabels");
+            variantitem->setValue(m_options->IncludeInstanceLabels());
+            variantitem->setBold(settings.contains("openzwave/IncludeInstanceLabels"));
+            variantitem->setEnabled(!m_options->isLocked());
+            topItem->addSubProperty(variantitem);
+            this->m_variantToProperty.insert("IncludeInstanceLabels", variantitem);
+        }
+        m_variantEditor->addProperty(topItem);
+
+        //m_variantEditor->setEnabled(!m_options->isLocked());
+        this->ui->config_ozw->layout()->addWidget(m_variantEditor);
     }
-    {
-        variantitem = variantManager->addProperty(QVariant::String, "UserPath");
-        variantitem->setValue(options->UserPath());
-        variantitem->setBold(settings.contains("openzwave/UserPath"));
-        topItem->addSubProperty(variantitem);
-        this->m_variantToProperty.insert("UserPath", variantitem);
-    }
-
-    m_variantEditor->addProperty(topItem);
-
-    topItem = variantManager->addProperty(QtVariantPropertyManager::groupTypeId(),
-                                          QLatin1String("Logging"));
-
-    {
-        variantitem = variantManager->addProperty(QVariant::Bool, "Logging");
-        variantitem->setValue(options->Logging());
-        variantitem->setBold(settings.contains("openzwave/Logging"));
-        topItem->addSubProperty(variantitem);
-        this->m_variantToProperty.insert("Logging", variantitem);
-    }
-
-    {
-        variantitem = variantManager->addProperty(QVariant::String, "LogFileName");
-        variantitem->setValue(options->LogFileName());
-        variantitem->setBold(settings.contains("openzwave/LogFileName"));
-        topItem->addSubProperty(variantitem);
-        this->m_variantToProperty.insert("LogFileName", variantitem);
-    }
-
-    {
-        variantitem = variantManager->addProperty(QVariant::Bool, "AppendLogFile");
-        variantitem->setValue(options->AppendLogFile());
-        variantitem->setBold(settings.contains("openzwave/AppendLogFile"));
-        topItem->addSubProperty(variantitem);
-        this->m_variantToProperty.insert("AppendLogFile", variantitem);
-    }
-
-    {
-        variantitem = variantManager->addProperty(QVariant::Bool, "ConsoleOutput");
-        variantitem->setValue(options->ConsoleOutput());
-        variantitem->setBold(settings.contains("openzwave/ConsoleOutput"));
-        topItem->addSubProperty(variantitem);
-        this->m_variantToProperty.insert("ConsoleOutput", variantitem);
-    }
-
-    {
-        enumitem = enumManager->addProperty("SaveLogLevel");
-        enumManager->setEnumNames(enumitem, options->SaveLogLevel().getEnums());
-        enumManager->setValue(enumitem, options->SaveLogLevel().getSelected());
-        enumitem->setBold(settings.contains("openzwave/SaveLogLevel"));
-        topItem->addSubProperty(enumitem);
-        this->m_variantToProperty.insert("SaveLogLevel", enumitem);
-    }
-
-    {
-        enumitem = enumManager->addProperty("QueueLogLevel");
-        enumManager->setEnumNames(enumitem, options->QueueLogLevel().getEnums());
-        enumManager->setValue(enumitem, options->QueueLogLevel().getSelected());
-        enumitem->setBold(settings.contains("openzwave/QueueLogLevel"));
-        topItem->addSubProperty(enumitem);
-        this->m_variantToProperty.insert("QueueLogLevel", enumitem);
-    }
-
-    {
-        enumitem = enumManager->addProperty("DumpTriggerLevel");
-        enumManager->setEnumNames(enumitem, options->DumpTriggerLevel().getEnums());
-        enumManager->setValue(enumitem, options->DumpTriggerLevel().getSelected());
-        enumitem->setBold(settings.contains("openzwave/DumpTriggerLevel"));
-        topItem->addSubProperty(enumitem);
-        this->m_variantToProperty.insert("DumpTriggerLevel", enumitem);
-    }
-
-    m_variantEditor->addProperty(topItem);
-
-    topItem = variantManager->addProperty(QtVariantPropertyManager::groupTypeId(),
-                                          QLatin1String("Driver"));
-
-    {
-        variantitem = variantManager->addProperty(QVariant::Bool, "NotifyTransactions");
-        variantitem->setValue(options->NotifyTransactions());
-        variantitem->setBold(settings.contains("openzwave/NotifyTransactions"));
-        topItem->addSubProperty(variantitem);
-        this->m_variantToProperty.insert("NotifyTransactions", variantitem);
-    }
-
-    {
-        variantitem = variantManager->addProperty(QVariant::String, "SaveConfiguration");
-        variantitem->setValue(options->SaveConfiguration());
-        variantitem->setBold(settings.contains("openzwave/SaveConfiguration"));
-        topItem->addSubProperty(variantitem);
-        this->m_variantToProperty.insert("SaveConfiguration", variantitem);
-    }
-
-    {
-        variantitem = variantManager->addProperty(QVariant::Int, "DriverMaxAttempts");
-        variantitem->setValue(options->DriverMaxAttempts());
-        variantitem->setBold(settings.contains("openzwave/DriverMaxAttempts"));
-        topItem->addSubProperty(variantitem);
-        this->m_variantToProperty.insert("DriverMaxAttempts", variantitem);
-    }
-
-    {
-        variantitem = variantManager->addProperty(QVariant::Bool, "SuppressValueRefresh");
-        variantitem->setValue(options->SuppressValueRefresh());
-        variantitem->setBold(settings.contains("openzwave/SuppressValueRefresh"));
-        topItem->addSubProperty(variantitem);
-        this->m_variantToProperty.insert("SuppressValueRefresh", variantitem);
-    }
-
-    {
-        variantitem = variantManager->addProperty(QVariant::Int, "RetryTimeout");
-        variantitem->setValue(options->RetryTimeout());
-        variantitem->setBold(settings.contains("openzwave/RetryTimeout"));
-        topItem->addSubProperty(variantitem);
-        this->m_variantToProperty.insert("RetryTimeout", variantitem);
-    }
-
-    {
-        variantitem = variantManager->addProperty(QVariant::Bool, "EnableSIS");
-        variantitem->setValue(options->EnableSIS());
-        variantitem->setBold(settings.contains("openzwave/EnableSIS"));
-        topItem->addSubProperty(variantitem);
-        this->m_variantToProperty.insert("EnableSIS", variantitem);
-    }
-
-    {
-        variantitem = variantManager->addProperty(QVariant::Bool, "NotifyOnDriverUnload");
-        variantitem->setValue(options->NotifyOnDriverUnload());
-        variantitem->setBold(settings.contains("openzwave/NotifyOnDriverUnload"));
-        topItem->addSubProperty(variantitem);
-        this->m_variantToProperty.insert("NotifyOnDriverUnload", variantitem);
-    }
-
-    m_variantEditor->addProperty(topItem);
-
-    topItem = variantManager->addProperty(QtVariantPropertyManager::groupTypeId(),
-                                          QLatin1String("Associations"));
-
-    {
-        variantitem = variantManager->addProperty(QVariant::Bool, "Associate");
-        variantitem->setValue(options->Associate());
-        variantitem->setBold(settings.contains("openzwave/Associate"));
-        topItem->addSubProperty(variantitem);
-        this->m_variantToProperty.insert("Associate", variantitem);
-    }
-
-    {
-        variantitem = variantManager->addProperty(QVariant::Bool, "PerformReturnRoutes");
-        variantitem->setValue(options->PerformReturnRoutes());
-        variantitem->setBold(settings.contains("openzwave/PerformReturnRoutes"));
-        topItem->addSubProperty(variantitem);
-        this->m_variantToProperty.insert("PerformReturnRoutes", variantitem);
-    }
-
-
-    m_variantEditor->addProperty(topItem);
-
-    topItem = variantManager->addProperty(QtVariantPropertyManager::groupTypeId(),
-                                          QLatin1String("Polling"));
-
-    {
-        variantitem = variantManager->addProperty(QVariant::Int, "PollInterval");
-        variantitem->setValue(options->PollInterval());
-        variantitem->setBold(settings.contains("openzwave/PollInterval"));
-        topItem->addSubProperty(variantitem);
-        this->m_variantToProperty.insert("PollInterval", variantitem);
-    }
-
-    {
-        variantitem = variantManager->addProperty(QVariant::Bool, "IntervalBetweenPolls");
-        variantitem->setValue(options->IntervalBetweenPolls());
-        variantitem->setBold(settings.contains("openzwave/IntervalBetweenPolls"));
-        topItem->addSubProperty(variantitem);
-        this->m_variantToProperty.insert("IntervalBetweenPolls", variantitem);
-    }
-
-    m_variantEditor->addProperty(topItem);
-
-    topItem = variantManager->addProperty(QtVariantPropertyManager::groupTypeId(),
-                                          QLatin1String("CommandClasses"));
-
-    {
-        variantitem = variantManager->addProperty(QVariant::String, "Exclude");
-        variantitem->setValue(options->Exclude());
-        variantitem->setBold(settings.contains("openzwave/Exclude"));
-        topItem->addSubProperty(variantitem);
-        this->m_variantToProperty.insert("Exclude", variantitem);
-    }
-
-    {
-        variantitem = variantManager->addProperty(QVariant::String, "Include");
-        variantitem->setValue(options->Include());
-        variantitem->setBold(settings.contains("openzwave/Include"));
-        topItem->addSubProperty(variantitem);
-        this->m_variantToProperty.insert("Include", variantitem);
-    }
-
-
-    m_variantEditor->addProperty(topItem);
-
-    topItem = variantManager->addProperty(QtVariantPropertyManager::groupTypeId(),
-                                          QLatin1String("Security"));
-
-    {
-        enumitem = enumManager->addProperty("SecurityStrategy");
-        enumManager->setEnumNames(enumitem, options->SecurityStrategy().getEnums());
-        enumManager->setValue(enumitem, options->SecurityStrategy().getSelected());
-        enumitem->setBold(settings.contains("openzwave/SecurityStrategy"));
-        topItem->addSubProperty(enumitem);
-        this->m_variantToProperty.insert("SecurityStrategy", enumitem);
-    }
-
-    {
-        variantitem = variantManager->addProperty(QVariant::Bool, "CustomSecuredCC");
-        variantitem->setValue(options->CustomSecuredCC());
-        variantitem->setBold(settings.contains("openzwave/CustomSecuredCC"));
-        topItem->addSubProperty(variantitem);
-        this->m_variantToProperty.insert("CustomSecuredCC", variantitem);
-    }
-
-    {
-        variantitem = variantManager->addProperty(QVariant::String, "EnforceSecureReception");
-        variantitem->setValue(options->EnforceSecureReception());
-        variantitem->setBold(settings.contains("openzwave/EnforceSecureReception"));
-        topItem->addSubProperty(variantitem);
-        this->m_variantToProperty.insert("EnforceSecureReception", variantitem);
-    }
-
-    {
-        variantitem = variantManager->addProperty(QVariant::String, "NetworkKey");
-        variantitem->setValue(options->NetworkKey());
-        variantitem->setBold(settings.contains("openzwave/NetworkKey"));
-        topItem->addSubProperty(variantitem);
-        this->m_variantToProperty.insert("NetworkKey", variantitem);
-    }
-
-
-    m_variantEditor->addProperty(topItem);
-
-    topItem = variantManager->addProperty(QtVariantPropertyManager::groupTypeId(),
-                                          QLatin1String("Sleeping Devices"));
-
-    {
-        variantitem = variantManager->addProperty(QVariant::Bool, "AssumeAwake");
-        variantitem->setValue(options->AssumeAwake());
-        variantitem->setBold(settings.contains("openzwave/AssumeAwake"));
-        topItem->addSubProperty(variantitem);
-        this->m_variantToProperty.insert("AssumeAwake", variantitem);
-    }
-
-    m_variantEditor->addProperty(topItem);
-
-    topItem = variantManager->addProperty(QtVariantPropertyManager::groupTypeId(),
-                                          QLatin1String("UserCode CommandClass"));
-
-
-    {
-        variantitem = variantManager->addProperty(QVariant::Bool, "RefreshAllUserCodes");
-        variantitem->setValue(options->RefreshAllUserCodes());
-        variantitem->setBold(settings.contains("openzwave/RefreshAllUserCodes"));
-        topItem->addSubProperty(variantitem);
-        this->m_variantToProperty.insert("RefreshAllUserCodes", variantitem);
-    }
-
-    m_variantEditor->addProperty(topItem);
-
-    topItem = variantManager->addProperty(QtVariantPropertyManager::groupTypeId(),
-                                          QLatin1String("Device Database"));
-
-
-    {
-        variantitem = variantManager->addProperty(QVariant::String, "AutoUpdateConfigFile");
-        variantitem->setValue(options->AutoUpdateConfigFile());
-        variantitem->setBold(settings.contains("openzwave/AutoUpdateConfigFile"));
-        topItem->addSubProperty(variantitem);
-        this->m_variantToProperty.insert("AutoUpdateConfigFile", variantitem);
-    }
-
-    {
-        enumitem = enumManager->addProperty("ReloadAfterUpdate");
-        enumManager->setEnumNames(enumitem, options->ReloadAfterUpdate().getEnums());
-        enumManager->setValue(enumitem, options->ReloadAfterUpdate().getSelected());
-        enumitem->setBold(settings.contains("openzwave/ReloadAfterUpdate"));
-        topItem->addSubProperty(enumitem);
-        this->m_variantToProperty.insert("ReloadAfterUpdate", enumitem);
-    }
-
-
-    m_variantEditor->addProperty(topItem);
-
-    topItem = variantManager->addProperty(QtVariantPropertyManager::groupTypeId(),
-                                          QLatin1String("Lanaguage"));
-
-
-    {
-        variantitem = variantManager->addProperty(QVariant::String, "Language");
-        variantitem->setValue(options->Language());
-        variantitem->setBold(settings.contains("openzwave/Language"));
-        topItem->addSubProperty(variantitem);
-        this->m_variantToProperty.insert("Language", variantitem);
-    }
-
-    m_variantEditor->addProperty(topItem);
-
-    topItem = variantManager->addProperty(QtVariantPropertyManager::groupTypeId(),
-                                          QLatin1String("Multi Channel Devices"));
-
-
-    {
-        variantitem = variantManager->addProperty(QVariant::Bool, "IncludeInstanceLabels");
-        variantitem->setValue(options->IncludeInstanceLabels());
-        variantitem->setBold(settings.contains("openzwave/IncludeInstanceLabels"));
-        topItem->addSubProperty(variantitem);
-        this->m_variantToProperty.insert("IncludeInstanceLabels", variantitem);
-    }
-    m_variantEditor->addProperty(topItem);
-
-    m_variantEditor->setEnabled(!options->isLocked());
-    this->ui->config_ozw->layout()->addWidget(m_variantEditor);
-
 }
 
 Configuration::~Configuration()
@@ -372,6 +414,7 @@ Configuration::~Configuration()
 }
 
 void Configuration::saveConfiguration() {
+
     QtVariantProperty *property;
     property = dynamic_cast<QtVariantProperty *>(this->m_variantToProperty["Logging"]);
     if (property->value().toBool() != m_options->Logging()) {

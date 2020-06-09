@@ -17,13 +17,18 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="config_ozw">
       <attribute name="title">
        <string>OpenZWave</string>
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout"/>
+     </widget>
+     <widget class="QWidget" name="config_net">
+      <attribute name="title">
+       <string>Network</string>
+      </attribute>
      </widget>
     </widget>
    </item>

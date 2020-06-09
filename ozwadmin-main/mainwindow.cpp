@@ -69,7 +69,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(ui->actionOpen, SIGNAL(triggered()), this, SLOT(OpenConnection()));
 	connect(ui->action_Close, SIGNAL(triggered()), this, SLOT(CloseConnection()));
 	connect(ui->actionDevice_Database, SIGNAL(triggered()), this, SLOT(OpenDeviceDB()));
-	connect(ui->action_Configuration, SIGNAL(triggered()), this, SLOT(openConfigWindow()));
+	connect(ui->action_Preferences, SIGNAL(triggered()), this, SLOT(openPreferencesWindow()));
 	connect(ui->actionAbout, SIGNAL(triggered()), this, SLOT(openAboutWindow()));
 	connect(ui->action_AddNode, SIGNAL(triggered()), this, SLOT(addNode()));
 	connect(ui->action_Delete_Node, SIGNAL(triggered()), this, SLOT(delNode()));
@@ -162,7 +162,10 @@ void MainWindow::openDefaultWindows() {
 
 	ads::CDockWidget *configValueDW = new ads::CDockWidget("Config Values");
 	configValueDW->setWidget(configValues);
-	this->ui->menuWindow->addAction(configValueDW->toggleViewAction());
+	/* OSX thinks this is a Preferences Window, so tell QT to tell it "its not!"" */
+	QAction *configAction = configValueDW->toggleViewAction();
+	configAction->setMenuRole(QAction::NoRole);
+	this->ui->menuWindow->addAction(configAction);
 	this->m_DockManager->addDockWidget(ads::CenterDockWidgetArea, configValueDW, RightDockWidget);
 
 	this->ui->menuWindow->addSeparator();
@@ -293,8 +296,8 @@ void MainWindow::OpenDeviceDB() {
     ddb->show();
 }
 
-void MainWindow::openConfigWindow() {
-    Configuration *cfg = new Configuration(OZWCore::get()->getQTOZWManager()->getOptions(), this);
+void MainWindow::openPreferencesWindow() {
+    Configuration *cfg = new Configuration(this);
     cfg->show();
 }
 

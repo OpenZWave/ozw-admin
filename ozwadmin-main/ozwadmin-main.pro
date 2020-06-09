@@ -98,7 +98,7 @@ macx: {
     OZWDB.path = Contents/Resources/
     QMAKE_BUNDLE_DATA += BUNDLE
     QMAKE_BUNDLE_DATA += OZWDB
-    MakeBundle.commands = $$[QT_HOST_BINS]/macdeployqt ../ozwadmin.app && $$top_srcdir/scripts/macdeployqtfix.py ../ozwadmin.app/Contents/MacOS/ozwadmin $$[QT_INSTALL_PREFIX]
+    MakeBundle.commands = $$[QT_HOST_BINS]/macdeployqt ../ozwadmin.app -no-strip && $$top_srcdir/scripts/macdeployqtfix.py ../ozwadmin.app/Contents/MacOS/ozwadmin $$[QT_INSTALL_PREFIX]
     QMAKE_EXTRA_TARGETS += MakeBundle
     QMAKE_POST_LINK += $$MakeBundle.commands
     ICON = res/ozw_logo.icns
