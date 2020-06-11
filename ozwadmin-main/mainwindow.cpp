@@ -83,6 +83,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	sw->move(this->geometry().center() - sw->rect().center());
 
 	QTimer::singleShot(5000, sw, SLOT(close()));
+	QApplication::restoreOverrideCursor();
 }
 
 MainWindow::~MainWindow()

@@ -53,12 +53,12 @@ int main(int argc, char *argv[])
 #else
     QLoggingCategory::setFilterRules("default.debug=true");
 #endif
-
     QCoreApplication::setOrganizationName("OpenZWave");
     QCoreApplication::setOrganizationDomain("openzwave.net");
     QCoreApplication::setApplicationName("ozw-admin");
     QCoreApplication::setApplicationVersion(DEF2STR(APP_VERSION));
     QApplication a(argc, argv);
+    QApplication::setOverrideCursor(Qt::WaitCursor);
 
 
     QCommandLineParser parser;
