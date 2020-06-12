@@ -56,7 +56,7 @@ NodeFlagsWidget::~NodeFlagsWidget()
 
 void NodeFlagsWidget::setValue(QBitArray value) {
     this->m_value = value;
-    for (int i = 0; i <= value.size(); i++) {
+    for (int i = 0; i < this->m_value.size(); i++) {
         switch (i) {
             case QTOZW_Nodes::nodeFlags::isAwake:
                 {

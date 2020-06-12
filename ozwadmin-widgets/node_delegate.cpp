@@ -24,6 +24,7 @@ void Node_Delegate::paint(QPainter *painter, const QStyleOptionViewItem &option,
 
 QSize Node_Delegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
+    Q_UNUSED(option);
     NodeFlagsWidget fw;
     fw.setValue(index.data().value<QBitArray>());
     return fw.sizeHint();
