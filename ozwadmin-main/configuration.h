@@ -23,11 +23,23 @@ public:
     void saveConfiguration();
 
 private:
+    QtVariantProperty *addStringProperty(QString name, QString value, bool readonly);
+    QtVariantProperty *addBoolProperty(QString name, bool value, bool readonly);
+    QtVariantProperty *addIntProperty(QString name, int value, bool readonly);
+    QtProperty *addEnumProperty(QString name, QStringList options, int selected, bool readonly);
+
+private:
     Ui::Configuration *ui;
     QSettings settings;
-    QtTreePropertyBrowser *m_variantEditor;
-    QtVariantPropertyManager *variantManager;
-    QtEnumPropertyManager *enumManager;
+    QtTreePropertyBrowser *m_OZWEditor;
+    QtVariantPropertyManager *m_OZWvariantManager;
+    QtEnumPropertyManager *m_OZWenumManager;
+
+    QtTreePropertyBrowser *m_NetworkEditor;
+    QtVariantPropertyManager *m_NetvariantManager;
+    QtEnumPropertyManager *m_NetenumManager;
+
+
     QMap<QString, QtProperty *> m_variantToProperty;
     QTOZWOptions *m_options;
 };
