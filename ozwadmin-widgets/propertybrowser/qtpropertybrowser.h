@@ -71,8 +71,9 @@ typedef QLineEdit::EchoMode EchoMode;
 class QtAbstractPropertyManager;
 class QtPropertyPrivate;
 
-class QT_QTPROPERTYBROWSER_EXPORT QtProperty
+class QT_QTPROPERTYBROWSER_EXPORT QtProperty : public QObject
 {
+    Q_OBJECT
 public:
     virtual ~QtProperty();
 

@@ -10,6 +10,37 @@
 
 class ControllerCommands;
 
+class SettingsManager : public QObject
+{
+    Q_OBJECT
+    public:
+        SettingsManager(QObject *parent = nullptr);
+        ~SettingsManager();
+        Q_PROPERTY(quint32 networkCache READ networkCache WRITE setNetworkCache NOTIFY networkCacheChanged);
+        Q_PROPERTY(quint32 logBufferSize READ logBufferSize WRITE setLogBufferSize NOTIFY logBufferSizeChanged);
+        Q_PROPERTY(bool retriveLogBuffer READ retriveLogBuffer WRITE setRetriveLogBuffer NOTIFY retriveLogBufferChanged);
+        quint32 networkCache();
+        quint32 logBufferSize();
+        bool retriveLogBuffer();
+
+    public Q_SLOTS:
+        void setNetworkCache(QVariant size);
+        void setNetworkCache(quint32 size);
+        void setLogBufferSize(QVariant size);
+        void setLogBufferSize(quint32 size);
+        void setRetriveLogBuffer(QVariant value);
+        void setRetriveLogBuffer(bool value);
+
+    Q_SIGNALS:
+        void networkCacheChanged(int size);
+        void logBufferSizeChanged(quint32 size);
+        void retriveLogBufferChanged(bool value);
+        
+    private:
+
+        QSettings m_settings;        
+};
+
 class OZWCore : public QObject
 {
     Q_OBJECT
@@ -19,8 +50,7 @@ public:
     void initilize();
     QTOpenZwave *getQTOZW();
     QTOZWManager *getQTOZWManager();
-    QSettings settings;
-
+    SettingsManager settings;
 signals:
     QMessageBox::StandardButton raiseCriticalError(QString title, QString message);
 public slots:

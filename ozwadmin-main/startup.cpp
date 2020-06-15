@@ -20,18 +20,18 @@ Startup::Startup(QWidget *parent) :
     QObject::connect(ui->startlocal, &QPushButton::clicked, this, &Startup::localPressed);
     QObject::connect(ui->startremote, &QPushButton::clicked, this, &Startup::remotePressed);
 #if defined(Q_OS_MACOS)
-    ui->serialport->setText(OZWCore::get()->settings.value("connection/serialport", "/dev/cu.SLAB_USBtoUART").toString());
+    ui->serialport->setText(QSettings().value("connection/serialport", "/dev/cu.SLAB_USBtoUART").toString());
 #elif defined(Q_OS_WIN)
-    ui->serialport->setText(OZWCore::get()->settings.value("connection/serialport", "COM1").toString());
+    ui->serialport->setText(QSettings().value("connection/serialport", "COM1").toString());
 #else
-    ui->serialport->setText(OZWCore::get()->settings.value("connection/serialport", "/dev/ttyUSB0").toString());
+    ui->serialport->setText(QSettings().value("connection/serialport", "/dev/ttyUSB0").toString());
 #endif
-    ui->enableserver->setChecked(OZWCore::get()->settings.value("connection/startserver", true).toBool());
-    QUrl server = QUrl::fromUserInput(OZWCore::get()->settings.value("connection/remotehost", "ws://localhost:1983").toString());
+    ui->enableserver->setChecked(QSettings().value("connection/startserver", true).toBool());
+    QUrl server = QUrl::fromUserInput(QSettings().value("connection/remotehost", "ws://localhost:1983").toString());
     qDebug() << server;
     ui->remotehost->setText(server.host());
     ui->remoteport->setText(QString::number(server.port()));
-    ui->authKey->setText(OZWCore::get()->settings.value("connection/authKey", "").toString());
+    ui->authKey->setText(QSettings().value("connection/authKey", "").toString());
 }
 
 Startup::~Startup()

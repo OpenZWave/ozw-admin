@@ -485,6 +485,7 @@ void QtVariantPropertyManagerPrivate::valueChanged(QtProperty *property, const Q
         return;
     emit q_ptr->valueChanged(varProp, val);
     emit q_ptr->propertyChanged(varProp);
+    emit varProp->valueChanged(val);
 }
 
 void QtVariantPropertyManagerPrivate::slotValueChanged(QtProperty *property, int val)

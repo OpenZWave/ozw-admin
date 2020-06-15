@@ -57,13 +57,16 @@ class QtVariantPropertyPrivate;
 
 class QT_QTPROPERTYBROWSER_EXPORT QtVariantProperty : public QtProperty
 {
+    Q_OBJECT
 public:
     ~QtVariantProperty();
     QVariant value() const;
     QVariant attributeValue(const QString &attribute) const;
     int valueType() const;
     int propertyType() const;
-
+Q_SIGNALS:
+    void valueChanged(const QVariant value);
+public Q_SLOTS:
     void setValue(const QVariant &value);
     void setAttribute(const QString &attribute, const QVariant &value);
 protected:

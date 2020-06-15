@@ -97,27 +97,39 @@ void MainWindow::QTOZW_Ready(bool ready) {
     qCDebug(ozwadmin) << "QTOZW Ready";
 
     /* apply our Local Configuration Options to the OZW Options Class */
-    OZWCore::get()->settings.beginGroup("openzwave");
-    QStringList optionlist = OZWCore::get()->settings.allKeys();
+	
+    QSettings().beginGroup("openzwave");
+    QStringList optionlist = QSettings().allKeys();
     for (int i = 0; i < optionlist.size(); i++) {
-        qCDebug(ozwadmin) << "Updating Option " << optionlist.at(i) << " to " << OZWCore::get()->settings.value(optionlist.at(i));
+        qCDebug(ozwadmin) << "Updating Option " << optionlist.at(i) << " to " << QSettings().value(optionlist.at(i));
         QTOZWOptions *ozwoptions = OZWCore::get()->getQTOZWManager()->getOptions();
         QStringList listtypes;
         listtypes << "SaveLogLevel" << "QueueLogLevel" << "DumpLogLevel";
         if (listtypes.contains(optionlist.at(i))) {
             OptionList list = ozwoptions->property(optionlist.at(i).toLocal8Bit()).value<OptionList>();
             if (list.getEnums().size() > 0)
-                list.setSelected(OZWCore::get()->settings.value(optionlist.at(i)).toString());
+                list.setSelected(QSettings().value(optionlist.at(i)).toString());
         }
         else
         {
-            ozwoptions->setProperty(optionlist.at(i).toLocal8Bit(), OZWCore::get()->settings.value(optionlist.at(i)));
+            ozwoptions->setProperty(optionlist.at(i).toLocal8Bit(), QSettings().value(optionlist.at(i)));
         }
     }
-    OZWCore::get()->settings.endGroup();
+    QSettings().endGroup();
 	openDefaultWindows();
 }
 void MainWindow::openDefaultWindows() {
+
+	if ((OZWCore::get()->getQTOZWManager()->getNodeModel()->rowCount() > (int)OZWCore::get()->settings.networkCache()) ||
+		(OZWCore::get()->getQTOZWManager()->getValueModel()->rowCount() > (int)OZWCore::get()->settings.networkCache()) ||
+		(OZWCore::get()->getQTOZWManager()->getAssociationModel()->rowCount() > (int)OZWCore::get()->settings.networkCache())) {
+			quint32 size = OZWCore::get()->getQTOZWManager()->getNodeModel()->rowCount();
+			size = qMax<int>(size, OZWCore::get()->getQTOZWManager()->getValueModel()->rowCount());
+			size = qMax<int>(size, OZWCore::get()->getQTOZWManager()->getAssociationModel()->rowCount());
+			QString msg("Please Increase the Network Cache Size in the Configuration. Current Setting: %1 Remote Max Records: %2");
+			this->openCriticalDialog("Network Cache Size Insufficent", msg.arg(OZWCore::get()->settings.networkCache()).arg(size));	
+			QCoreApplication::exit(-1);
+		}
 
 	this->ntw = new nodeTableWidget(this);
 	DeviceInfo *di = new DeviceInfo(this);
@@ -214,7 +226,7 @@ void MainWindow::OpenConnection() {
 		}
 		else 
 		{
-            OZWCore::get()->settings.setValue("connection/startserver", su.getstartServer());
+            QSettings().setValue("connection/startserver", su.getstartServer());
 			connectToLocal(su.getserialPort());			
 			return;
 		}
@@ -227,18 +239,18 @@ void MainWindow::OpenConnection() {
 
 void MainWindow::connectToLocal(QString serial) {
 	this->connected(true);
-	OZWCore::get()->settings.setValue("connection/serialport", serial);
-	qCDebug(ozwadmin) << "Doing Local Connection: " << serial << OZWCore::get()->settings.value("StartServer").toBool();
+	QSettings().setValue("connection/serialport", serial);
+	qCDebug(ozwadmin) << "Doing Local Connection: " << serial << QSettings().value("StartServer").toBool();
 	startupprogress *sup = new startupprogress(false, this);
 	sup->show();
-	OZWCore::get()->getQTOZWManager()->initilizeSource(OZWCore::get()->settings.value("connection/startserver").toBool());
+	OZWCore::get()->getQTOZWManager()->initilizeSource(QSettings().value("connection/startserver").toBool());
 	OZWCore::get()->getQTOZWManager()->open(serial);
 }
 
 void MainWindow::connectToRemote(QUrl server, QString key) {
 	this->connected(true);
-	OZWCore::get()->settings.setValue("connection/remotehost", server);
-	OZWCore::get()->settings.setValue("connection/authKey", key);
+	QSettings().setValue("connection/remotehost", server);
+	QSettings().setValue("connection/authKey", key);
 	qCDebug(ozwadmin) << "Doing Remote Connection:" << server;
 	startupprogress *sup = new startupprogress(true, this);
 	sup->setWindowFlags(Qt::Window | Qt::WindowTitleHint | Qt::CustomizeWindowHint);

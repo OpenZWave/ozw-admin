@@ -27,107 +27,123 @@ Configuration::Configuration(QWidget *parent) :
     else
         qCDebug(ozwadmin) << "No m_options";
 
-        QtVariantEditorFactory *variantFactory = new QtVariantEditorFactory(this);
-        QtEnumEditorFactory *enumFactory = new QtEnumEditorFactory(this);
-        m_OZWvariantManager = new QtVariantPropertyManager(this);
-        m_OZWenumManager = new QtEnumPropertyManager(this);
+    QtVariantEditorFactory *variantFactory = new QtVariantEditorFactory(this);
+    QtEnumEditorFactory *enumFactory = new QtEnumEditorFactory(this);
+    m_variantManager = new QtVariantPropertyManager(this);
+    m_enumManager = new QtEnumPropertyManager(this);
 
     { 
         /* OZW Pane */
         this->m_OZWEditor = new QtTreePropertyBrowser(this);
-        m_OZWEditor->setFactoryForManager(m_OZWvariantManager, variantFactory);
-        m_OZWEditor->setFactoryForManager(m_OZWenumManager, enumFactory);
+        m_OZWEditor->setFactoryForManager(m_variantManager, variantFactory);
+        m_OZWEditor->setFactoryForManager(m_enumManager, enumFactory);
         m_OZWEditor->setPropertiesWithoutValueMarked(true);
         m_OZWEditor->setRootIsDecorated(false);
 
-        QtProperty *topItem = m_OZWvariantManager->addProperty(QtVariantPropertyManager::groupTypeId(),
+        QtProperty *topItem = m_variantManager->addProperty(QtVariantPropertyManager::groupTypeId(),
                     QLatin1String(" Paths"));
-        topItem->addSubProperty(this->addStringProperty("ConfigPath", m_options->ConfigPath(), m_options->isLocked()));
-        topItem->addSubProperty(this->addStringProperty("UserPath", m_options->UserPath(), m_options->isLocked()));
+        topItem->addSubProperty(this->addStringProperty("ConfigPath", m_options->ConfigPath(), !m_options->isLocked()));
+        topItem->addSubProperty(this->addStringProperty("UserPath", m_options->UserPath(), !m_options->isLocked()));
         m_OZWEditor->addProperty(topItem);
 
 
-        topItem = m_OZWvariantManager->addProperty(QtVariantPropertyManager::groupTypeId(),
+        topItem = m_variantManager->addProperty(QtVariantPropertyManager::groupTypeId(),
                                             QLatin1String("Driver"));
-        topItem->addSubProperty(this->addBoolProperty("NotifyTransactions", m_options->NotifyTransactions(), m_options->isLocked()));
-        topItem->addSubProperty(this->addBoolProperty("SaveConfiguration", m_options->SaveConfiguration(), m_options->isLocked()));
-        topItem->addSubProperty(this->addIntProperty("DriverMaxAttempts", m_options->DriverMaxAttempts(), m_options->isLocked()));
-        topItem->addSubProperty(this->addBoolProperty("SuppressValueRefresh", m_options->SuppressValueRefresh(), m_options->isLocked()));
-        topItem->addSubProperty(this->addIntProperty("RetryTimeout", m_options->RetryTimeout(), m_options->isLocked()));
-        topItem->addSubProperty(this->addBoolProperty("EnableSIS", m_options->EnableSIS(), m_options->isLocked()));
-        topItem->addSubProperty(this->addBoolProperty("NotifyOnDriverUnload", m_options->NotifyOnDriverUnload(), m_options->isLocked()));
+        topItem->addSubProperty(this->addBoolProperty("NotifyTransactions", m_options->NotifyTransactions(), !m_options->isLocked()));
+        topItem->addSubProperty(this->addBoolProperty("SaveConfiguration", m_options->SaveConfiguration(), !m_options->isLocked()));
+        topItem->addSubProperty(this->addIntProperty("DriverMaxAttempts", m_options->DriverMaxAttempts(), !m_options->isLocked()));
+        topItem->addSubProperty(this->addBoolProperty("SuppressValueRefresh", m_options->SuppressValueRefresh(), !m_options->isLocked()));
+        topItem->addSubProperty(this->addIntProperty("RetryTimeout", m_options->RetryTimeout(), !m_options->isLocked()));
+        topItem->addSubProperty(this->addBoolProperty("EnableSIS", m_options->EnableSIS(), !m_options->isLocked()));
+        topItem->addSubProperty(this->addBoolProperty("NotifyOnDriverUnload", m_options->NotifyOnDriverUnload(), !m_options->isLocked()));
         m_OZWEditor->addProperty(topItem);
 
-        topItem = m_OZWvariantManager->addProperty(QtVariantPropertyManager::groupTypeId(),
+        topItem = m_variantManager->addProperty(QtVariantPropertyManager::groupTypeId(),
                                             QLatin1String("Associations"));
-        topItem->addSubProperty(this->addBoolProperty("Associate", m_options->Associate(), m_options->isLocked()));
-        topItem->addSubProperty(this->addBoolProperty("PerformReturnRoutes", m_options->PerformReturnRoutes(), m_options->isLocked()));
+        topItem->addSubProperty(this->addBoolProperty("Associate", m_options->Associate(), !m_options->isLocked()));
+        topItem->addSubProperty(this->addBoolProperty("PerformReturnRoutes", m_options->PerformReturnRoutes(), !m_options->isLocked()));
         m_OZWEditor->addProperty(topItem);
 
-        topItem = m_OZWvariantManager->addProperty(QtVariantPropertyManager::groupTypeId(),
+        topItem = m_variantManager->addProperty(QtVariantPropertyManager::groupTypeId(),
                                             QLatin1String("Polling"));
-        topItem->addSubProperty(this->addIntProperty("PollInterval", m_options->PollInterval(), m_options->isLocked()));
-        topItem->addSubProperty(this->addBoolProperty("IntervalBetweenPolls", m_options->IntervalBetweenPolls(), m_options->isLocked()));
+        topItem->addSubProperty(this->addIntProperty("PollInterval", m_options->PollInterval(), !m_options->isLocked()));
+        topItem->addSubProperty(this->addBoolProperty("IntervalBetweenPolls", m_options->IntervalBetweenPolls(), !m_options->isLocked()));
         m_OZWEditor->addProperty(topItem);
 
-        topItem = m_OZWvariantManager->addProperty(QtVariantPropertyManager::groupTypeId(),
+        topItem = m_variantManager->addProperty(QtVariantPropertyManager::groupTypeId(),
                                             QLatin1String("CommandClasses"));
-        topItem->addSubProperty(this->addStringProperty("Exclude", m_options->Exclude(), m_options->isLocked()));
-        topItem->addSubProperty(this->addStringProperty("Include", m_options->Include(), m_options->isLocked()));
+        topItem->addSubProperty(this->addStringProperty("Exclude", m_options->Exclude(), !m_options->isLocked()));
+        topItem->addSubProperty(this->addStringProperty("Include", m_options->Include(), !m_options->isLocked()));
         m_OZWEditor->addProperty(topItem);
 
-        topItem = m_OZWvariantManager->addProperty(QtVariantPropertyManager::groupTypeId(),
+        topItem = m_variantManager->addProperty(QtVariantPropertyManager::groupTypeId(),
                                             QLatin1String("Security"));
-        topItem->addSubProperty(this->addEnumProperty("SecurityStrategy", m_options->SecurityStrategy().getEnums(), m_options->SecurityStrategy().getSelected(), m_options->isLocked()));
-        topItem->addSubProperty(this->addStringProperty("CustomSecuredCC", m_options->CustomSecuredCC(), m_options->isLocked())); 
-        topItem->addSubProperty(this->addBoolProperty("EnforceSecureReception", m_options->EnforceSecureReception(), m_options->isLocked()));
-        topItem->addSubProperty(this->addStringProperty("networkKey", m_options->NetworkKey(), m_options->isLocked()));
+        topItem->addSubProperty(this->addEnumProperty("SecurityStrategy", m_options->SecurityStrategy().getEnums(), m_options->SecurityStrategy().getSelected(), !m_options->isLocked()));
+        topItem->addSubProperty(this->addStringProperty("CustomSecuredCC", m_options->CustomSecuredCC(), !m_options->isLocked())); 
+        topItem->addSubProperty(this->addBoolProperty("EnforceSecureReception", m_options->EnforceSecureReception(), !m_options->isLocked()));
+        topItem->addSubProperty(this->addStringProperty("NetworkKey", m_options->NetworkKey(), !m_options->isLocked()));
         m_OZWEditor->addProperty(topItem);
 
-        topItem = m_OZWvariantManager->addProperty(QtVariantPropertyManager::groupTypeId(),
+        topItem = m_variantManager->addProperty(QtVariantPropertyManager::groupTypeId(),
                                             QLatin1String("Sleeping Devices"));
-        topItem->addSubProperty(this->addBoolProperty("AssumeAwake", m_options->AssumeAwake(), m_options->isLocked()));
+        topItem->addSubProperty(this->addBoolProperty("AssumeAwake", m_options->AssumeAwake(), !m_options->isLocked()));
         m_OZWEditor->addProperty(topItem);
 
-        topItem = m_OZWvariantManager->addProperty(QtVariantPropertyManager::groupTypeId(),
+        topItem = m_variantManager->addProperty(QtVariantPropertyManager::groupTypeId(),
                                             QLatin1String("UserCode CommandClass"));
-        topItem->addSubProperty(this->addBoolProperty("RefreshAllUserCodes", m_options->RefreshAllUserCodes(), m_options->isLocked()));
+        topItem->addSubProperty(this->addBoolProperty("RefreshAllUserCodes", m_options->RefreshAllUserCodes(), !m_options->isLocked()));
         m_OZWEditor->addProperty(topItem);
 
-        topItem = m_OZWvariantManager->addProperty(QtVariantPropertyManager::groupTypeId(),
+        topItem = m_variantManager->addProperty(QtVariantPropertyManager::groupTypeId(),
                                             QLatin1String("Device Database"));
-        topItem->addSubProperty(this->addBoolProperty("AutoUpdateConfigFile", m_options->AutoUpdateConfigFile(), m_options->isLocked()));
-        topItem->addSubProperty(this->addEnumProperty("ReloadAfterUpdate", m_options->ReloadAfterUpdate().getEnums(), m_options->ReloadAfterUpdate().getSelected(), m_options->isLocked()));
+        topItem->addSubProperty(this->addBoolProperty("AutoUpdateConfigFile", m_options->AutoUpdateConfigFile(), !m_options->isLocked()));
+        topItem->addSubProperty(this->addEnumProperty("ReloadAfterUpdate", m_options->ReloadAfterUpdate().getEnums(), m_options->ReloadAfterUpdate().getSelected(), !m_options->isLocked()));
         m_OZWEditor->addProperty(topItem);
 
-        topItem = m_OZWvariantManager->addProperty(QtVariantPropertyManager::groupTypeId(),
+        topItem = m_variantManager->addProperty(QtVariantPropertyManager::groupTypeId(),
                                             QLatin1String("Language"));
-        topItem->addSubProperty(this->addStringProperty("Language", m_options->Language(), m_options->isLocked()));
+        topItem->addSubProperty(this->addStringProperty("Language", m_options->Language(), !m_options->isLocked()));
         m_OZWEditor->addProperty(topItem);
 
-        topItem = m_OZWvariantManager->addProperty(QtVariantPropertyManager::groupTypeId(),
+        topItem = m_variantManager->addProperty(QtVariantPropertyManager::groupTypeId(),
                                             QLatin1String("Multi Channel Devices"));
-        topItem->addSubProperty(this->addBoolProperty("IncludeInstanceLabels", m_options->IncludeInstanceLabels(), m_options->isLocked()));
+        topItem->addSubProperty(this->addBoolProperty("IncludeInstanceLabels", m_options->IncludeInstanceLabels(), !m_options->isLocked()));
         m_OZWEditor->addProperty(topItem);
 
-        //m_OZWEditor->setEnabled(!m_options->isLocked());
+        //m_OZWEditor->setEnabled(!!m_options->isLocked());
         this->ui->config_ozw->layout()->addWidget(m_OZWEditor);
     }
+
+
     {
         /* Network Pane */
-        m_NetvariantManager = new QtVariantPropertyManager(this);
-        m_NetenumManager = new QtEnumPropertyManager(this);
-
 
         this->m_NetworkEditor = new QtTreePropertyBrowser(this);
-        m_NetworkEditor->setFactoryForManager(m_NetvariantManager, variantFactory);
-        m_NetworkEditor->setFactoryForManager(m_NetenumManager, enumFactory);
+        m_NetworkEditor->setFactoryForManager(m_variantManager, variantFactory);
+        m_NetworkEditor->setFactoryForManager(m_enumManager, enumFactory);
         m_NetworkEditor->setPropertiesWithoutValueMarked(true);
         m_NetworkEditor->setRootIsDecorated(false);
 
-        QtProperty *topItem = m_OZWvariantManager->addProperty(QtVariantPropertyManager::groupTypeId(),
-                    QLatin1String(" Paths"));
+        QtVariantProperty *variantProperty;
+
+        QtProperty *topItem = m_variantManager->addProperty(QtVariantPropertyManager::groupTypeId(),
+                    QLatin1String(" Network"));
+
+        variantProperty = this->addIntProperty("Network Object Cache", OZWCore::get()->settings.networkCache(), true);
+        connect(variantProperty, &QtVariantProperty::valueChanged, &OZWCore::get()->settings, QOverload<QVariant>::of(&SettingsManager::setNetworkCache));
+        topItem->addSubProperty(variantProperty);
         m_NetworkEditor->addProperty(topItem);
+
+         topItem = m_variantManager->addProperty(QtVariantPropertyManager::groupTypeId(),
+                    QLatin1String(" Logging"));
+        variantProperty = this->addIntProperty("Log Buffer Size", OZWCore::get()->settings.logBufferSize(), true);
+        connect(variantProperty, &QtVariantProperty::valueChanged, &OZWCore::get()->settings, QOverload<QVariant>::of(&SettingsManager::setLogBufferSize));
+        topItem->addSubProperty(variantProperty);
+        variantProperty = this->addBoolProperty("Retrive All Logs on Connect", OZWCore::get()->settings.retriveLogBuffer(), true);
+        connect(variantProperty, &QtVariantProperty::valueChanged, &OZWCore::get()->settings, QOverload<QVariant>::of(&SettingsManager::setRetriveLogBuffer));
+        topItem->addSubProperty(variantProperty);
+        m_NetworkEditor->addProperty(topItem);
+
 
         this->ui->config_net->layout()->addWidget(m_NetworkEditor);
     }
@@ -142,33 +158,7 @@ Configuration::~Configuration()
 void Configuration::saveConfiguration() {
 
     QtVariantProperty *property;
-    QtProperty *property1 = dynamic_cast<QtProperty *>(this->m_variantToProperty["SaveLogLevel"]);
-    OptionList SaveLogLevel = m_options->SaveLogLevel();
-    if (property1->valueText() != SaveLogLevel.getSelectedName()) {
-        SaveLogLevel.setSelected(property1->valueText());
-        m_options->setSaveLogLevel(SaveLogLevel);
-        settings.setValue("openzwave/SaveLogLevel", SaveLogLevel.getSelectedName());
-        qDebug() << "Saved SaveLogLevel Param with " << SaveLogLevel.getSelectedName();
-    }
-
-    property1 = dynamic_cast<QtProperty *>(this->m_variantToProperty["QueueLogLevel"]);
-    OptionList QueueLogLevel = m_options->SaveLogLevel();
-    if (property1->valueText() != QueueLogLevel.getSelectedName()) {
-        QueueLogLevel.setSelected(property1->valueText());
-        m_options->setQueueLogLevel(QueueLogLevel);
-        settings.setValue("openzwave/QueueLogLevel", QueueLogLevel.getSelectedName());
-        qDebug() << "Saved QueueLogLevel Param with " << QueueLogLevel.getSelectedName();
-    }
-
-    property1 = dynamic_cast<QtProperty *>(this->m_variantToProperty["DumpTriggerLevel"]);
-    OptionList DumpTriggerLevel = m_options->DumpTriggerLevel();
-    if (property1->valueText() != DumpTriggerLevel.getSelectedName()) {
-        DumpTriggerLevel.setSelected(property1->valueText());
-        m_options->setQueueLogLevel(DumpTriggerLevel);
-        settings.setValue("openzwave/DumpTriggerLevel", DumpTriggerLevel.getSelectedName());
-        qDebug() << "Saved DumpTriggerLevel Param with " << DumpTriggerLevel.getSelectedName();
-    }
-
+    QtProperty *property1;
 
     property = dynamic_cast<QtVariantProperty *>(this->m_variantToProperty["Associate"]);
     if (property->value() != m_options->Associate()) {
@@ -344,36 +334,33 @@ void Configuration::saveConfiguration() {
 }
 
 QtVariantProperty *Configuration::addStringProperty(QString name, QString value, bool locked) {
-            QtVariantProperty *variantitem = m_OZWvariantManager->addProperty(QVariant::String, name);
+            QtVariantProperty *variantitem = m_variantManager->addProperty(QVariant::String, name);
             variantitem->setValue(value);
-            variantitem->setBold(settings.contains("openzwave/"+name));
-            variantitem->setEnabled(!locked);
+            variantitem->setEnabled(locked);
             this->m_variantToProperty.insert(name, variantitem);
             return variantitem;
 }
 
 QtVariantProperty *Configuration::addBoolProperty(QString name, bool value, bool locked) {
-            QtVariantProperty *variantitem = m_OZWvariantManager->addProperty(QVariant::Bool, name);
+            QtVariantProperty *variantitem = m_variantManager->addProperty(QVariant::Bool, name);
             variantitem->setValue(value);
-            variantitem->setBold(settings.contains("openzwave/"+name));
-            variantitem->setEnabled(!locked);
+            variantitem->setEnabled(locked);
             this->m_variantToProperty.insert(name, variantitem);
             return variantitem;
 }
 
 QtVariantProperty *Configuration::addIntProperty(QString name, int value, bool locked) {
-            QtVariantProperty *variantitem = m_OZWvariantManager->addProperty(QVariant::Int, name);
+            QtVariantProperty *variantitem = m_variantManager->addProperty(QVariant::Int, name);
             variantitem->setValue(value);
-            variantitem->setBold(settings.contains("openzwave/"+name));
-            variantitem->setEnabled(!locked);
+            variantitem->setEnabled(locked);
             this->m_variantToProperty.insert(name, variantitem);
             return variantitem;
 }
 
 QtProperty *Configuration::addEnumProperty(QString name, QStringList options, int selected, bool readonly) {
-            QtProperty *enumitem = m_OZWenumManager->addProperty(name);
-            m_OZWenumManager->setEnumNames(enumitem, options);
-            m_OZWenumManager->setValue(enumitem, selected);
+            QtProperty *enumitem = m_enumManager->addProperty(name);
+            m_enumManager->setEnumNames(enumitem, options);
+            m_enumManager->setValue(enumitem, selected);
             enumitem->setBold(settings.contains("openzwave/"+name));
             enumitem->setEnabled(!readonly);
             this->m_variantToProperty.insert(name, enumitem);

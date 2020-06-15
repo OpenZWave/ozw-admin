@@ -31,13 +31,11 @@ private:
 private:
     Ui::Configuration *ui;
     QSettings settings;
-    QtTreePropertyBrowser *m_OZWEditor;
-    QtVariantPropertyManager *m_OZWvariantManager;
-    QtEnumPropertyManager *m_OZWenumManager;
+    QtVariantPropertyManager *m_variantManager;
+    QtEnumPropertyManager *m_enumManager;
 
+    QtTreePropertyBrowser *m_OZWEditor;
     QtTreePropertyBrowser *m_NetworkEditor;
-    QtVariantPropertyManager *m_NetvariantManager;
-    QtEnumPropertyManager *m_NetenumManager;
 
 
     QMap<QString, QtProperty *> m_variantToProperty;

@@ -53,6 +53,7 @@ void LogWindow::init() {
 
 void LogWindow::logsReady(bool ready) {
     if (ready) {
-        this->m_log->syncroniseLogs();
+        if (OZWCore::get()->settings.retriveLogBuffer() == true) 
+            this->m_log->syncroniseLogs();
     }
 }
