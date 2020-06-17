@@ -13,10 +13,28 @@ TEMPLATE = app
 isEmpty(BUILDNUMBER) {
 	BUILDNUMBER = 0
 }
+GIT_VERSION_TAG=$$system(git describe --tags --match *.0)
+message($$GIT_VERSION_TAG)
+GIT_VERSIONS = $$split(GIT_VERSION_TAG, "-")
+message($$GIT_VERSIONS)
+BUILDNUMBER=$$member(GIT_VERSIONS, 1)
+
 VERSION = 0.1.$$BUILDNUMBER
 message("Building Version $$VERSION")
 
 DEFINES +=APP_VERSION=$$VERSION
+unix {
+	packagefiles.input=$$PWD/../scripts/version.in
+	packagefiles.output=$$PWD/../scripts/version
+	QMAKE_SUBSTITUTES += packagefiles
+}
+win32 {
+	packagefiles.input=$$PWD\..\scripts\package.nsis.in
+	packagefiles.output=$$PWD\..\scripts\package.nsis
+	QMAKE_SUBSTITUTES += packagefiles
+	message("doing Substitutions")
+}
+
 
 SOURCES += main.cpp\
     configuration.cpp \
