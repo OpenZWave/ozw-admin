@@ -101,6 +101,14 @@ int main(int argc, char *argv[])
 
     parser.process(a);
 
+
+
+#ifdef Q_OS_UNIX
+    if (parser.isSet(userDir)) {
+        QSettings::setPath(QSettings::IniFormat, QSettings::UserScope, parser.value(userDir).append("ozw-admin.ini"));
+        qCDebug(ozwadmin) << "Settings Path is at " << QSettings().fileName();
+    }
+#endif
     QSettings settings;
 
     QString dbPath, userPath;
@@ -239,7 +247,6 @@ int main(int argc, char *argv[])
 #endif
     qCInfo(ozwadmin) << "DBPath: " << dbPath;
     qCInfo(ozwadmin) << "userPath: " << userPath;
-
 
     MainWindow w;
     w.show();

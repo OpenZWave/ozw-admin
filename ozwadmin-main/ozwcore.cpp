@@ -43,6 +43,8 @@ QTOZWManager *OZWCore::getQTOZWManager() {
 SettingsManager::SettingsManager(QObject *parent) :
     QObject(parent)
 {
+    qCDebug(ozwadmin) << "Settings Path: " << m_settings.fileName();
+
     bool ok;
     int size = qEnvironmentVariableIntValue("QTRO_NODES_CACHE_SIZE", &ok);
     if (!ok) {
@@ -57,7 +59,6 @@ SettingsManager::SettingsManager(QObject *parent) :
 
     setLogBufferSize(logBufferSize());
     setRetriveLogBuffer(retriveLogBuffer());
-
 }
 SettingsManager::~SettingsManager() 
 {
