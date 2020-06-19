@@ -362,7 +362,7 @@ QtProperty *Configuration::addEnumProperty(QString name, QStringList options, in
             m_enumManager->setEnumNames(enumitem, options);
             m_enumManager->setValue(enumitem, selected);
             enumitem->setBold(settings.contains("openzwave/"+name));
-            enumitem->setEnabled(!readonly);
+            enumitem->setEnabled(readonly);
             this->m_variantToProperty.insert(name, enumitem);
             return enumitem;
 }

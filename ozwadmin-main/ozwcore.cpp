@@ -52,6 +52,9 @@ SettingsManager::SettingsManager(QObject *parent) :
         qCDebug(ozwadmin) << "Using Enviroment Network Cache:" << size;
         setNetworkCache(size);
     }
+    /* Just Put our Enviroment Back there in case it was default */
+    qputenv("QTRO_NODES_CACHE_SIZE", QString::number(networkCache()).toLocal8Bit());
+
     setLogBufferSize(logBufferSize());
     setRetriveLogBuffer(retriveLogBuffer());
 
@@ -77,7 +80,15 @@ void SettingsManager::setNetworkCache(quint32 size)
     if (size != networkCache()) {
         m_settings.setValue("network/cachesize", size);
         emit networkCacheChanged(size);
+        qCInfo(ozwadmin) << "Set Network Cache Size Called: " << QString::number(size).toLocal8Bit();
         qputenv("QTRO_NODES_CACHE_SIZE", QString::number(size).toLocal8Bit());
+        bool ok;
+        int size = qEnvironmentVariableIntValue("QTRO_NODES_CACHE_SIZE", &ok);
+        if (!ok) {
+            qCDebug(ozwadmin) << "QTRO_NODES_CACHE_SIZE Enviroment missing";
+        } else {
+            qCDebug(ozwadmin) << "QTRO_NODES_CACHE_SIZE Enviroment is now set to" << size;
+        }
     }
 }
 
