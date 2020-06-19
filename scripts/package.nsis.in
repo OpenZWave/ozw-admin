@@ -11,7 +11,7 @@
 RequestExecutionLevel Admin
 Name \"${APPLICATION_NAME} ${APPLICATION_VERSION}\"
 OutFile \"${APPLICATION_NAME}-${APPLICATION_VERSION}-installer.exe\"
-InstallDir \"$PROGRAMFILES\${APPLICATION_NAME}\"
+InstallDir \"$PROGRAMFILES\\${APPLICATION_NAME}\"
 SetCompressor \"lzma\"
 
 ; ===== Pages =====
@@ -70,9 +70,9 @@ Section \"\"
 	SetOutPath $INSTDIR
 	WriteUninstaller $INSTDIR\uninstall.exe
 
-	CreateDirectory \"$SMPROGRAMS\${COMPANY}\${APPLICATION_NAME}\"
-	CreateShortCut \"$SMPROGRAMS\${COMPANY}\${APPLICATION_NAME}\${APPLICATION_NAME}.lnk\" \"$INSTDIR\ozwadmin.exe\" \"\" \"$INSTDIR\ozwadmin.exe\" 0
-	CreateShortCut \"$SMPROGRAMS\${COMPANY}\${APPLICATION_NAME}\Uninstall ${APPLICATION_NAME}.lnk\" \"$INSTDIR\uninstall.exe\" \"\" \"$INSTDIR\uninstall.exe\" 0
+	CreateDirectory \"$SMPROGRAMS\\${COMPANY}\\${APPLICATION_NAME}\"
+	CreateShortCut \"$SMPROGRAMS\\${COMPANY}\\${APPLICATION_NAME}\\${APPLICATION_NAME}.lnk\" \"$INSTDIR\ozwadmin.exe\" \"\" \"$INSTDIR\ozwadmin.exe\" 0
+	CreateShortCut \"$SMPROGRAMS\\${COMPANY}\\${APPLICATION_NAME}\Uninstall ${APPLICATION_NAME}.lnk\" \"$INSTDIR\uninstall.exe\" \"\" \"$INSTDIR\uninstall.exe\" 0
 SectionEnd
 
 
@@ -109,10 +109,10 @@ Section \"Uninstall\"
 	Delete $INSTDIR\styles\*.dll
 	Delete $INSTDIR\translations\*.qm
 	Delete $INSTDIR\uninstall.exe
-	Delete \"$SMPROGRAMS\${COMPANY}\${APPLICATION_NAME}\${APPLICATION_NAME}.lnk\"
-	Delete \"$SMPROGRAMS\${COMPANY}\${APPLICATION_NAME}\Uninstall ${APPLICATION_NAME}.lnk\"
+	Delete \"$SMPROGRAMS\\${COMPANY}\\${APPLICATION_NAME}\\${APPLICATION_NAME}.lnk\"
+	Delete \"$SMPROGRAMS\\${COMPANY}\\${APPLICATION_NAME}\Uninstall ${APPLICATION_NAME}.lnk\"
 	
-	RMDir \"$SMPROGRAMS\${COMPANY}\${APPLICATION_NAME}\"
+	RMDir \"$SMPROGRAMS\\${COMPANY}\\${APPLICATION_NAME}\"
 	RMDir $INSTDIR\platforms
 	RMDir $INSTDIR\iconimages
 	RMDir $INSTDIR\styles
