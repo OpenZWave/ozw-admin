@@ -15,6 +15,7 @@ LogWindow::LogWindow(QWidget *parent) :
 
     this->m_log = OZWCore::get()->getQTOZWManager()->getLog();
     connect(this->m_log, &QTOZWLog::newLogLine, this, &LogWindow::newMsg);
+    connect(this->m_log, &QTOZWLog::syncStatus, this, &LogWindow::syncStatus);
 
     this->m_scrollTimer.setInterval(500);
     connect(&this->m_scrollTimer, &QTimer::timeout, this, &LogWindow::scrollWindow);
@@ -58,4 +59,8 @@ void LogWindow::logsReady(bool ready) {
         if (OZWCore::get()->settings.retriveLogBuffer() == true) 
             this->m_log->syncroniseLogs();
     }
+}
+
+void LogWindow::syncStatus(quint32 size, bool finsihed) {
+    qCDebug(ozwadmin) << "Sync Status: " << size << "Finsihed:" << finsihed;
 }
