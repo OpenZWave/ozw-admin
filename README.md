@@ -2,7 +2,7 @@
 This is a Gui for OpenZWave, intended to replace the open-zwave-control-panel eventually.
 
 Latest Installer Images/AppImages can be found here:
-http://bamboo.my-ho.st/bamboo/browse/OZW-OZW/latestSuccessful/artifact
+https://github.com/OpenZWave/ozw-admin/releases
 
 Work in Progress. Don't expect much right now :)
 

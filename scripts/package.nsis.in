@@ -1,29 +1,29 @@
 ; ===== Defines =====
-!define APPLICATION_NAME "OpenZwave Admin"
-!define APPLICATION_VERSION "0.1.0"
-!define COMPANY "OpenZWave"
-!define PROJECT_ROOT "."
+!define APPLICATION_NAME \"OpenZwave Admin\"
+!define APPLICATION_VERSION \"$$VERSION\"
+!define COMPANY \"OpenZWave\"
+!define PROJECT_ROOT \".\"
 
 ; ===== Includes =====
-!include "MUI2.nsh"
+!include \"MUI2.nsh\"
 
 ; ===== General =====
 RequestExecutionLevel Admin
-Name "${APPLICATION_NAME} ${APPLICATION_VERSION}"
-OutFile "${APPLICATION_NAME}-${APPLICATION_VERSION}-installer.exe"
-InstallDir "$PROGRAMFILES\${APPLICATION_NAME}"
-SetCompressor "lzma"
+Name \"${APPLICATION_NAME} ${APPLICATION_VERSION}\"
+OutFile \"${APPLICATION_NAME}-${APPLICATION_VERSION}-installer.exe\"
+InstallDir \"$PROGRAMFILES\${APPLICATION_NAME}\"
+SetCompressor \"lzma\"
 
 ; ===== Pages =====
 !insertmacro MUI_PAGE_WELCOME
-!insertmacro MUI_PAGE_LICENSE "..\LICENSE"
+!insertmacro MUI_PAGE_LICENSE \"..\LICENSE\"
 !insertmacro MUI_PAGE_DIRECTORY
 !insertmacro MUI_PAGE_INSTFILES
 !define MUI_FINISHPAGE_NOAUTOCLOSE
 !define MUI_FINISHPAGE_RUN
 !define MUI_FINISHPAGE_RUN_CHECKED
-!define MUI_FINISHPAGE_RUN_TEXT "Run Application"
-!define MUI_FINISHPAGE_RUN_FUNCTION "RunApplication"
+!define MUI_FINISHPAGE_RUN_TEXT \"Run Application\"
+!define MUI_FINISHPAGE_RUN_FUNCTION \"RunApplication\"
 !insertmacro MUI_PAGE_FINISH
 
 !insertmacro MUI_UNPAGE_WELCOME
@@ -31,14 +31,14 @@ SetCompressor "lzma"
 !insertmacro MUI_UNPAGE_INSTFILES
 !insertmacro MUI_UNPAGE_FINISH
 
-!insertmacro MUI_LANGUAGE "English"
+!insertmacro MUI_LANGUAGE \"English\"
 
 Function .onInit
 SetShellVarContext All
 FunctionEnd
 
 ; ===== Installer =====
-Section ""
+Section \"\"
 	SetOutPath $INSTDIR
 	
 	CreateDirectory $INSTDIR\platforms
@@ -70,9 +70,9 @@ Section ""
 	SetOutPath $INSTDIR
 	WriteUninstaller $INSTDIR\uninstall.exe
 
-	CreateDirectory '$SMPROGRAMS\${COMPANY}\${APPLICATION_NAME}'
-	CreateShortCut '$SMPROGRAMS\${COMPANY}\${APPLICATION_NAME}\${APPLICATION_NAME}.lnk' '$INSTDIR\ozwadmin.exe' "" '$INSTDIR\ozwadmin.exe' 0
-	CreateShortCut '$SMPROGRAMS\${COMPANY}\${APPLICATION_NAME}\Uninstall ${APPLICATION_NAME}.lnk' '$INSTDIR\uninstall.exe' "" '$INSTDIR\uninstall.exe' 0
+	CreateDirectory \"$SMPROGRAMS\${COMPANY}\${APPLICATION_NAME}\"
+	CreateShortCut \"$SMPROGRAMS\${COMPANY}\${APPLICATION_NAME}\${APPLICATION_NAME}.lnk\" \"$INSTDIR\ozwadmin.exe\" \"\" \"$INSTDIR\ozwadmin.exe\" 0
+	CreateShortCut \"$SMPROGRAMS\${COMPANY}\${APPLICATION_NAME}\Uninstall ${APPLICATION_NAME}.lnk\" \"$INSTDIR\uninstall.exe\" \"\" \"$INSTDIR\uninstall.exe\" 0
 SectionEnd
 
 
@@ -80,15 +80,15 @@ Section /o VCRedist VCRedist_id
     SetCompress off
 	File ${PROJECT_ROOT}\vc_redist.x86.exe
     SetCompress auto
-    ExecWait "vc_redist.x64.exe"
+    ExecWait \"vc_redist.x64.exe\"
 SectionEnd
 
-Section "CheckVCRedist"
-	ReadRegStr $0 HKLM "SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\x86" "Version"
-	${If} $0 >= "v14.16.27033x"
-   		DetailPrint "VC Redistributable: The installed version is usable $0"
+Section \"CheckVCRedist\"
+	ReadRegStr $0 HKLM \"SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\x86\" \"Version\"
+	${If} $0 >= \"v14.16.27033x\"
+   		DetailPrint \"VC Redistributable: The installed version is usable $0\"
 	${Else}
-   		DetailPrint "VC Redistributable: Need to update old version $0"
+   		DetailPrint \"VC Redistributable: Need to update old version $0\"
 		SectionSetFlags ${VCRedist_id} 1 ; Selected   
 	${EndIf}
 	Delete $INSTDIR\vc_redist.x86.exe
@@ -98,7 +98,7 @@ SectionEnd
 
 
 ; ===== Uninstaller =====
-Section "Uninstall"	
+Section \"Uninstall\"	
 	Delete $INSTDIR\LICENSE
 	Delete $INSTDIR\*.exe
 	Delete $INSTDIR\*.dll
@@ -109,10 +109,10 @@ Section "Uninstall"
 	Delete $INSTDIR\styles\*.dll
 	Delete $INSTDIR\translations\*.qm
 	Delete $INSTDIR\uninstall.exe
-	Delete '$SMPROGRAMS\${COMPANY}\${APPLICATION_NAME}\${APPLICATION_NAME}.lnk'
-	Delete '$SMPROGRAMS\${COMPANY}\${APPLICATION_NAME}\Uninstall ${APPLICATION_NAME}.lnk'
+	Delete \"$SMPROGRAMS\${COMPANY}\${APPLICATION_NAME}\${APPLICATION_NAME}.lnk\"
+	Delete \"$SMPROGRAMS\${COMPANY}\${APPLICATION_NAME}\Uninstall ${APPLICATION_NAME}.lnk\"
 	
-	RMDir '$SMPROGRAMS\${COMPANY}\${APPLICATION_NAME}'
+	RMDir \"$SMPROGRAMS\${COMPANY}\${APPLICATION_NAME}\"
 	RMDir $INSTDIR\platforms
 	RMDir $INSTDIR\iconimages
 	RMDir $INSTDIR\styles
@@ -123,6 +123,6 @@ SectionEnd
 
 ; ===== Functions =====
 Function RunApplication
-	ExecShell "" "$INSTDIR\ozwadmin.exe"
+	ExecShell \"\" \"$INSTDIR\ozwadmin.exe\"
 FunctionEnd
 
