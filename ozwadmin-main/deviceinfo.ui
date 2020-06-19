@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>600</width>
-    <height>401</height>
+    <height>466</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -204,8 +204,11 @@
      <layout class="QGridLayout" name="gridLayout_2">
       <item row="1" column="2">
        <widget class="QCheckBox" name="ni_security">
+        <property name="toolTip">
+         <string>This is not S0/S2 Security. </string>
+        </property>
         <property name="text">
-         <string>Security</string>
+         <string>Security (Legacy)</string>
         </property>
        </widget>
       </item>

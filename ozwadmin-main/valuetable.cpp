@@ -57,6 +57,8 @@ void forEach(QAbstractItemModel* model, QModelIndex parent = QModelIndex()) {
 
 void ValueTable::logChanges(const QModelIndex &current, const QModelIndex &previous)
 {
+    Q_UNUSED(current);
+    Q_UNUSED(previous);
     qCDebug(ozwadmin) << "SelectionChanged UnFiltered Rows:" << this->m_proxyModel->sourceModel()->rowCount();
     qCDebug(ozwadmin) << "\t Filter Node:" << this->m_proxyModel->getCurrentFilteredNode();
     qCDebug(ozwadmin) << "\t Genre Filter:" << (int)this->m_proxyModel->getFilterGenre();
