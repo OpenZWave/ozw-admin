@@ -44,6 +44,8 @@ void LogWindow::scrollWindow()
 }
 
 void LogWindow::init() {
+    connect(&OZWCore::get()->settings, &SettingsManager::logBufferSizeChanged, this->m_log, &QTOZWLog::setLogBufSize);
+    this->m_log->setLogBufSize(OZWCore::get()->settings.logBufferSize());
     this->m_logModel = new QTOZWLogModel(this->m_log, this);
     this->ui->logview->setModel(this->m_logModel);
     connect(this->m_log, &QTOZWLog::readyChanged, this, &LogWindow::logsReady);

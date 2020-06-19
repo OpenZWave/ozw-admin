@@ -98,24 +98,25 @@ void MainWindow::QTOZW_Ready(bool ready) {
 
     /* apply our Local Configuration Options to the OZW Options Class */
 	
-    QSettings().beginGroup("openzwave");
-    QStringList optionlist = QSettings().allKeys();
+    QSettings settings;
+	settings.beginGroup("openzwave");
+    QStringList optionlist = settings.allKeys();
     for (int i = 0; i < optionlist.size(); i++) {
-        qCDebug(ozwadmin) << "Updating Option " << optionlist.at(i) << " to " << QSettings().value(optionlist.at(i));
+        qCDebug(ozwadmin) << "Updating Option " << optionlist.at(i) << " to " << settings.value(optionlist.at(i));
         QTOZWOptions *ozwoptions = OZWCore::get()->getQTOZWManager()->getOptions();
         QStringList listtypes;
         listtypes << "SaveLogLevel" << "QueueLogLevel" << "DumpLogLevel";
         if (listtypes.contains(optionlist.at(i))) {
             OptionList list = ozwoptions->property(optionlist.at(i).toLocal8Bit()).value<OptionList>();
             if (list.getEnums().size() > 0)
-                list.setSelected(QSettings().value(optionlist.at(i)).toString());
+                list.setSelected(settings.value(optionlist.at(i)).toString());
         }
         else
         {
-            ozwoptions->setProperty(optionlist.at(i).toLocal8Bit(), QSettings().value(optionlist.at(i)));
+            ozwoptions->setProperty(optionlist.at(i).toLocal8Bit(), settings.value(optionlist.at(i)));
         }
     }
-    QSettings().endGroup();
+    settings.endGroup();
 	openDefaultWindows();
 }
 void MainWindow::openDefaultWindows() {
