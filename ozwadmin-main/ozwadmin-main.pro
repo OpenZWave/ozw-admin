@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui widgets xml remoteobjects websockets svg
+QT       += core gui widgets xml remoteobjects websockets svg serialport
 CONFIG   += silent
 
 TARGET = ../ozwadmin

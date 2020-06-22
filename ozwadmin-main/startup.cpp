@@ -3,6 +3,7 @@
 #include <QSettings>
 #include <QUrl>
 #include <QDebug>
+#include <QSerialPortInfo>
 
 #include "startup.h"
 #include "ui_startup.h"
@@ -19,16 +20,16 @@ Startup::Startup(QWidget *parent) :
     ui->remoteport->setMaximumWidth(w+8);
     QObject::connect(ui->startlocal, &QPushButton::clicked, this, &Startup::localPressed);
     QObject::connect(ui->startremote, &QPushButton::clicked, this, &Startup::remotePressed);
+    foreach(QSerialPortInfo spinfo, QSerialPortInfo::availablePorts()) {
 #if defined(Q_OS_MACOS)
-    ui->serialport->setText(QSettings().value("connection/serialport", "/dev/cu.SLAB_USBtoUART").toString());
-#elif defined(Q_OS_WIN)
-    ui->serialport->setText(QSettings().value("connection/serialport", "COM1").toString());
-#else
-    ui->serialport->setText(QSettings().value("connection/serialport", "/dev/ttyUSB0").toString());
+        if (spinfo.portName().startsWith("tty", Qt::CaseInsensitive))
+            continue;
 #endif
-    ui->enableserver->setChecked(QSettings().value("connection/startserver", true).toBool());
+        ui->serialport->addItem(spinfo.systemLocation());
+    }
+    //ui->enableserver->setChecked(QSettings().value("connection/startserver", true).toBool());
+    ui->enableserver->setChecked(true);
     QUrl server = QUrl::fromUserInput(QSettings().value("connection/remotehost", "ws://localhost:1983").toString());
-    qDebug() << server;
     ui->remotehost->setText(server.host());
     ui->remoteport->setText(QString::number(server.port()));
     ui->authKey->setText(QSettings().value("connection/authKey", "").toString());
@@ -41,10 +42,7 @@ Startup::~Startup()
 
 void Startup::localPressed() {
 
-    if (ui->serialport->text().length() == 0) {
-        QMessageBox::critical(this, tr("Error"), tr("You Must Specify a Serial Port"), QMessageBox::Ok);
-    }
-	this->m_serialPort = ui->serialport->text();
+	this->m_serialPort = ui->serialport->currentText();
 	this->m_remote = false;
     this->m_startServer = ui->enableserver->isChecked();
 	this->setResult(DialogCode::Accepted);
@@ -53,6 +51,8 @@ void Startup::localPressed() {
 void Startup::remotePressed() {
     if (ui->remotehost->text().length() == 0) {
         QMessageBox::critical(this, tr("Error"), tr("You Must Specify a Remote Host"), QMessageBox::Ok);
+        this->reject();
+        return;
     }
 	this->m_remoteHost = ui->remotehost->text();
 	this->m_remotePort = ui->remoteport->text().toUInt();
