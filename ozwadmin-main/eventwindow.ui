@@ -21,8 +21,8 @@
      </property>
      <property name="icon">
       <iconset resource="ozwadmin-main.qrc">
-       <normaloff>:/res/buttonIcons/play.svg</normaloff>
-       <normalon>:/res/buttonIcons/pause.svg</normalon>:/res/buttonIcons/play.svg</iconset>
+       <normaloff>:/res/buttonIcons/pause.svg</normaloff>
+       <normalon>:/res/buttonIcons/play.svg</normalon>:/res/buttonIcons/pause.svg</iconset>
      </property>
      <property name="iconSize">
       <size>

@@ -14,13 +14,14 @@ public:
     explicit ControllerCommands(QMainWindow *parent = nullptr);
     enum Command {Command_addNode, Command_delNode, Command_healNetwork, Command_cancel, Command_none};
     Q_ENUM(Command);
+
 public slots:
     void addNode();
     void delNode();
     void healNetwork();
     void cancelCommand();
-
     void controllerCommandNotification(quint8 node, NotificationTypes::QTOZW_Notification_Controller_Cmd command, NotificationTypes::QTOZW_Notification_Controller_State state, NotificationTypes::QTOZW_Notification_Controller_Error error);
+    void refreshNodeInfo(quint8 node);
 private:
     QMessageBox m_msgBox;
     Command m_command;

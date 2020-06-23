@@ -145,6 +145,7 @@ void MainWindow::openDefaultWindows() {
 	connect(this->ntw, &nodeTableWidget::currentRowChanged, this, &MainWindow::NodeSelected);
 	connect(this->ntw, &nodeTableWidget::currentRowChanged, di, &DeviceInfo::NodeSelected);
 	connect(this->ntw, &nodeTableWidget::currentRowChanged, ni, &NodeStatus::NodeSelected);
+	connect(this->ntw, &nodeTableWidget::refreshNodeInfo, this->m_controllerCommands, &ControllerCommands::refreshNodeInfo);
 	connect(this->sbMsg, &statusBarMessages::newMessage, ew, &EventWindow::newEvent);
 	connect(di, &DeviceInfo::openMetaDataWindow, this, &MainWindow::openMetaDataWindow);
 

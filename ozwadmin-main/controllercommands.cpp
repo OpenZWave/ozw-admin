@@ -13,8 +13,7 @@ ControllerCommands::ControllerCommands(QMainWindow *parent) :
 
 
 void ControllerCommands::addNode() {
-
-
+    
     this->m_command = ControllerCommands::Command_addNode;
     QMessageBox::StandardButton ret = QMessageBox::question(qobject_cast<QMainWindow*>(this->parent()), "Include Secure?", "Do you wish to include the new device with encryption?", QMessageBox::Yes|QMessageBox::No|QMessageBox::Cancel);
     if (ret == QMessageBox::Cancel) {
@@ -334,6 +333,14 @@ void ControllerCommands::controllerCommandNotification(quint8 node, Notification
                 }
             }            
         }
-
     }
+}
+
+void ControllerCommands::refreshNodeInfo(quint8 node)
+{
+    QMessageBox::StandardButton ret = QMessageBox::question(qobject_cast<QMainWindow*>(this->parent()), "Refresh Node?", "Refreshing the Node?", QMessageBox::Yes|QMessageBox::No);
+    if (ret == QMessageBox::No) {
+        return;
+    }
+    OZWCore::get()->getQTOZWManager()->refreshNodeInfo(node);    
 }

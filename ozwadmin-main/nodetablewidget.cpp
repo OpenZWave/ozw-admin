@@ -15,6 +15,8 @@ nodeTableWidget::nodeTableWidget(QWidget *parent) :
     ui(new Ui::nodeTableWidget)
 {
     this->ui->setupUi(this);
+	this->ui->verticalLayout->insertWidget(0, &this->tb);
+
 	Node_Delegate *nodeflagdelegate = new Node_Delegate(this);
 
 	this->ui->nodeList->setItemDelegateForColumn(QTOZW_Nodes::NodeColumns::NodeFlags, nodeflagdelegate);
@@ -27,6 +29,10 @@ nodeTableWidget::nodeTableWidget(QWidget *parent) :
 
 	this->ui->nodeList->setContextMenuPolicy(Qt::CustomContextMenu);
 	connect(this->ui->nodeList, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(rightClickMenu(QPoint)));
+
+	this->tb.insertAction(nullptr, this->ui->actionRefresh_Node_Info);
+	connect(this->ui->actionRefresh_Node_Info, &QAction::triggered, this, &nodeTableWidget::refreshNodeInfoTriggered);
+
 }
 
 nodeTableWidget::~nodeTableWidget()
@@ -51,6 +57,7 @@ void nodeTableWidget::setModel(QAbstractItemModel *model)
 		}
 	}
 	connect(ui->nodeList->selectionModel(), &QItemSelectionModel::currentRowChanged, this, &nodeTableWidget::currentRowChanged);
+	connect(ui->nodeList->selectionModel(), &QItemSelectionModel::currentRowChanged, this, &nodeTableWidget::updateSelectedNode);
 	connect(proxyNodeList, &QTOZW_proxyNodeModel::rowsInserted, this, &nodeTableWidget::resizeContents);
 	connect(proxyNodeList, &QTOZW_proxyNodeModel::rowsRemoved, this, &nodeTableWidget::resizeContents);
 	QTimer::singleShot(500, this, &nodeTableWidget::resizeContents);
@@ -67,14 +74,25 @@ QItemSelectionModel *nodeTableWidget::selectionModel()
 
 void nodeTableWidget::rightClickMenu(QPoint pos) 
 {
-    //QModelIndex index=this->ui->nodeList->indexAt(pos);
-
     QMenu *menu=new QMenu(this);
-    menu->addAction(new QAction("Action 1", this));
-    menu->addAction(new QAction("Action 2", this));
-    menu->addAction(new QAction("Action 3", this));
+    menu->addAction(this->ui->actionRefresh_Node_Info);
     menu->popup(this->ui->nodeList->viewport()->mapToGlobal(pos));
 }
+
+void nodeTableWidget::updateSelectedNode(const QModelIndex &current, const QModelIndex &previous) 
+{
+	Q_UNUSED(previous);
+	this->ui->actionRefresh_Node_Info->setData(current.model()->data(current.model()->index(current.row(), QTOZW_Nodes::NodeID)).toInt());
+	this->ui->actionRefresh_Node_Info->setToolTip(QString("Refresh Node Info for Node %1").arg(current.model()->data(current.model()->index(current.row(), QTOZW_Nodes::NodeID)).toInt()));
+}
+
+void nodeTableWidget::refreshNodeInfoTriggered() {
+	quint8 node = this->ui->actionRefresh_Node_Info->data().toInt();
+	emit this->refreshNodeInfo(node);
+}
+
+
+
 
 void nodeTableWidget::resizeContents() {
 	this->ui->nodeList->resizeColumnsToContents();

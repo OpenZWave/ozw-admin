@@ -14,5 +14,6 @@
         <file>res/start.svg</file>
         <file>res/buttonIcons/pause.svg</file>
         <file>res/buttonIcons/play.svg</file>
+        <file>res/buttonIcons/refresh.svg</file>
     </qresource>
 </RCC>

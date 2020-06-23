@@ -13,7 +13,10 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout">
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="spacing">
+    <number>0</number>
+   </property>
    <property name="leftMargin">
     <number>0</number>
    </property>
@@ -26,10 +29,7 @@
    <property name="bottomMargin">
     <number>0</number>
    </property>
-   <property name="spacing">
-    <number>0</number>
-   </property>
-   <item row="0" column="0">
+   <item>
     <widget class="QTableView" name="nodeList">
      <attribute name="horizontalHeaderStretchLastSection">
       <bool>true</bool>
@@ -37,7 +37,18 @@
     </widget>
    </item>
   </layout>
+  <action name="actionRefresh_Node_Info">
+   <property name="icon">
+    <iconset resource="ozwadmin-main.qrc">
+     <normaloff>:/res/buttonIcons/refresh.svg</normaloff>:/res/buttonIcons/refresh.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Refresh Node Info</string>
+   </property>
+  </action>
  </widget>
- <resources/>
+ <resources>
+  <include location="ozwadmin-main.qrc"/>
+ </resources>
  <connections/>
 </ui>
