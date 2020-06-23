@@ -8,6 +8,7 @@
 #include "startup.h"
 #include "ui_startup.h"
 #include "ozwcore.h"
+#include "util.h"
 
 Startup::Startup(QWidget *parent) :
     QDialog(parent),
@@ -20,13 +21,17 @@ Startup::Startup(QWidget *parent) :
     ui->remoteport->setMaximumWidth(w+8);
     QObject::connect(ui->startlocal, &QPushButton::clicked, this, &Startup::localPressed);
     QObject::connect(ui->startremote, &QPushButton::clicked, this, &Startup::remotePressed);
+    QString selected;
     foreach(QSerialPortInfo spinfo, QSerialPortInfo::availablePorts()) {
 #if defined(Q_OS_MACOS)
         if (spinfo.portName().startsWith("tty", Qt::CaseInsensitive))
             continue;
 #endif
-        ui->serialport->addItem(spinfo.systemLocation());
+        ui->serialport->addItem(spinfo.portName(), spinfo.systemLocation());
+        if (QSettings().value("connection/serialport") == spinfo.systemLocation())
+            selected = spinfo.portName();
     }
+    ui->serialport->setCurrentText(selected);
     //ui->enableserver->setChecked(QSettings().value("connection/startserver", true).toBool());
     ui->enableserver->setChecked(true);
     QUrl server = QUrl::fromUserInput(QSettings().value("connection/remotehost", "ws://localhost:1983").toString());
@@ -42,7 +47,7 @@ Startup::~Startup()
 
 void Startup::localPressed() {
 
-	this->m_serialPort = ui->serialport->currentText();
+	this->m_serialPort = ui->serialport->currentData().toString();
 	this->m_remote = false;
     this->m_startServer = ui->enableserver->isChecked();
 	this->setResult(DialogCode::Accepted);

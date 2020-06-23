@@ -86,4 +86,5 @@ QString SockErrorToString(QAbstractSocket::SocketError error)
     case QAbstractSocket::UnknownSocketError:
       return QObject::tr("Unknown Socket Error");
   }
+  return QObject::tr("Unknown Socket Error");
 }
