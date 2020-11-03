@@ -185,9 +185,9 @@ void ControllerCommands::controllerCommandNotification(quint8 node, Notification
                 case NotificationTypes::Ctrl_State_InProgress: {
                     this->m_msgBox.setIcon(QMessageBox::Information);
                     if (node) {
-                        this->m_msgBox.setText(QString("Exectuting Exclusion on Node %1").arg(node));
+                        this->m_msgBox.setText(QString("Executing Exclusion on Node %1").arg(node));
                     } else { 
-                        this->m_msgBox.setText("Exectuting Exclusion on Device");
+                        this->m_msgBox.setText("Executing Exclusion on Device");
                     }
                     this->m_msgBox.setDetailedText("Node is currently being removed from its Network Association");
                     this->m_msgBox.setStandardButtons(QMessageBox::NoButton);
@@ -278,9 +278,9 @@ void ControllerCommands::controllerCommandNotification(quint8 node, Notification
                         details.append("Some Devices Failed\n");
                     }
                     if (node) {
-                        this->m_msgBox.setText(QString("Exectuting Heal Network on Node %1").arg(node));
+                        this->m_msgBox.setText(QString("Executing Heal Network on Node %1").arg(node));
                     } else { 
-                        this->m_msgBox.setText("Exectuting Heal Network");
+                        this->m_msgBox.setText("Executing Heal Network");
                     }
                     if (!details.isEmpty()) this->m_msgBox.setDetailedText(details);
                     this->m_msgBox.setStandardButtons(QMessageBox::Close);
